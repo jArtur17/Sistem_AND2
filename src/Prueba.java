@@ -1,3 +1,6 @@
 public class Prueba {
-  System.out.println("Holaaa")
+  public static void main(String[] args) {
+    System.out.print("Holaaa");
+  }
+
 }

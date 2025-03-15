@@ -1,3 +1,5 @@
+package Pedidos;
+
 public class Pedidos {
     int id_pedido, id_cliente;
     String fecha_hora, estado, metodo_pago;

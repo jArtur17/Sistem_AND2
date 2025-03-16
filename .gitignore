@@ -2,6 +2,7 @@
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+uiDesigner.xml
 
 ### Eclipse ###
 .apt_generated

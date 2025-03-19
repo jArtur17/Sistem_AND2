@@ -42,9 +42,12 @@ public class PedidosGUI {
     double total = 0;
     int item = 0;
     String product="";
+    String idProducto="";
     DefaultTableModel model = new DefaultTableModel();
+    //ArrayList<ArrayList<Object>> lista = new ArrayList<>();
 
     ConexionFarmacia cf = new ConexionFarmacia();
+
 
     public PedidosGUI() {
         //JFrame frame = new JFrame("Reloj en tiempo real");
@@ -208,9 +211,19 @@ public class PedidosGUI {
                         return;
                     }
 
+                    /*
+                    if (lista.size() > 6) {  // Verifica que exista ese índice antes de acceder
+                        String idProducto = lista.get(6).toString();  // Lo conviertes a String si es necesario
+                        System.out.println("ID del Producto: " + idProducto);
+                    } else {
+                        System.out.println("El índice no existe. Asegúrate de haberlo agregado correctamente.");
+                    }*/
+                    int product = Integer.parseInt(idProducto);
+
                     // Insertar cada producto en la tabla productoorden
                     for (int i = 0; i < rowCount; i++) {
-                        int product = Integer.parseInt(tablaProductos.getValueAt(i, 0).toString()); // Obtener id_producto
+                        String idProducto = model.getValueAt(i, 0).toString();
+                        //int product = Integer.parseInt(tablaCarrito.getValueAt(i, 1).toString()); // Obtener id_producto
                         int can = Integer.parseInt(tablaCarrito.getValueAt(i, 3).toString()); // Obtener cantidad
                         String t_can = tablaCarrito.getValueAt(i, 2).toString(); // Obtener tipo_cantidad
                         int pre_u = Integer.parseInt(tablaCarrito.getValueAt(i, 4).toString()); // Obtener precio_unitario
@@ -330,21 +343,22 @@ public class PedidosGUI {
         String t_cantidad = comboBox1.getSelectedItem().toString();
         int precio_u = Integer.parseInt(textField7.getText());
 
-
-
-        /*
         int fila = tablaProductos.getSelectedRow();
+        idProducto = tablaProductos.getValueAt(fila, 0).toString();
+
+
+        String prod="";
         if (fila >= 0 && fila < tablaProductos.getRowCount()) {
-            // La columna dos tiene índice 1 (las columnas se indexan desde 0)
-             product = tablaProductos.getValueAt(fila, 1).toString();
-            System.out.println(product);
+            // La columna del ID del producto debe ser ajustada según tu tabla
+                 // Este es el ID del producto
+            prod = tablaProductos.getValueAt(fila, 1).toString();// Asumiendo que el ID está en la primera columna (índice 0)
+            System.out.println(prod);
         } else {
             JOptionPane.showMessageDialog(null, "Seleccione un producto");
+            return;
         }
 
-         */
 
-        ArrayList lista = new ArrayList();
         if(stock == stockmin ){
             JOptionPane.showMessageDialog(null, "Este producto ha llegado al stock mínimo");
         }else if (cantidad <= 0) {
@@ -356,19 +370,24 @@ public class PedidosGUI {
             int sub_total = precio_u * cantidad;
             total += sub_total;
             textField11.setText(String.valueOf(total));
+            ArrayList lista = new ArrayList();
             lista.add(item+=1);
-            lista.add(product);
+            lista.add(prod);
             lista.add(t_cantidad);
             lista.add(cantidad);
             lista.add(precio_u);
             lista.add(sub_total);
-            Object[] ob = new Object[6];
+            lista.add(idProducto);
+            Object[] ob = new Object[7];
             ob[0] = lista.get(0);
             ob[1] = lista.get(1);
             ob[2] = lista.get(2);
             ob[3] = lista.get(3);
             ob[4] = lista.get(4);
             ob[5] = lista.get(5);
+            ob[6] = lista.get(6);
+
+            System.out.println(ob[6]);
             model.addRow(ob);
             tablaCarrito.setModel(model);
 

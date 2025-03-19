@@ -323,7 +323,11 @@
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
-            <properties/>
+            <properties>
+              <model>
+                <item value="CLIENTES"/>
+              </model>
+            </properties>
           </component>
           <component id="d5b23" class="javax.swing.JTextField" binding="textField10" default-binding="true">
             <constraints>
@@ -392,12 +396,12 @@
               <text value="Agregar producto"/>
             </properties>
           </component>
-          <component id="216a" class="javax.swing.JButton" binding="cancelarButton" default-binding="true">
+          <component id="216a" class="javax.swing.JButton" binding="cancelarPedidoButton" default-binding="true">
             <constraints>
               <grid row="6" column="0" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="cancelar"/>
+              <text value="Cancelar pedido"/>
             </properties>
           </component>
           <component id="6ebd8" class="javax.swing.JButton" binding="generarVentaButton" default-binding="true">

@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,6 +46,7 @@ public class PedidosGUI {
     String idProducto="";
     DefaultTableModel model = new DefaultTableModel();
     //ArrayList<ArrayList<Object>> lista = new ArrayList<>();
+
 
     ConexionFarmacia cf = new ConexionFarmacia();
 
@@ -223,26 +225,20 @@ public class PedidosGUI {
                         return;
                     }
 
-                    /*
-                    if (lista.size() > 6) {  // Verifica que exista ese índice antes de acceder
-                        String idProducto = lista.get(6).toString();  // Lo conviertes a String si es necesario
-                        System.out.println("ID del Producto: " + idProducto);
-                    } else {
-                        System.out.println("El índice no existe. Asegúrate de haberlo agregado correctamente.");
-                    }*/
-                    int product = Integer.parseInt(idProducto);
 
-                    // Insertar cada producto en la tabla productoorden
+                    //int product = Integer.parseInt(idProducto);
+
+                    // Insertar cada producto en la tabla detalle_pedido
                     for (int i = 0; i < rowCount; i++) {
-                        String idProducto = model.getValueAt(i, 0).toString();
+                        int idPro = Integer.parseInt(model.getValueAt(i, 1).toString());
                         //int product = Integer.parseInt(tablaCarrito.getValueAt(i, 1).toString()); // Obtener id_producto
-                        int can = Integer.parseInt(tablaCarrito.getValueAt(i, 3).toString()); // Obtener cantidad
-                        String t_can = tablaCarrito.getValueAt(i, 2).toString(); // Obtener tipo_cantidad
-                        int pre_u = Integer.parseInt(tablaCarrito.getValueAt(i, 4).toString()); // Obtener precio_unitario
-                        int sub = Integer.parseInt(tablaCarrito.getValueAt(i, 5).toString());
+                        int can = Integer.parseInt(tablaCarrito.getValueAt(i, 4).toString()); // Obtener cantidad
+                        String t_can = tablaCarrito.getValueAt(i, 3).toString(); // Obtener tipo_cantidad
+                        int pre_u = Integer.parseInt(tablaCarrito.getValueAt(i, 5).toString()); // Obtener precio_unitario
+                        int sub = Integer.parseInt(tablaCarrito.getValueAt(i, 6).toString());
 
                         psProductos.setInt(1, idPedido);
-                        psProductos.setInt(2, product);
+                        psProductos.setInt(2, idPro);
                         psProductos.setInt(3, can);
                         psProductos.setString(4, t_can);
                         psProductos.setInt(5, pre_u);
@@ -384,12 +380,13 @@ public class PedidosGUI {
             textField11.setText(String.valueOf(total));
             ArrayList lista = new ArrayList();
             lista.add(item+=1);
+            lista.add(idProducto);
             lista.add(prod);
             lista.add(t_cantidad);
             lista.add(cantidad);
             lista.add(precio_u);
             lista.add(sub_total);
-            lista.add(idProducto);
+            //lista.add(idProducto);
             Object[] ob = new Object[7];
             ob[0] = lista.get(0);
             ob[1] = lista.get(1);
@@ -399,7 +396,8 @@ public class PedidosGUI {
             ob[5] = lista.get(5);
             ob[6] = lista.get(6);
 
-            System.out.println(ob[6]);
+
+            //System.out.println(ob[6]);
             model.addRow(ob);
             tablaCarrito.setModel(model);
 
@@ -483,12 +481,21 @@ public class PedidosGUI {
     public void Carrito() {
         DefaultTableModel pedidos = new DefaultTableModel();
         pedidos.addColumn("Item");
+        pedidos.addColumn("ID");
         pedidos.addColumn("Producto");
         pedidos.addColumn("tipo de Cant");
         pedidos.addColumn("Cantidad");
         pedidos.addColumn("Precio unitario");
         pedidos.addColumn("Subtotal");
         tablaCarrito.setModel(pedidos);
+
+        /*
+        TableColumn id = tablaCarrito.getColumnModel().getColumn(1);
+        id.setMinWidth(0);
+        id.setMaxWidth(0);
+        id.setPreferredWidth(0);
+
+         */
     }
 
     private void cargarClientes() {

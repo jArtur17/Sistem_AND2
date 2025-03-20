@@ -1,4 +1,4 @@
-package Pedidos;
+package Proyecto.Pedidos;
 
 import Conexion.Conexion;
 

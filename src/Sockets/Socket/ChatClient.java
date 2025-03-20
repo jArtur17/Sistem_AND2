@@ -1,4 +1,4 @@
-package Socket;
+package Sockets.Socket;
 
 import javax.swing.*;
 import java.io.BufferedReader;

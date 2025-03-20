@@ -1,4 +1,5 @@
-package Proyecto.Cliente;
+package Cliente;
+
 import Conexion.Conexion;
 
 import javax.swing.*;

@@ -37,7 +37,6 @@ public class PedidosGUI {
     private JTextArea textArea1;
     private JTextField textField11;
     private JPanel PanelCarrito;
-    private JFrame frame;
 
 /************************************************************************************************************************/
     //variables propias globales

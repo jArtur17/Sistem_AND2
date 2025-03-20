@@ -1,6 +1,7 @@
 import Caja.CajaGUI;
 import Cliente.ClienteGUI;
 import Detalle_Financiero.Detalle_FinancieroGUI;
+import Pedidos.PedidosGUI;
 import Reportes.ReportesGUI;
 
 
@@ -60,7 +61,8 @@ public class Menu {
         pedidosButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                PedidosGUI pGUI = new PedidosGUI();
+                pGUI.PedidosMain();
             }
         });
 

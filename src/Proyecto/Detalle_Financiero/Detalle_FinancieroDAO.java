@@ -1,4 +1,4 @@
-package Detalle_Financiero;
+package Proyecto.Detalle_Financiero;
 
 import Conexion.Conexion;
 
@@ -10,7 +10,7 @@ public class Detalle_FinancieroDAO
     private Conexion conexion = new Conexion();
 
 
-    public int Agregar(Detalle_Financiero detalle_financiero) {
+    public int Agregar(Detalle_Financiero.Detalle_Financiero detalle_financiero) {
         Connection con = conexion.getConnection();
         int nuevoIdFinanciero = -1;
 
@@ -52,7 +52,7 @@ public class Detalle_FinancieroDAO
 
 
 
-    public void Actualizar(Detalle_Financiero detalle_financiero){
+    public void Actualizar(Detalle_Financiero.Detalle_Financiero detalle_financiero){
         Connection con = conexion.getConnection();
 
         String query = "UPDATE detalle_financiero SET id_venta = ?, tipo_pago = ?, ingreso = ?,  egreso = ?, descripcion = ?,  fecha_hora = ?  WHERE id_detallefinanciero = ?";

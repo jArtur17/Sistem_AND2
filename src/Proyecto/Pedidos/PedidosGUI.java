@@ -37,6 +37,7 @@ public class PedidosGUI {
     private JTextArea textArea1;
     private JTextField textField11;
     private JPanel PanelCarrito;
+    private JFrame Jframe;
 
 /************************************************************************************************************************/
     //variables propias globales
@@ -61,7 +62,7 @@ public class PedidosGUI {
     Conexion cf = new Conexion();
 /************************************************************************************************************************/
 
-    public PedidosGUI() {
+    public PedidosGUI(JFrame parentFrame) {
 
 /************************************************************************************************************************/
 
@@ -518,7 +519,7 @@ public class PedidosGUI {
         //fin de metodos
 /************************************************************************************************************************/
     //main
-    public static void main(String[] args) {
+    public void runPedidos() {
         JFrame frame = new JFrame("Main");
         frame.setContentPane(new PedidosGUI().PanelPrincipal);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

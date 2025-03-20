@@ -1,12 +1,14 @@
-package Detalle_Financiero;
+package Proyecto.Detalle_Financiero;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 
-import Caja.CajaDAO;
 import Conexion.Conexion;
+import Proyecto.Caja.CajaDAO;
+
 import java.time.LocalDateTime;
+
 
 
 import java.awt.event.ActionEvent;

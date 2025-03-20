@@ -1,4 +1,4 @@
-package Reportes;
+package Proyecto.Reportes;
 
 import Conexion.Conexion;
 

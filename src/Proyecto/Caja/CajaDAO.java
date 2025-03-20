@@ -1,4 +1,4 @@
-package Caja;
+package Proyecto.Caja;
 
 import Conexion.Conexion;
 import java.sql.*;

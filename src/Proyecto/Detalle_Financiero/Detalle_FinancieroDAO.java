@@ -1,4 +1,4 @@
-package Detalle_Financiero;
+package Proyecto.Detalle_Financiero;
 
 import Conexion.Conexion;
 

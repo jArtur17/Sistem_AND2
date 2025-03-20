@@ -1,7 +1,6 @@
-import Caja.CajaGUI;
-import Detalle_Financiero.Detalle_FinancieroGUI;
-import Reportes.ReportesGUI;
-
+import Proyecto.Detalle_Financiero.Detalle_FinancieroGUI;
+import Proyecto.Reportes.ReportesGUI;
+import Proyecto.Caja.CajaGUI;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

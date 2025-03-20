@@ -1,4 +1,4 @@
-package Caja;
+package Proyecto.Caja;
 
 public class Caja {
 

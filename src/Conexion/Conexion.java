@@ -1,11 +1,11 @@
-package conexion;
+package Conexion;
 
 import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class ConexionFarmacia {
+public class Conexion {
 
     public Connection getConnection() {
         Connection con = null;

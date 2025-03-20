@@ -1,6 +1,6 @@
 package Pedidos;
 
-import conexion.ConexionFarmacia;
+import Conexion.Conexion;
 
 import javax.swing.*;
 import java.sql.*;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PedidosDAO {
-    ConexionFarmacia cf = new ConexionFarmacia();
+    Conexion cf = new Conexion();
 
     //1) Obtener clientes. cf: objeto de la conexion.
     public List<Pedidos> Obtener() {

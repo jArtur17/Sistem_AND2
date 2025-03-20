@@ -1,19 +1,17 @@
-package Proyecto.Cliente;
-
-import connectionFA.ConnectionFA;
-
+package Farmacia.Cliente;
+import Conexion.Conexion;
 import javax.swing.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class ClienteDAO {
-        private ConnectionFA connectionFA = new ConnectionFA();
+        private Conexion cf = new Conexion();
 
 
-        public void agregar(Cliente cliente)
+        public void agregar(Proyecto.Cliente.Cliente cliente)
         {
-            Connection con = connectionFA.getConnection();
+            Connection con = cf.getConnection();
             String query = "INSERT INTO cliente(cedula, nombre, telefono, correo, direccion) VALUES (?,?,?,?,?)";
 
             try

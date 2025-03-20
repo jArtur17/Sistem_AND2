@@ -34,11 +34,11 @@ public class PedidosGUI {
     private JButton cancelarPedidoButton;
     private JButton generarVentaButton;
     private JComboBox comboBoxClientes;
-    private JTextField textField10;
     private JPanel Panel_datos;
     private JTable tablaCarrito;
     private JTextArea textArea1;
     private JTextField textField11;
+    private JPanel PanelCarrito;
     double total = 0;
     int item = 0;
     String product="";
@@ -76,6 +76,7 @@ public class PedidosGUI {
         Carrito();
         agregarListenerTabla();
         Panel_datos.setVisible(false);
+        PanelCarrito.setVisible(false);
         Scrol_productos.setPreferredSize(new Dimension(200, 200));
         Panel_datos.setBackground(new Color(200, 200, 200));
         textField1.setBackground(new Color(220, 230, 240));
@@ -88,6 +89,17 @@ public class PedidosGUI {
         textField3.setBackground(new Color(220, 220, 220));
 
         textArea1.setLineWrap(true);
+        textArea1.setBackground(new Color(220, 230, 240));
+
+        textField6.setEditable(false);
+        textField8.setEditable(false);
+        textField7.setEditable(false);
+        textField3.setEditable(false);
+        textField5.setEditable(false);
+        textField2.setEditable(false);
+        textField9.setEditable(false);
+        textArea1.setEditable(false);
+        textField11.setEditable(false);
 
 
         comboBoxClientes.addActionListener(e -> {
@@ -350,14 +362,13 @@ public class PedidosGUI {
         String prod="";
         if (fila >= 0 && fila < tablaProductos.getRowCount()) {
             // La columna del ID del producto debe ser ajustada según tu tabla
-                 // Este es el ID del producto
+            // Este es el ID del producto
             prod = tablaProductos.getValueAt(fila, 1).toString();// Asumiendo que el ID está en la primera columna (índice 0)
             System.out.println(prod);
         } else {
             JOptionPane.showMessageDialog(null, "Seleccione un producto");
             return;
         }
-
 
         if(stock == stockmin ){
             JOptionPane.showMessageDialog(null, "Este producto ha llegado al stock mínimo");
@@ -367,6 +378,7 @@ public class PedidosGUI {
             JOptionPane.showMessageDialog(null, "No se ha seleccionado el cliente");
         }
         else if(stock > 0 && stock > stockmin && cantidad > 0){
+            PanelCarrito.setVisible(true);
             int sub_total = precio_u * cantidad;
             total += sub_total;
             textField11.setText(String.valueOf(total));

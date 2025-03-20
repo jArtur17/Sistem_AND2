@@ -1,4 +1,4 @@
-package Reportes;
+package Proyecto.Reportes;
 
 import Conexion.Conexion;
 
@@ -17,7 +17,7 @@ public class ReportesGUI {
     private JButton semanalesButton;
     private JButton mensualesButton;
 
-    private ReportesDAO reportesDAO = new ReportesDAO();
+    private Reportes.ReportesDAO reportesDAO = new Reportes.ReportesDAO();
 
     private JFrame frame;
     private JFrame parentFrame;

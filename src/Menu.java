@@ -1,6 +1,7 @@
 import Caja.CajaGUI;
 import Detalle_Financiero.Detalle_FinancieroGUI;
-import Reportes.ReportesGUI;
+import Pedidos.PedidosGUI;
+import Proyecto.Reportes.ReportesGUI;
 
 
 import javax.swing.*;
@@ -59,6 +60,9 @@ public class Menu {
         pedidosButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                PedidosGUI pedidosGUI = new PedidosGUI(frame);
+                pedidosGUI.runPedidos();
+                frame.setVisible(false);
 
             }
         });

@@ -1,4 +1,4 @@
-package Detalle_Financiero;
+package Proyecto.Detalle_Financiero;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -6,6 +6,8 @@ import javax.swing.table.DefaultTableModel;
 
 import Caja.CajaDAO;
 import Conexion.Conexion;
+import Detalle_Financiero.Detalle_Financiero;
+
 import java.time.LocalDateTime;
 
 
@@ -34,7 +36,7 @@ public class Detalle_FinancieroGUI {
     private JFrame frame;
     private JFrame parentFrame;
 
-    private Detalle_FinancieroDAO detalleFinancieroDAO = new Detalle_FinancieroDAO();
+    private Detalle_Financiero.Detalle_FinancieroDAO detalleFinancieroDAO = new Detalle_Financiero.Detalle_FinancieroDAO();
     private CajaDAO cajaDAO = new CajaDAO();
 
     private Conexion conexion = new Conexion();

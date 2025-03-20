@@ -1,4 +1,4 @@
-package Caja;
+package Proyecto.Caja;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -20,7 +20,7 @@ public class CajaGUI {
     private JFrame frame;
     private JFrame parentFrame;
 
-    private CajaDAO cajaDAO = new CajaDAO();
+    private Caja.CajaDAO cajaDAO = new Caja.CajaDAO();
     private Conexion conexion = new Conexion();
 
     public CajaGUI(JFrame parentFrame) {

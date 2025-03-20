@@ -1,6 +1,6 @@
 package Proyecto.Producto;
 
-import connectionFA.ConnectionFA;
+import Conexion.Conexion;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -31,7 +31,7 @@ public class ProductoGUI {
     private JFrame frame;
     private JFrame parentFrame;
     private ProductoDAO productoDAO = new ProductoDAO();
-    private ConnectionFA connectionFA = new ConnectionFA();
+    private Conexion connectionFA = new Conexion();
 
     int rows = 0;
 

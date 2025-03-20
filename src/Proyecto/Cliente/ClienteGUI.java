@@ -1,7 +1,4 @@
 package Proyecto.Cliente;
-
-import connectionFA.ConnectionFA;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -13,6 +10,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import Conexion.Conexion;
 
 public class ClienteGUI {
     private JPanel main;
@@ -30,7 +28,7 @@ public class ClienteGUI {
     private JFrame frame;
     private JFrame parentFrame;
     private ClienteDAO clienteDAO = new ClienteDAO();
-    private ConnectionFA connectionFA = new ConnectionFA();
+    private Conexion connectionFA = new Conexion();
 
     int rows = 0;
 

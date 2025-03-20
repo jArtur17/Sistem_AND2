@@ -1,5 +1,6 @@
 import Caja.CajaGUI;
 import Detalle_Financiero.Detalle_FinancieroGUI;
+import Reportes.ReportesGUI;
 
 
 import javax.swing.*;
@@ -10,6 +11,12 @@ public class Menu {
     private JPanel main;
     private JButton movimientoFinancieroButton;
     private JButton cajaButton;
+    private JButton reportesButton;
+    private JButton pedidosButton;
+    private JButton clientesButton;
+    private JButton productosButton;
+    private JButton hisotrialPedidosButton;
+    private JButton chatButton;
 
     private JFrame frame;
 
@@ -37,6 +44,40 @@ public class Menu {
             }
         });
 
+        reportesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ReportesGUI reportesGUI = new ReportesGUI(frame);
+                reportesGUI.runReport();
+                frame.setVisible(false);
+
+
+            }
+        });
+
+
+        pedidosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+
+        clientesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+
+        productosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
 
     }
 

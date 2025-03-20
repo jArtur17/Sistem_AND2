@@ -10,38 +10,47 @@ public class Detalle_FinancieroDAO
     private Conexion conexion = new Conexion();
 
 
-    public void Agregar(Detalle_Financiero detalle_financiero)
-    {
+    public int Agregar(Detalle_Financiero detalle_financiero) {
         Connection con = conexion.getConnection();
+        int nuevoIdFinanciero = -1;
 
-        String query = "INSERT INTO detalle_financiero(id_venta, tipo_pago, ingreso, egreso, descripcion, fecha_hora) VALUES (?,?,?,?,?,?)";
+        try {
+            // Obtener el siguiente id_detallefinanciero
+            String getMaxIdQuery = "SELECT COALESCE(MAX(id_detallefinanciero), 0) + 1 FROM detalle_financiero";
+            PreparedStatement getMaxIdStmt = con.prepareStatement(getMaxIdQuery);
+            ResultSet rs = getMaxIdStmt.executeQuery();
 
-        try
-        {
+            if (rs.next()) {
+                nuevoIdFinanciero = rs.getInt(1);
+            }
+
+            // Insertar el nuevo registro (corregido el nombre de la columna)
+            String query = "INSERT INTO detalle_financiero(id_detallefinanciero, id_venta, tipo_pago, ingreso, egreso, descripcion, fecha_hora) VALUES (?,?,?,?,?,?,?)";
             PreparedStatement pst = con.prepareStatement(query);
-            pst.setInt(1, detalle_financiero.getId_venta());
-            pst.setString(2, detalle_financiero.getTipo_pago());
-            pst.setInt(3, detalle_financiero.getIngreso());
-            pst.setInt(4, detalle_financiero.getEgreso());
-            pst.setString(5, detalle_financiero.getDescripcion());
-            pst.setTimestamp(6, Timestamp.valueOf(detalle_financiero.getFecha_hora()));
+
+            pst.setInt(1, nuevoIdFinanciero);
+            pst.setInt(2, nuevoIdFinanciero); // id_venta = id_financiero (hasta definirlo bien)
+            pst.setString(3, detalle_financiero.getTipo_pago());
+            pst.setInt(4, detalle_financiero.getIngreso());
+            pst.setInt(5, detalle_financiero.getEgreso());
+            pst.setString(6, detalle_financiero.getDescripcion());
+            pst.setTimestamp(7, Timestamp.valueOf(detalle_financiero.getFecha_hora()));
 
             int result = pst.executeUpdate();
 
-            if (result>0)
-                JOptionPane.showMessageDialog(null,"Agregado con Exito");
-            else
-                JOptionPane.showMessageDialog(null,"No se agrego");
+            rs.close();
+            getMaxIdStmt.close();
+            pst.close();
+            con.close();
 
-        }
-
-        catch (SQLException e)
-        {
+            return (result > 0) ? nuevoIdFinanciero : -1;
+        } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null,"No se agrego");
-
+            return -1;
         }
     }
+
+
 
     public void Actualizar(Detalle_Financiero detalle_financiero){
         Connection con = conexion.getConnection();

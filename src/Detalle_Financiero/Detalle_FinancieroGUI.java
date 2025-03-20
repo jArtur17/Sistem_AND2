@@ -46,6 +46,7 @@ public class Detalle_FinancieroGUI {
         textField1.setVisible(false);
         textField2.setEditable(false);
         textField2.setVisible(false);
+        textField3.setVisible(false);
         textField5.setEditable(false);
         showdata();
 
@@ -55,22 +56,18 @@ public class Detalle_FinancieroGUI {
         agregarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (textField3.getText().trim().isEmpty() || textField4.getText().trim().isEmpty() || comboBox2.getSelectedItem() == null) {
+                if (textField4.getText().trim().isEmpty() || comboBox2.getSelectedItem() == null) {
                     JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos.");
                     return;
                 }
 
                 try {
-                    int id_financiero = 0;
-                    int id_venta = Integer.parseInt(textField3.getText().trim());
                     String tipo_pago = (String) comboBox1.getSelectedItem();
                     int monto = Integer.parseInt(textField4.getText().trim());
 
-                    // Determinar si es ingreso o egreso
                     String tipoOperacion = (String) comboBox2.getSelectedItem();
                     int ingreso = tipoOperacion.equals("Ingreso") ? monto : 0;
                     int egreso = tipoOperacion.equals("Egreso") ? monto : 0;
-
 
                     String descripcion = textField5.getText().trim();
                     if (descripcion.isEmpty()) {
@@ -78,25 +75,24 @@ public class Detalle_FinancieroGUI {
                         return;
                     }
 
-
                     LocalDateTime fecha_hora = LocalDateTime.now();
 
+                    Detalle_Financiero detalle = new Detalle_Financiero(0, 0, tipo_pago, ingreso, egreso, descripcion, fecha_hora);
 
-                    Detalle_Financiero detalle = new Detalle_Financiero(0, id_venta, tipo_pago, ingreso, egreso, descripcion, fecha_hora);
-                    detalleFinancieroDAO.Agregar(detalle);
+                    // Llamar solo una vez
+                    int idFinancieroGenerado = detalleFinancieroDAO.Agregar(detalle);
 
-                    // Obtener el ID del detalle financiero recién insertado
-                    int idDetalleFinanciero = detalleFinancieroDAO.obtenerUltimoIdInsertado();
+                    if (idFinancieroGenerado != -1) {
+                        String concepto = tipoOperacion + " - " + descripcion;
+                        cajaDAO.RegistrarMovimiento(concepto, ingreso - egreso, idFinancieroGenerado);
 
-                    // Registrar el movimiento en la caja con el ID del detalle financiero
-                    String concepto = tipoOperacion + " - " + descripcion;
-                    cajaDAO.RegistrarMovimiento(concepto, ingreso - egreso, idDetalleFinanciero);
+                        clear();
+                        showdata();
 
-                    // Limpiar campos y actualizar la tabla
-                    clear();
-                    showdata();
-
-
+                        JOptionPane.showMessageDialog(null, "Registro agregado correctamente.");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Error al agregar el detalle financiero.");
+                    }
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "El monto debe ser un número válido.");
                 }

@@ -45,17 +45,16 @@ public class CajaDAO {
 
 
 
-    public void RegistrarMovimiento(String concepto, int valor, int id_detallefinanciero) {
-        String query = "INSERT INTO caja (concepto, valor, id_detallefinanciero) VALUES (?, ?, ?)";
-
-        try (Connection con = conexion.getConnection();
-             PreparedStatement stmt = con.prepareStatement(query)) {
-
-            stmt.setString(1, concepto);
-            stmt.setInt(2, valor);
-            stmt.setInt(3, id_detallefinanciero);
-            stmt.executeUpdate();
-
+    public void RegistrarMovimiento(String concepto, int valorMovimiento, int id_detallefinanciero) {
+        Connection con = conexion.getConnection();
+        try {
+            String query = "INSERT INTO caja (concepto, valor, id_detallefinanciero) VALUES (?, ?, ?)";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, concepto);
+            ps.setInt(2, valorMovimiento);
+            ps.setInt(3, id_detallefinanciero); // Asociamos el movimiento con el id_financiero
+            ps.executeUpdate();
+            ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

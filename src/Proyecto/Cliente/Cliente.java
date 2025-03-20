@@ -1,4 +1,4 @@
-package Farmacia.Cliente;
+package Proyecto.Cliente;
 
 public class Cliente {
     int id_cliente; String cedula, nombre, telefono, correo, direccion;

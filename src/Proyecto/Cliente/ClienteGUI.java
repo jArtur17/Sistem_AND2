@@ -1,7 +1,7 @@
-package Farmacia.Cliente;
+package Proyecto.Cliente;
 
-import Conexion.Conexion;
-import Farmacia.Cliente.ClienteDAO;
+import connectionFA.ConnectionFA;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -30,7 +30,7 @@ public class ClienteGUI {
     private JFrame frame;
     private JFrame parentFrame;
     private ClienteDAO clienteDAO = new ClienteDAO();
-    private Conexion cf = new Conexion();
+    private ConnectionFA connectionFA = new ConnectionFA();
 
     int rows = 0;
 
@@ -168,7 +168,7 @@ public class ClienteGUI {
         table1.setModel(modelo);
 
         String[] dato = new String[6];
-        Connection con = cf.getConnection();
+        Connection con = connectionFA.getConnection();
 
         try
         {

@@ -545,7 +545,7 @@ public class PedidosGUI {
         frame.setContentPane(new PedidosGUI().PanelPrincipal);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setSize(900,900);
+        frame.setSize(850,800);
 
         frame.setResizable(false);
         frame.setVisible(true);

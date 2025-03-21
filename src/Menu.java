@@ -89,10 +89,12 @@ public class Menu {
         chatButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Servidor socketS = new Servidor();
-                //socketS.SocketServidor();
-                Cliente sock = new Cliente();
-                sock.SocketCliente();
+                Servidor socketS = new Servidor();
+                //socketS.iniciar();
+                socketS.SocketServidor();
+
+                //Cliente sock = new Cliente();
+                //sock.SocketCliente();
             }
         });
     }
@@ -104,7 +106,7 @@ public class Menu {
         frame.setContentPane(menu.main);
 //          frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setSize(320,210);
+        frame.setSize(500,500);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
     }

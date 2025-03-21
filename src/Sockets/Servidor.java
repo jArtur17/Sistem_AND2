@@ -1,4 +1,6 @@
 package Sockets;
+import Pedidos.PedidosGUI;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,6 +21,7 @@ public class Servidor {
     private PrintWriter out;
     private Socket clientSocket;
 
+
     public Servidor() {
         textArea1.setEditable(false);
 
@@ -27,11 +30,14 @@ public class Servidor {
             public void actionPerformed(ActionEvent e) {
                 new Thread(() -> iniciar()).start();
             }
+
         });
 
         enviarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                PedidosGUI pGUI = new PedidosGUI();
+                MensajePedido("");
                 String mensaje = textField1.getText();
                 if (mensaje != null && !mensaje.isEmpty()) {
                     if (out != null) {
@@ -52,6 +58,7 @@ public class Servidor {
     public void iniciar() {
         try (ServerSocket serverSocket = new ServerSocket(12345)) {
             actualizarTextArea("Servidor iniciado. Esperando conexión...\n");
+
 
             while (true){
             clientSocket = serverSocket.accept();
@@ -96,6 +103,10 @@ public class Servidor {
         }
     }
 
+    public void MensajePedido(String msj){
+
+    }
+
 
     private void actualizarTextArea(String mensaje) {
         SwingUtilities.invokeLater(() -> textArea1.append(mensaje));
@@ -109,5 +120,7 @@ public class Servidor {
         frame.pack();
         frame.setSize(600, 400);
         frame.setVisible(true);
+        Cliente cliente = new Cliente();
+        cliente.SocketCliente();
     }
 }

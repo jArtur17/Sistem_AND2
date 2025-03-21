@@ -1,6 +1,7 @@
 package Pedidos;
 
 import Conexion.Conexion;
+import Sockets.Servidor;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -59,6 +60,9 @@ public class PedidosGUI {
 /*************************************************************************************************************************/
     //conexion a la base de datos(cf:objeto de la conexion)
     Conexion cf = new Conexion();
+
+    //acceder a los sockets
+    Servidor serv = new Servidor();
 /************************************************************************************************************************/
 
     public PedidosGUI() {
@@ -196,6 +200,7 @@ public class PedidosGUI {
                     textField11.setText("");
                     total = 0;
                 }
+                serv.MensajePedido("Se ha cancelado tu venta");
 
             }
         });
@@ -289,6 +294,7 @@ public class PedidosGUI {
                     con.commit();
                     /*----------------------------------------------------------------------------------------------------------------------*/
                     JOptionPane.showMessageDialog(null, "Venta generada con éxito.");
+                    serv.MensajePedido("La venta ha sido generada exitosamente");
                     /*----------------------------------------------------------------------------------------------------------------------*/
 
                 } catch (SQLException ex) {
@@ -550,6 +556,8 @@ public class PedidosGUI {
         }
     }
 }
+
+
 
 //fin del codigo --jArtur
 //funciones a implementar: buscar por cedula, mejorar interfaz

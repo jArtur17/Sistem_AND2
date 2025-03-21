@@ -2,7 +2,7 @@ package Pedidos;
 
 import Caja.CajaGUI;
 import Conexion.Conexion;
-import Sockets.Servidor;
+//import Sockets.Servidor;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -39,11 +39,11 @@ public class PedidosGUI {
     private JTextArea textArea1;
     private JTextField textField11;
     private JPanel PanelCarrito;
-    private Servidor serv;
+    //private Servidor serv;
 
-    public void setServidor(Servidor servidor) {
-        this.serv = servidor;
-    }
+    //public void setServidor(Servidor servidor) {
+      //  this.serv = servidor;
+    //}
 
     CajaGUI caja = new CajaGUI();
 
@@ -107,7 +107,8 @@ public class PedidosGUI {
 
         //Paneles ocultos, (carrito y datos del producto)
         Panel_datos.setVisible(false);
-        PanelCarrito.setVisible(false);
+        //PanelCarrito.setVisible(false);
+        PanelCarrito.setEnabled(false);
 
         //textfield que no se pueden editar
         textField6.setEditable(false);
@@ -177,7 +178,7 @@ public class PedidosGUI {
         agregarProductoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Panel_datos.setVisible(true);
+                //Panel_datos.setVisible(true);
                 agregarProducto();
             }
         });
@@ -372,7 +373,7 @@ public class PedidosGUI {
                     textArea1.setText(String.valueOf(resultados.getString("indicaciones")));
                     textField2.setText(String.valueOf(resultados.getString("lote")));
                     textField9.setText(String.valueOf(resultados.getString("almacen")));
-                    Panel_datos.setVisible(true); // Activa el panel
+                    //Panel_datos.setVisible(true); // Activa el panel
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

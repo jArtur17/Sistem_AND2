@@ -3,6 +3,8 @@ import Cliente.ClienteGUI;
 import Detalle_Financiero.Detalle_FinancieroGUI;
 import Pedidos.PedidosGUI;
 import Reportes.ReportesGUI;
+import Sockets.Cliente;
+import Sockets.Servidor;
 
 
 import javax.swing.*;
@@ -84,6 +86,15 @@ public class Menu {
             }
         });
 
+        chatButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //Servidor socketS = new Servidor();
+                //socketS.SocketServidor();
+                Cliente sock = new Cliente();
+                sock.SocketCliente();
+            }
+        });
     }
 
     public static void main(String[] args) {

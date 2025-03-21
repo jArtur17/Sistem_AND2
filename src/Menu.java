@@ -105,9 +105,8 @@ public class Menu {
         chatButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Servidor socketS = new Servidor();
-                //socketS.iniciar();
-                //socketS.SocketServidor();
+                Servidor socketS = new Servidor();
+                socketS.iniciar();
 
                 //Cliente sock = new Cliente();
                 //sock.SocketCliente();

@@ -10,7 +10,7 @@ public class ConnectionFA {
         Connection connection= null;
 
         try {
-            connection= DriverManager.getConnection("jdbc:mysql://localhost:3306/farmacia","root","");
+            connection= DriverManager.getConnection("jdbc:mysql://localhost:3306/drogueria","root","");
         }
         catch (Exception e)
         {

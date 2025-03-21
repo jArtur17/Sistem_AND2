@@ -1,4 +1,4 @@
-package ClienteInterfaz;
+package Sockets;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

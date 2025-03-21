@@ -1,7 +1,8 @@
-package Proyecto.Caja;
+package Caja;
 
 import Conexion.Conexion;
 import java.sql.*;
+import java.sql.Connection;
 
 public class CajaDAO {
 
@@ -52,7 +53,7 @@ public class CajaDAO {
             PreparedStatement ps = con.prepareStatement(query);
             ps.setString(1, concepto);
             ps.setInt(2, valorMovimiento);
-            ps.setInt(3, id_detallefinanciero); // Asociamos el movimiento con el id_financiero
+            ps.setInt(3, id_detallefinanciero);
             ps.executeUpdate();
             ps.close();
         } catch (SQLException e) {

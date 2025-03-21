@@ -1,10 +1,11 @@
-import Proyecto.Detalle_Financiero.Detalle_FinancieroGUI;
-
-import Proyecto.Caja.CajaGUI;
+import Caja.CajaGUI;
+import Detalle_Financiero.Detalle_FinancieroGUI;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.net.URL;
+
+
 
 public class Menu {
     private JPanel main;
@@ -20,76 +21,92 @@ public class Menu {
     private JFrame frame;
 
 
-    public Menu(JFrame frame)
-    {
-        this.frame  = frame;
+    public Menu(JFrame frame) {
+        this.frame = frame;
 
-        movimientoFinancieroButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Detalle_FinancieroGUI detalleFinancieroGUI = new Detalle_FinancieroGUI(frame);
-                detalleFinancieroGUI.runFinanciero();
-                frame.setVisible(false);
-            }
-        });
-        cajaButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CajaGUI cajaGUI = new CajaGUI(frame);
-                cajaGUI.runCaja();
-                frame.setVisible(false);
+        // Aplicar fondo degradado
+        main = new FondoPanel();
+        main.setLayout(new BorderLayout());
 
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 8, 10, 0)); // Botones en fila
+        buttonPanel.setOpaque(false);
 
-            }
-        });
+        // Crear botones estilizados
+        pedidosButton = createStyledButton("Pedidos");
+        hisotrialPedidosButton = createStyledButton("Historial Pedidos");
+        chatButton = createStyledButton("Chat");
+        clientesButton = createStyledButton("Clientes");
+        productosButton = createStyledButton("Productos");
+        movimientoFinancieroButton = createStyledButton("Movimiento Financiero");
+        cajaButton = createStyledButton("Caja");
+        reportesButton = createStyledButton("Reportes");
 
-        reportesButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        // Agregar botones al panel
+        buttonPanel.add(pedidosButton);
+        buttonPanel.add(hisotrialPedidosButton);
+        buttonPanel.add(chatButton);
+        buttonPanel.add(clientesButton);
+        buttonPanel.add(productosButton);
+        buttonPanel.add(movimientoFinancieroButton);
+        buttonPanel.add(cajaButton);
+        buttonPanel.add(reportesButton);
 
+        // Imagen en la parte inferior
+        JLabel imageLabel = new JLabel();
+        URL imageUrl = getClass().getClassLoader().getResource("imagenes/img_2.png");
+        if (imageUrl != null) {
+            imageLabel.setIcon(new ImageIcon(imageUrl));
+        }
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
+        main.add(buttonPanel, BorderLayout.NORTH);
+        main.add(imageLabel, BorderLayout.SOUTH);
 
-            }
-        });
-
-
-        pedidosButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
-
-
-        clientesButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
-
-
-        productosButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
+        // Configuración de eventos
+        movimientoFinancieroButton.addActionListener(e -> {
+            Detalle_FinancieroGUI detalleFinancieroGUI = new Detalle_FinancieroGUI(frame);
+            detalleFinancieroGUI.runFinanciero();
+            frame.setVisible(false);
         });
 
+        cajaButton.addActionListener(e -> {
+            CajaGUI cajaGUI = new CajaGUI(frame);
+            cajaGUI.runCaja();
+            frame.setVisible(false);
+        });
+
+        frame.setContentPane(main);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+    private JButton createStyledButton(String text) {
+        JButton button = new JButton(text);
+        button.setBackground(new Color(0, 51, 102)); // Azul oscuro
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.addActionListener(e -> button.setBackground(new Color(51, 153, 255))); // Azul claro al hacer clic
+        return button;
+    }
+
+    class FondoPanel extends JPanel {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+            GradientPaint gp = new GradientPaint(0, 0, new Color(51, 153, 255), getWidth(), getHeight(), new Color(0, 51, 102));
+            g2d.setPaint(gp);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+        }
     }
 
     public static void main(String[] args) {
-
         JFrame frame = new JFrame("Data Base Game");
-        Menu menu = new Menu(frame); // Se pasa el frame al constructor de Menu
-        frame.setContentPane(menu.main);
-//          frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setSize(320,210);
-        frame.setVisible(true);
-        frame.setLocationRelativeTo(null);
+        new Menu(frame);
     }
-
 }
 
 

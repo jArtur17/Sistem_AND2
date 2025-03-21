@@ -1,4 +1,4 @@
-package Proyecto.Caja;
+package Caja;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 import java.sql.*;
 import Conexion.Conexion;
+import java.sql.Connection;
 
 public class CajaGUI {
     private JPanel main;
@@ -24,9 +25,7 @@ public class CajaGUI {
     private Conexion conexion = new Conexion();
 
     public CajaGUI(JFrame parentFrame) {
-
         this.parentFrame = parentFrame;
-
         textField1.setEditable(false);
         showdata();
 

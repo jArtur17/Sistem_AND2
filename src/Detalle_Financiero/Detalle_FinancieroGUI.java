@@ -1,14 +1,12 @@
-package Proyecto.Detalle_Financiero;
+package Detalle_Financiero;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 
+import Caja.CajaDAO;
 import Conexion.Conexion;
-import Proyecto.Caja.CajaDAO;
-
 import java.time.LocalDateTime;
-
 
 
 import java.awt.event.ActionEvent;
@@ -321,3 +319,5 @@ public class Detalle_FinancieroGUI {
 
 
 }
+
+

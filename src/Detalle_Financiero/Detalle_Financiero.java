@@ -1,4 +1,4 @@
-package Proyecto.Detalle_Financiero;
+package Detalle_Financiero;
 
 
 import java.time.LocalDateTime;

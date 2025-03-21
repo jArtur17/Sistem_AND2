@@ -1,4 +1,4 @@
-package Proyecto.Detalle_Financiero;
+package Detalle_Financiero;
 
 import Conexion.Conexion;
 
@@ -81,23 +81,6 @@ public class Detalle_FinancieroDAO
         }
     }
 
-    public int obtenerUltimoIdInsertado() {
-        int ultimoId = -1; // Valor predeterminado en caso de error
-        String query = "SELECT id_detallefinanciero FROM detalle_Financiero ORDER BY id_detallefinanciero DESC LIMIT 1";
-
-        try (Connection con = conexion.getConnection();
-             Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-
-            if (rs.next()) {
-                ultimoId = rs.getInt("id_detallefinanciero");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return ultimoId;
-    }
-
 
     public void Eliminar(int id_detallefinanciero)
     {
@@ -128,4 +111,5 @@ public class Detalle_FinancieroDAO
     }
 
 }
+
 

@@ -1,8 +1,14 @@
 import Caja.CajaGUI;
+import Cliente.ClienteGUI;
 import Detalle_Financiero.Detalle_FinancieroGUI;
+import Pedidos.PedidosGUI;
+import Producto.ProductoGUI;
+import Sockets.Servidor;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URL;
 
 
@@ -74,6 +80,46 @@ public class Menu {
             CajaGUI cajaGUI = new CajaGUI(frame);
             cajaGUI.runCaja();
             frame.setVisible(false);
+        });
+
+        pedidosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Servidor servidor = new Servidor();
+                PedidosGUI pGUI = new PedidosGUI();
+                pGUI.setServidor(servidor);
+                pGUI.PedidosMain();
+            }
+        });
+
+        clientesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ClienteGUI clientes = new ClienteGUI(frame);
+                clientes.runCliente();
+                frame.setVisible(false);
+            }
+        });
+
+        chatButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Servidor socketS = new Servidor();
+                //socketS.iniciar();
+                socketS.SocketServidor();
+
+                //Cliente sock = new Cliente();
+                //sock.SocketCliente();
+            }
+        });
+
+        productosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ProductoGUI producto = new ProductoGUI(frame);
+                producto.runProducto();
+                frame.setVisible(false);
+            }
         });
 
         frame.setContentPane(main);

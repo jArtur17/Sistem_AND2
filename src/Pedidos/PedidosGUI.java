@@ -207,7 +207,7 @@ public class PedidosGUI {
                     textField11.setText("");
                     total = 0;
                 }
-                serv.enviarMensaje("Pedido cancelado con éxito.");
+                //serv.enviarMensaje("Pedido cancelado con éxito.");
 
 
             }

@@ -21,7 +21,6 @@ public class Servidor {
     private PrintWriter out;
     private Socket clientSocket;
 
-
     public Servidor() {
         textArea1.setEditable(false);
 
@@ -36,8 +35,6 @@ public class Servidor {
         enviarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                PedidosGUI pGUI = new PedidosGUI();
-                MensajePedido("");
                 String mensaje = textField1.getText();
                 if (mensaje != null && !mensaje.isEmpty()) {
                     if (out != null) {
@@ -93,6 +90,15 @@ public class Servidor {
         }
     }
 
+    public void enviarMensaje(String mensaje) {
+        if (out != null) {
+            out.println(mensaje);
+            actualizarTextArea("Mensaje enviado al cliente: " + mensaje + "\n");
+        } else {
+            actualizarTextArea("Error: No hay cliente conectado para enviar el mensaje.\n");
+        }
+    }
+
     private void cerrarRecursos() {
         try {
             if (out != null) out.close();
@@ -101,10 +107,6 @@ public class Servidor {
         } catch (IOException e) {
             actualizarTextArea("Error al cerrar recursos: " + e.getMessage() + "\n");
         }
-    }
-
-    public void MensajePedido(String msj){
-
     }
 
 
@@ -120,7 +122,5 @@ public class Servidor {
         frame.pack();
         frame.setSize(600, 400);
         frame.setVisible(true);
-        Cliente cliente = new Cliente();
-        cliente.SocketCliente();
     }
 }

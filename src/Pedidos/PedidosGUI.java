@@ -38,6 +38,11 @@ public class PedidosGUI {
     private JTextArea textArea1;
     private JTextField textField11;
     private JPanel PanelCarrito;
+    private Servidor serv;
+
+    public void setServidor(Servidor servidor) {
+        this.serv = servidor;
+    }
 
 /************************************************************************************************************************/
     //variables propias globales
@@ -62,7 +67,7 @@ public class PedidosGUI {
     Conexion cf = new Conexion();
 
     //acceder a los sockets
-    Servidor serv = new Servidor();
+    //Servidor serv = new Servidor();
 /************************************************************************************************************************/
 
     public PedidosGUI() {
@@ -174,7 +179,6 @@ public class PedidosGUI {
             }
         });
         /*----------------------------------------------------------------------------------------------------------------------*/
-
         //accion de cancelar el pedido
         cancelarPedidoButton.addActionListener(new ActionListener() {
             @Override
@@ -200,7 +204,8 @@ public class PedidosGUI {
                     textField11.setText("");
                     total = 0;
                 }
-                serv.MensajePedido("Se ha cancelado tu venta");
+                serv.enviarMensaje("Pedido cancelado con éxito.");
+
 
             }
         });
@@ -294,7 +299,7 @@ public class PedidosGUI {
                     con.commit();
                     /*----------------------------------------------------------------------------------------------------------------------*/
                     JOptionPane.showMessageDialog(null, "Venta generada con éxito.");
-                    serv.MensajePedido("La venta ha sido generada exitosamente");
+                    serv.enviarMensaje("Pedido generado con éxito.");
                     /*----------------------------------------------------------------------------------------------------------------------*/
 
                 } catch (SQLException ex) {
@@ -322,6 +327,7 @@ public class PedidosGUI {
 
         });
     }
+
     //fin de las acciones
 /************************************************************************************************************************/
 
@@ -525,6 +531,11 @@ public class PedidosGUI {
 /************************************************************************************************************************/
     //main
     public void PedidosMain() {
+        Servidor servidor = new Servidor();
+        servidor.SocketServidor();// Inicia el servidor
+        PedidosGUI pedidosGui = new PedidosGUI();
+        pedidosGui.setServidor(servidor);
+
         JFrame frame = new JFrame("Main");
         frame.setContentPane(new PedidosGUI().PanelPrincipal);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

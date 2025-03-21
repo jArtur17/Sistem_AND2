@@ -63,7 +63,9 @@ public class Menu {
         pedidosButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Servidor servidor = new Servidor();
                 PedidosGUI pGUI = new PedidosGUI();
+                pGUI.setServidor(servidor);
                 pGUI.PedidosMain();
             }
         });

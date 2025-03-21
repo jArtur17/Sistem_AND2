@@ -1,5 +1,6 @@
 package Pedidos;
 
+import Caja.CajaGUI;
 import Conexion.Conexion;
 import Sockets.Servidor;
 
@@ -44,11 +45,13 @@ public class PedidosGUI {
         this.serv = servidor;
     }
 
+    CajaGUI caja = new CajaGUI();
+
 /************************************************************************************************************************/
     //variables propias globales
 
     //total del pedido
-    double total = 0;
+    int total = 0;
 
     //item del carrito (auto incremental)
     int item = 0;
@@ -226,7 +229,7 @@ public class PedidosGUI {
                 String fecha_hora = textField4.getText();
                 String estado = "Entregado";
                 String metodo = comboBox2.getSelectedItem().toString();
-                Double tot = Double.parseDouble(textField11.getText());
+                int tot = Integer.parseInt(textField11.getText());
                 ///////////////////////////////////////////////////////
 
                 //variables sql
@@ -248,7 +251,7 @@ public class PedidosGUI {
                     psOrden.setString(2, fecha_hora);
                     psOrden.setString(3, estado);
                     psOrden.setString(4, metodo);
-                    psOrden.setDouble(5, tot);
+                    psOrden.setInt(5, tot);
                     psOrden.executeUpdate();
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -292,14 +295,16 @@ public class PedidosGUI {
                         psProductos.setInt(3, can);
                         psProductos.setString(4, t_can);
                         psProductos.setInt(5, pre_u);
-                        psProductos.setDouble(6, sub);
+                        psProductos.setInt(6, sub);
                         psProductos.addBatch(); // Agregar al batch
                     }
                     psProductos.executeBatch();
                     con.commit();
                     /*----------------------------------------------------------------------------------------------------------------------*/
                     JOptionPane.showMessageDialog(null, "Venta generada con éxito.");
-                    serv.enviarMensaje("Pedido generado con éxito.");
+                    caja.EnviarDinero(total);
+
+                    //serv.enviarMensaje("Pedido generado con éxito.");
                     /*----------------------------------------------------------------------------------------------------------------------*/
 
                 } catch (SQLException ex) {
@@ -322,7 +327,7 @@ public class PedidosGUI {
                         closeEx.printStackTrace();
                     }
                 }
-
+                caja.actualizarTotal();
             }
 
         });
@@ -531,10 +536,10 @@ public class PedidosGUI {
 /************************************************************************************************************************/
     //main
     public void PedidosMain() {
-        Servidor servidor = new Servidor();
-        servidor.SocketServidor();// Inicia el servidor
-        PedidosGUI pedidosGui = new PedidosGUI();
-        pedidosGui.setServidor(servidor);
+        //Servidor servidor = new Servidor();
+        //servidor.SocketServidor();// Inicia el servidor
+        //PedidosGUI pedidosGui = new PedidosGUI();
+        //pedidosGui.setServidor(servidor);
 
         JFrame frame = new JFrame("Main");
         frame.setContentPane(new PedidosGUI().PanelPrincipal);

@@ -16,6 +16,7 @@ public class CajaGUI {
     private JButton volverButton;
     private JTable table1;
     private JTextField textField1;
+    int sum_total = 0;
 
     private JFrame frame;
     private JFrame parentFrame;
@@ -23,10 +24,51 @@ public class CajaGUI {
     private CajaDAO cajaDAO = new CajaDAO();
     private Conexion conexion = new Conexion();
 
+    public CajaGUI() {
+
+    }
+
+    public void EnviarDinero(int total){
+        sum_total += total;
+        textField1.setText(String.valueOf(sum_total));
+        System.out.println(sum_total);
+
+        Connection con = conexion.getConnection();
+        PreparedStatement ps = null;
+
+        try {
+            String sql = "INSERT INTO caja (id_detallefinanciero, concepto, valor) VALUES (?, ?, ?)";
+            ps = con.prepareStatement(sql);
+
+            ps.setInt(1, 1);
+            ps.setString(2, "Pedido");
+            ps.setInt(3, total);
+
+            ps.executeUpdate();
+
+            //System.out.println("Dinero enviado a la caja con éxito.");
+
+            showdata(); // Actualizar la tabla de caja en la interfaz
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     public CajaGUI(JFrame parentFrame) {
         this.parentFrame = parentFrame;
         textField1.setEditable(false);
         showdata();
+
+
+
 
         // ** Configurar estilo de la tabla **
         table1.setBackground(Color.WHITE); // Fondo de las celdas blanco
@@ -131,6 +173,36 @@ public class CajaGUI {
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
     }
+
+    public void actualizarTotal() {
+        Connection con = conexion.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            String sql = "SELECT SUM(valor) AS total FROM caja";
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                sum_total = rs.getInt("total");
+                textField1.setText(String.valueOf(sum_total));
+                SwingUtilities.invokeLater(() -> textField1.setText(String.valueOf(sum_total)));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     // ** Clase interna para dibujar el fondo con imagen y degradado **
     class FondoPanel extends JPanel {

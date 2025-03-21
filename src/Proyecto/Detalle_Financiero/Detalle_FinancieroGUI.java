@@ -321,5 +321,3 @@ public class Detalle_FinancieroGUI {
 
 
 }
-
-

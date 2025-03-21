@@ -1,5 +1,5 @@
 import Proyecto.Detalle_Financiero.Detalle_FinancieroGUI;
-import Proyecto.Reportes.ReportesGUI;
+
 import Proyecto.Caja.CajaGUI;
 
 import javax.swing.*;
@@ -46,9 +46,7 @@ public class Menu {
         reportesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ReportesGUI reportesGUI = new ReportesGUI(frame);
-                reportesGUI.runReport();
-                frame.setVisible(false);
+
 
 
             }

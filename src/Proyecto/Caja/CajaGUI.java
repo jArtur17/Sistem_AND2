@@ -24,7 +24,9 @@ public class CajaGUI {
     private Conexion conexion = new Conexion();
 
     public CajaGUI(JFrame parentFrame) {
+
         this.parentFrame = parentFrame;
+
         textField1.setEditable(false);
         showdata();
 

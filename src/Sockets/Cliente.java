@@ -89,7 +89,7 @@ public class Cliente {
         SwingUtilities.invokeLater(() -> textArea1.append(mensaje));
     }
 
-    public static void main(String[] args) {
+    public void iniciarSocketCliente() {
         JFrame frame = new JFrame("Cliente de Chat");
         Cliente cliente = new Cliente();
         frame.setContentPane(cliente.panel);

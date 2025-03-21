@@ -106,7 +106,8 @@ public class Menu {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Servidor socketS = new Servidor();
-                socketS.iniciar();
+                socketS.IniciarSocketServidor();
+
 
                 //Cliente sock = new Cliente();
                 //sock.SocketCliente();

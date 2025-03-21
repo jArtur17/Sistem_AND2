@@ -102,7 +102,7 @@ public class Servidor {
         SwingUtilities.invokeLater(() -> textArea1.append(mensaje));
     }
 
-    public static void main(String[] args) {
+    public void IniciarSocketServidor() {
         JFrame frame = new JFrame("Servidor de Chat");
         Servidor servidor = new Servidor();
         frame.setContentPane(servidor.panel);

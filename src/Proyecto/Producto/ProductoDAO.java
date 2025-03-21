@@ -1,16 +1,15 @@
 package Proyecto.Producto;
 
-import connectionFA.ConnectionFA;
+import ConexionFarmacia.Conexion;
 
 import javax.swing.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Date;
 
 
 public class ProductoDAO {
-    private ConnectionFA connectionFA = new ConnectionFA();
+    private Conexion connectionFA = new Conexion();
 
     public void agregar(Producto producto) {
         Connection con = connectionFA.getConnection();

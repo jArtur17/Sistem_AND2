@@ -1,9 +1,9 @@
-package connectionFA;
+package ConexionFarmacia;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-public class ConnectionFA {
+public class Conexion {
 
     public Connection getConnection()
     {

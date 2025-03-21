@@ -1,6 +1,6 @@
 package Proyecto.Cliente;
 
-import connectionFA.ConnectionFA;
+import ConexionFarmacia.Conexion;
 
 import javax.swing.*;
 import java.sql.Connection;
@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class ClienteDAO {
-        private ConnectionFA connectionFA = new ConnectionFA();
+        private Conexion connectionFA = new Conexion();
 
 
         public void agregar(Cliente cliente)

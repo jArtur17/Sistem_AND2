@@ -1,7 +1,5 @@
 import javax.swing.JTable;
-import Conexion.Conexion;
-import connectionFA.ConnectionFA;
-
+import ConexionFarmacia.Conexion;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.Connection;
@@ -9,20 +7,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-private ConnectionFA connectionFA = new ConnectionFA();
+private Conexion connectionFA = new Conexion();
 private JTable tablaHistorial;
+private JTable table1;
+private JFrame frame;
+private JFrame parentFrame;
 
-public class HistorialCompraGUI {
-    private JTable table1;
-    private JButton️ Button;
-    private JFrame frame;
-    private JFrame parentFrame;
-
-}
 
     public void showdata()
     {
-        ConnectionFA connectionFA = new ConnectionFA();
+        Conexion connectionFA = new Conexion();
         DefaultTableModel modelo = new DefaultTableModel();
         modelo.addColumn("id_pedido");
         modelo.addColumn("id_cliente");
@@ -62,16 +56,16 @@ public class HistorialCompraGUI {
 
 
     public void main() {
-
-    }
-    public  void runHistorialCompra(){
-
-
         frame = new JFrame("Historial");
-        frame.setContentPane(this.main);
-    //  frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //frame.setContentPane(this.main);
+        //  frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setSize(600,600);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
+    }
+    public  void runHistorialCompra(){
+
+
+
     }

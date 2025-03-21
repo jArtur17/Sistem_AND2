@@ -3,8 +3,8 @@ import Cliente.ClienteGUI;
 import Detalle_Financiero.Detalle_FinancieroGUI;
 import Pedidos.PedidosGUI;
 import Producto.ProductoGUI;
-//import Sockets.Servidor;
-//Sockets.Cliente;
+import Sockets.Servidor;
+import Sockets.Cliente;
 
 import javax.swing.*;
 import java.awt.*;
@@ -86,7 +86,7 @@ public class Menu {
         pedidosButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Servidor servidor = new Servidor();
+                Servidor servidor = new Servidor();
                 PedidosGUI pGUI = new PedidosGUI();
                 //pGUI.setServidor(servidor);
                 pGUI.PedidosMain();

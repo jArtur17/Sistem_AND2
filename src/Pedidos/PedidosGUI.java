@@ -180,6 +180,13 @@ public class PedidosGUI {
                     preciotxt.setText(String.valueOf(productosItem.getStock_minimo()));
                     stocktxt.setText(String.valueOf(productosItem.getStock()));
                     stockminimotxt.setText(String.valueOf(productosItem.getPrecio_unitario()));
+                    int stock = Integer.parseInt(stocktxt.getText());
+                    int stockm = Integer.parseInt(stockminimotxt.getText());
+                    if(stock == stockm){
+                        stocktxt.setForeground(Color.red);
+                    }else{
+                        stocktxt.setForeground(Color.black);
+                    }
                 }
             }catch (ClassCastException ex){
                 JOptionPane.showMessageDialog(null, "Seleccione un producto");
@@ -402,7 +409,8 @@ public class PedidosGUI {
 
                     // El usuario acepta cancelar la compra
                     if (respuesta == JOptionPane.YES_OPTION) {
-
+                        //abrir productos
+                        System.exit(0);
                     }
                 }else if (comboBoxClientes.getSelectedItem().equals("CLIENTES")) {
                     JOptionPane.showMessageDialog(null, "No se ha seleccionado un cliente");

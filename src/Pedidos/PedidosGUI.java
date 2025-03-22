@@ -15,11 +15,11 @@ import java.util.ArrayList;
 public class PedidosGUI {
     private JTextField textField4;
     private JComboBox comboBoxTipo;
-    private JSpinner spinner1;
+    private JSpinner spinnercantidad;
     private JComboBox comboBox2;
     private JPanel PanelPrincipal;
     private JTable tablaProductos;
-    private JTextField textField1;
+    private JTextField estadotxt;
     private JTextField textField3;
     private JTextField textField5;
     private JTextField textField6;
@@ -37,12 +37,14 @@ public class PedidosGUI {
     private JTextArea textArea1;
     private JTextField textField11;
     private JPanel PanelCarrito;
-    private JTextField textField12;
+    private JTextField cedulatxt;
     private JComboBox comboBoxProductos;
-    private JTextField textField13;
-    private JTextField textField14;
+    private JTextField preciotxt;
+    private JTextField stocktxt;
+    private JTextField stockminimotxt;
     private JPanel Panelcantidad;
     private JPanel PanelCliente;
+    //private JFormattedTextField stockminimotxt;
 
     /************************************************************************************************************************/
     //variables propias globales
@@ -75,7 +77,10 @@ public class PedidosGUI {
         comboBoxClientes.setPreferredSize(new Dimension(300, 20));
         comboBoxProductos.setPreferredSize(new Dimension(300, 20));
         comboBoxTipo.setPreferredSize(new Dimension(300, 20));
-        spinner1.setPreferredSize(new Dimension(300, 20));
+        spinnercantidad.setPreferredSize(new Dimension(300, 20));
+
+        //textfield oculto
+        //stockminimotxt.setVisible(false);
 
         //Reloj del sistema, hora y fecha.
         Timer timer = new Timer(1000, new ActionListener() {
@@ -132,7 +137,7 @@ public class PedidosGUI {
 
 
         //color de los textfield en el panel de datos (azul claro)
-        textField1.setBackground(new Color(220, 230, 240));
+        estadotxt.setBackground(new Color(220, 230, 240));
         textField6.setBackground(new Color(220, 220, 220));
         textField7.setBackground(new Color(220, 220, 220));
         textField8.setBackground(new Color(220, 220, 220));
@@ -154,28 +159,33 @@ public class PedidosGUI {
         comboBoxClientes.addActionListener(e -> {
             if (comboBoxClientes.getSelectedItem().toString().equals("CLIENTES")) {
                 JOptionPane.showMessageDialog(null, "Seleccione un cliente");
-            } else {
-                ClientesItem clientesItem = (ClientesItem) comboBoxClientes.getSelectedItem();
+            }
+
+            ClientesItem cliente = (ClientesItem) comboBoxClientes.getSelectedItem();
+
+            if (cliente != null) {
+                cedulatxt.setText(String.valueOf(cliente.getCedula()));
             }
         });
         /*----------------------------------------------------------------------------------------------------------------------*/
 
-        //accion del combobox tipo de cantidad
-        comboBoxTipo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (comboBoxTipo.getSelectedItem().toString().equals("unidad")) {
-                    spinner1.setEnabled(true);
-                    spinner1.setValue(0);
-                } else if (comboBoxTipo.getSelectedItem().toString().equals("blister")) {
-                    spinner1.setValue(10);
-                    spinner1.setEnabled(false);
-                } else if (comboBoxTipo.getSelectedItem().toString().equals("caja")) {
-                    spinner1.setValue(100);
-                    spinner1.setEnabled(false);
-                }
+        //accion del combobox clientes
+        comboBoxProductos.addActionListener(e -> {
+            if (comboBoxProductos.getSelectedItem().toString().equals("PRODUCTOS")) {
+                JOptionPane.showMessageDialog(null, "Seleccione un productos");
+            }
+
+            ProductosItem productosItem = (ProductosItem) comboBoxProductos.getSelectedItem();
+
+            if (productosItem != null) {
+                preciotxt.setText(String.valueOf(productosItem.getPrecio_unitario()));
+                stocktxt.setText(String.valueOf(productosItem.getStock()));
+                stockminimotxt.setText(String.valueOf(productosItem.getStock_minimo()));
             }
         });
+
+        /*----------------------------------------------------------------------------------------------------------------------*/
+
         /*----------------------------------------------------------------------------------------------------------------------*/
 
         //accion de agregar productos (metodo agregarProducto)
@@ -205,11 +215,11 @@ public class PedidosGUI {
 
                     PanelCarrito.setVisible(false);
                     Panel_datos.setVisible(false);
-                    spinner1.setValue(0);
+                    spinnercantidad.setValue(0);
                     comboBoxTipo.setSelectedIndex(0);
                     comboBox2.setSelectedIndex(0);
                     comboBoxClientes.setSelectedIndex(0);
-                    textField1.setText("");
+                    estadotxt.setText("");
                     textField11.setText("");
                     total = 0;
                 }
@@ -353,63 +363,38 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
-        //metodo traer detalles del producto al ser seleccionado
-        private void mostrarDetallesProducto(int filaSeleccionada) {
-            DefaultTableModel modeloTabla = (DefaultTableModel) tablaProductos.getModel();
-            String idProducto = (String) modeloTabla.getValueAt(filaSeleccionada, 0);//revisar esta partte de codigo
-            Connection conexion = cf.getConnection();
-            try {
-                PreparedStatement consulta = conexion.prepareStatement("SELECT categoria, stock, stock_minimo, precio_unitario, fecha_vencimiento, indicaciones, almacen, lote FROM producto WHERE id_producto = ?");
-                consulta.setInt(1, Integer.parseInt(idProducto));
-                ResultSet resultados = consulta.executeQuery();
-
-                if (resultados.next()) {
-                    textField5.setText(resultados.getString("categoria"));
-                    textField6.setText(String.valueOf(resultados.getInt("stock")));
-                    textField8.setText(String.valueOf(resultados.getInt("stock_minimo")));
-                    textField7.setText(String.valueOf(resultados.getInt("precio_unitario")));
-                    textField3.setText(String.valueOf(resultados.getString("fecha_vencimiento")));
-                    textArea1.setText(String.valueOf(resultados.getString("indicaciones")));
-                    textField2.setText(String.valueOf(resultados.getString("lote")));
-                    textField9.setText(String.valueOf(resultados.getString("almacen")));
-                    Panel_datos.setVisible(true); // Activa el panel
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
         /*-------------------------------------------------------------------------------------------------------------*/
 
         //metodo de agregar productos al carrito
         void agregarProducto(){
 
             //comienza la orden
-            textField1.setText("En preparacion...");
+            estadotxt.setText("En preparacion...");
             ///////////////////////////////////////
 
 
             //variables de condición(obtenemos el stock normal y min)
-            int stockmin = Integer.parseInt(textField8.getText());
-            int stock = Integer.parseInt(textField6.getText());
+            int stockmin = Integer.parseInt(stockminimotxt.getText());
+            int stock = Integer.parseInt(stocktxt.getText());
             ////////////////////////////////////////////////////////
 
             model=(DefaultTableModel)tablaCarrito.getModel();
 
             //variables normales para agregar al carrito
-            int cantidad = (int) spinner1.getValue();
+            int cantidad = (int) spinnercantidad.getValue();
             String prod="";
             String t_cantidad = comboBoxTipo.getSelectedItem().toString();
-            int precio_u = Integer.parseInt(textField7.getText());
+            int precio_u = Integer.parseInt(preciotxt.getText());
             ////////////////////////////////////////////////////////
 
             //obtener el id del producto seleccionado
-            int fila = tablaProductos.getSelectedRow();
-            idProducto = tablaProductos.getValueAt(fila, 0).toString();
-            //////////////////////////////////////////////////////////////////
+            ProductosItem productosItem = (ProductosItem) comboBoxProductos.getSelectedItem();
+            int idProducto = productosItem.getId();
+            /////////////////////////////////////////////////////////////////////////////////
 
-            if (fila >= 0 && fila < tablaProductos.getRowCount()) {
-                prod = tablaProductos.getValueAt(fila, 1).toString(); //columna(1): nombre del producto
+
+            if (idProducto != 0) {
+                prod = comboBoxProductos.getSelectedItem().toString();
             } else {
                 JOptionPane.showMessageDialog(null, "Seleccione un producto");
                 return;
@@ -520,7 +505,7 @@ public class PedidosGUI {
                 // Agrega cada nombre al JComboBox
                 while (rs.next()) {
                     int idcliente = rs.getInt("id_cliente");
-                    int cedula = rs.getInt("cedula");
+                    String cedula = rs.getString("cedula");
                     String cliente = rs.getString("nombre");
                     comboBoxClientes.addItem(new ClientesItem(idcliente, cedula, cliente));
                 }
@@ -541,7 +526,7 @@ public class PedidosGUI {
                 Connection con = cf.getConnection();
                 Statement statement = con.createStatement();
 
-                String query = "SELECT id_producto, nombre, stock FROM producto";
+                String query = "SELECT id_producto, nombre, stock, stock_minimo, precio_unitario FROM producto";
                 ResultSet rs = statement.executeQuery(query);
 
                 // Agrega cada nombre al JComboBox
@@ -549,7 +534,9 @@ public class PedidosGUI {
                     int id_producto = rs.getInt("id_producto");
                     String nombre = rs.getString("nombre");
                     int stock = rs.getInt("stock");
-                    comboBoxProductos.addItem(new ProductosItem(id_producto, nombre, stock));
+                    int stockm = rs.getInt("stock_minimo");
+                    int preciou = rs.getInt("precio_unitario");
+                    comboBoxProductos.addItem(new ProductosItem(id_producto, nombre, stock, preciou, stockm));
                 }
 
                 rs.close();
@@ -583,6 +570,7 @@ public class PedidosGUI {
         public ClientesItem(int id_cliente, String cedula, String nombre) {
             this.id_cliente= id_cliente;
             this.nombre = nombre;
+            this.cedula = cedula;
         }
 
         public int getId() {
@@ -600,18 +588,24 @@ public class PedidosGUI {
 
     //clase para obtener el id del cliente
     class ProductosItem {
-        private int id_producto, stock;
+        private int id_producto, stock, precio_unitario, stock_minimo;
         private String nombre;
 
-        public ProductosItem(int id_producto, String nombre, int stock) {
+        public ProductosItem(int id_producto, String nombre, int stock, int stock_minimo, int precio_unitario) {
             this.id_producto = id_producto;
             this.nombre = nombre;
             this.stock = stock;
+            this.precio_unitario = precio_unitario;
+            this.stock_minimo = stock_minimo;
         }
 
         public int getId() {
             return id_producto;
         }
+
+        public int getPrecio_unitario(){return precio_unitario;}
+
+        public int getStock_minimo() {return stock_minimo;}
 
         public int getStock(){return stock;}
 

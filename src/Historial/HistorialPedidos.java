@@ -20,7 +20,7 @@ public class HistorialPedidos {
         //llamar los pedidos en la tabla
         Historialordenes();
         subtitulo.setOpaque(true);
-        subtitulo.setBackground(new Color(25, 25, 112)); // Negro con 150 de alfa (aproximadamente 60% de opacidad)
+        subtitulo.setBackground(new Color(25, 25, 112));
         subtitulo.setForeground(Color.WHITE);
 
 

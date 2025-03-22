@@ -1,6 +1,7 @@
 package Pedidos;
 
 import Conexion.Conexion;
+import Producto.ProductoGUI;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -45,6 +46,8 @@ public class PedidosGUI {
     private JPanel Panelcantidad;
     private JPanel PanelCliente;
     int sub_total = 0;
+    JFrame frame = new JFrame("Main");
+
     //private JFormattedTextField stockminimotxt;
 
     /************************************************************************************************************************/
@@ -410,7 +413,9 @@ public class PedidosGUI {
                     // El usuario acepta cancelar la compra
                     if (respuesta == JOptionPane.YES_OPTION) {
                         //abrir productos
-                        System.exit(0);
+                        frame.dispose();
+                        ProductoGUI p = new ProductoGUI();
+                        p.runProducto();
                     }
                 }else if (comboBoxClientes.getSelectedItem().equals("CLIENTES")) {
                     JOptionPane.showMessageDialog(null, "No se ha seleccionado un cliente");
@@ -545,13 +550,11 @@ public class PedidosGUI {
         //fin de metodos
 /************************************************************************************************************************/
     //main
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Main");
+    public void RunPedidos() {
         frame.setContentPane(new PedidosGUI().PanelPrincipal);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setSize(700,700);
-
         frame.setResizable(false);
         frame.setVisible(true);
     }

@@ -13,11 +13,17 @@ public class HistorialPedidos {
     private JButton button1;
     private JTable tablahistorial;
     private JPanel Panel;
+    private JLabel subtitulo;
     Conexion conR = new Conexion();
 
     public HistorialPedidos() {
         //llamar los pedidos en la tabla
         Historialordenes();
+        subtitulo.setOpaque(true);
+        subtitulo.setBackground(new Color(25, 25, 112)); // Negro con 150 de alfa (aproximadamente 60% de opacidad)
+        subtitulo.setForeground(Color.WHITE);
+
+
 
         button1.addActionListener(new ActionListener() {
             @Override
@@ -29,17 +35,18 @@ public class HistorialPedidos {
 
         tablahistorial.getModel().addTableModelListener(new TableModelListener() {
             @Override
-            public void tableChanged(TableModelEvent e) {
-                System.out.println("Evento TableModelEvent detectado.");//e = objeto del tablemodelevent
-                if (e.getType() == TableModelEvent.UPDATE) { //verifica si es un tipo actualización en este caso si la el pedido pasó a enviado, getTye obtiene que tipo de evento
+            public void tableChanged(TableModelEvent e) {//e = objeto del tablemodelevent
+
+                if (e.getType() == TableModelEvent.UPDATE) {//verifica si es un tipo actualización en este caso si la el pedido pasó a enviado, getTye obtiene que tipo de evento
                     int fila = e.getFirstRow(); //fila, almacena el num de fila. e= obtener la fila modificada
                     int columna = e.getColumn();//guarda el num de la columna. obtiene la colum actualizada
 
-                    if (columna == 4) { // Columna de estado
+                    if (columna == 3) { // Columna de estado
                         DefaultTableModel model = (DefaultTableModel) tablahistorial.getModel();
                         String nuevoEstado = model.getValueAt(fila, columna).toString();
                         int idPedido = Integer.parseInt(model.getValueAt(fila, 0).toString());
-
+                        System.out.println(idPedido);
+                        System.out.println(nuevoEstado);
                         actualizarEstado(idPedido, nuevoEstado);
 
                     }
@@ -66,7 +73,7 @@ public class HistorialPedidos {
 
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT id_pedido, id_cliente, fecha_hora, estado, metodo_pago, total FROM pedidos");
+            ResultSet rs = stmt.executeQuery("SELECT id_pedido, id_cliente, fecha_hora, estado, metodo_pago, total FROM pedidos WHERE estado = 'Entregado'");
 
             while (rs.next()) {
                 Arreglo[0] = rs.getString(1);
@@ -121,7 +128,9 @@ public class HistorialPedidos {
         }
     }
 
+
     public static void main(String[] args) {
+
         JFrame frame = new JFrame("Historial Pedidos");
         frame.setContentPane(new HistorialPedidos().Panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

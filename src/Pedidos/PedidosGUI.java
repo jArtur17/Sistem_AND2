@@ -514,14 +514,15 @@ public class PedidosGUI {
                 Connection con = cf.getConnection();
                 Statement statement = con.createStatement();
 
-                String query = "SELECT id_cliente, nombre FROM cliente";
+                String query = "SELECT id_cliente, cedula, nombre FROM cliente";
                 ResultSet rs = statement.executeQuery(query);
 
                 // Agrega cada nombre al JComboBox
                 while (rs.next()) {
                     int idcliente = rs.getInt("id_cliente");
+                    int cedula = rs.getInt("cedula");
                     String cliente = rs.getString("nombre");
-                    comboBoxClientes.addItem(new ClientesItem(idcliente, cliente));
+                    comboBoxClientes.addItem(new ClientesItem(idcliente, cedula, cliente));
                 }
 
                 rs.close();
@@ -540,14 +541,15 @@ public class PedidosGUI {
                 Connection con = cf.getConnection();
                 Statement statement = con.createStatement();
 
-                String query = "SELECT id_producto, nombre FROM producto";
+                String query = "SELECT id_producto, nombre, stock FROM producto";
                 ResultSet rs = statement.executeQuery(query);
 
                 // Agrega cada nombre al JComboBox
                 while (rs.next()) {
-                    int idcliente = rs.getInt("id_producto");
-                    String cliente = rs.getString("nombre");
-                    comboBoxProductos.addItem(new ClientesItem(idcliente, cliente));
+                    int id_producto = rs.getInt("id_producto");
+                    String nombre = rs.getString("nombre");
+                    int stock = rs.getInt("stock");
+                    comboBoxProductos.addItem(new ProductosItem(id_producto, nombre, stock));
                 }
 
                 rs.close();
@@ -576,9 +578,9 @@ public class PedidosGUI {
     //clase para obtener el id del cliente
     class ClientesItem {
         private int id_cliente;
-        private String nombre;
+        private String nombre, cedula;
 
-        public ClientesItem(int id_cliente, String nombre) {
+        public ClientesItem(int id_cliente, String cedula, String nombre) {
             this.id_cliente= id_cliente;
             this.nombre = nombre;
         }
@@ -586,6 +588,32 @@ public class PedidosGUI {
         public int getId() {
             return id_cliente;
         }
+
+        public String getCedula(){return cedula;}
+
+        @Override
+        public String toString() {
+            return nombre;
+        }
+    }
+
+
+    //clase para obtener el id del cliente
+    class ProductosItem {
+        private int id_producto, stock;
+        private String nombre;
+
+        public ProductosItem(int id_producto, String nombre, int stock) {
+            this.id_producto = id_producto;
+            this.nombre = nombre;
+            this.stock = stock;
+        }
+
+        public int getId() {
+            return id_producto;
+        }
+
+        public int getStock(){return stock;}
 
         @Override
         public String toString() {

@@ -44,6 +44,7 @@ public class PedidosGUI {
     private JTextField stockminimotxt;
     private JPanel Panelcantidad;
     private JPanel PanelCliente;
+    int sub_total = 0;
     //private JFormattedTextField stockminimotxt;
 
     /************************************************************************************************************************/
@@ -80,7 +81,7 @@ public class PedidosGUI {
         spinnercantidad.setPreferredSize(new Dimension(300, 20));
 
         //textfield oculto
-        //stockminimotxt.setVisible(false);
+        stockminimotxt.setVisible(false);
 
         //Reloj del sistema, hora y fecha.
         Timer timer = new Timer(1000, new ActionListener() {
@@ -157,31 +158,34 @@ public class PedidosGUI {
         /*----------------------------------------------------------------------------------------------------------------------*/
         //accion del combobox clientes
         comboBoxClientes.addActionListener(e -> {
-            if (comboBoxClientes.getSelectedItem().toString().equals("CLIENTES")) {
+            try{
+                ClientesItem cliente = (ClientesItem) comboBoxClientes.getSelectedItem();
+
+                if (cliente != null) {
+                    cedulatxt.setText(String.valueOf(cliente.getCedula()));
+                }
+            }catch (ClassCastException ex){
                 JOptionPane.showMessageDialog(null, "Seleccione un cliente");
             }
 
-            ClientesItem cliente = (ClientesItem) comboBoxClientes.getSelectedItem();
-
-            if (cliente != null) {
-                cedulatxt.setText(String.valueOf(cliente.getCedula()));
-            }
         });
         /*----------------------------------------------------------------------------------------------------------------------*/
 
         //accion del combobox clientes
         comboBoxProductos.addActionListener(e -> {
-            if (comboBoxProductos.getSelectedItem().toString().equals("PRODUCTOS")) {
-                JOptionPane.showMessageDialog(null, "Seleccione un productos");
+            try{
+                ProductosItem productosItem = (ProductosItem) comboBoxProductos.getSelectedItem();
+
+                if (productosItem != null) {
+                    preciotxt.setText(String.valueOf(productosItem.getStock_minimo()));
+                    stocktxt.setText(String.valueOf(productosItem.getStock()));
+                    stockminimotxt.setText(String.valueOf(productosItem.getPrecio_unitario()));
+                }
+            }catch (ClassCastException ex){
+                JOptionPane.showMessageDialog(null, "Seleccione un producto");
             }
 
-            ProductosItem productosItem = (ProductosItem) comboBoxProductos.getSelectedItem();
 
-            if (productosItem != null) {
-                preciotxt.setText(String.valueOf(productosItem.getPrecio_unitario()));
-                stocktxt.setText(String.valueOf(productosItem.getStock()));
-                stockminimotxt.setText(String.valueOf(productosItem.getStock_minimo()));
-            }
         });
 
         /*----------------------------------------------------------------------------------------------------------------------*/
@@ -217,8 +221,11 @@ public class PedidosGUI {
                     Panel_datos.setVisible(false);
                     spinnercantidad.setValue(0);
                     comboBoxTipo.setSelectedIndex(0);
-                    comboBox2.setSelectedIndex(0);
                     comboBoxClientes.setSelectedIndex(0);
+                    comboBoxProductos.setSelectedIndex(0);
+                    cedulatxt.setText("");
+                    preciotxt.setText("");
+                    stocktxt.setText("");
                     estadotxt.setText("");
                     textField11.setText("");
                     total = 0;
@@ -346,21 +353,6 @@ public class PedidosGUI {
     //fin de las acciones
 /************************************************************************************************************************/
 
-        //métodos
-
-        /*-------------------------------------------------------------------------------------------------------------*/
-
-        //accion de la tabla para identificar la fila seleccionada
-        //private void agregarListenerTabla () {
-            //tablaProductos.getSelectionModel().addListSelectionListener(e -> {
-                //if (!e.getValueIsAdjusting() && tablaProductos.getSelectedRow() != -1) {
-                    //int filaSeleccionada = tablaProductos.getSelectedRow();
-                   // mostrarDetallesProducto(filaSeleccionada);
-                //}
-            //});
-
-       // }
-
         /*-------------------------------------------------------------------------------------------------------------*/
 
         /*-------------------------------------------------------------------------------------------------------------*/
@@ -368,113 +360,108 @@ public class PedidosGUI {
         //metodo de agregar productos al carrito
         void agregarProducto(){
 
-            //comienza la orden
-            estadotxt.setText("En preparacion...");
-            ///////////////////////////////////////
+            try{
+                //comienza la orden
+                estadotxt.setText("En preparacion...");
+                ///////////////////////////////////////
 
 
-            //variables de condición(obtenemos el stock normal y min)
-            int stockmin = Integer.parseInt(stockminimotxt.getText());
-            int stock = Integer.parseInt(stocktxt.getText());
-            ////////////////////////////////////////////////////////
+                //variables de condición(obtenemos el stock normal y min)
+                int stockmin = Integer.parseInt(stockminimotxt.getText());
+                int stock = Integer.parseInt(stocktxt.getText());
+                ////////////////////////////////////////////////////////
 
-            model=(DefaultTableModel)tablaCarrito.getModel();
+                model=(DefaultTableModel)tablaCarrito.getModel();
 
-            //variables normales para agregar al carrito
-            int cantidad = (int) spinnercantidad.getValue();
-            String prod="";
-            String t_cantidad = comboBoxTipo.getSelectedItem().toString();
-            int precio_u = Integer.parseInt(preciotxt.getText());
-            ////////////////////////////////////////////////////////
+                //variables normales para agregar al carrito
+                int cantidad = (int) spinnercantidad.getValue();
+                String prod="";
+                String t_cantidad = comboBoxTipo.getSelectedItem().toString();
+                int precio_u = Integer.parseInt(preciotxt.getText());
+                ////////////////////////////////////////////////////////
 
-            //obtener el id del producto seleccionado
-            ProductosItem productosItem = (ProductosItem) comboBoxProductos.getSelectedItem();
-            int idProducto = productosItem.getId();
-            /////////////////////////////////////////////////////////////////////////////////
+                //obtener el id del producto seleccionado
+                ProductosItem productosItem = (ProductosItem) comboBoxProductos.getSelectedItem();
+                int idProducto = productosItem.getId();
+                /////////////////////////////////////////////////////////////////////////////////
 
 
-            if (idProducto != 0) {
-                prod = comboBoxProductos.getSelectedItem().toString();
-            } else {
-                JOptionPane.showMessageDialog(null, "Seleccione un producto");
-                return;
+                if (idProducto != 0) {
+                    prod = comboBoxProductos.getSelectedItem().toString();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Seleccione un producto");
+                    return;
+                }
+                //stock minimo
+                if(stock == stockmin ){
+                    int respuesta = JOptionPane.showConfirmDialog(null,
+                            "El producto ha llegado al stock minimo\n   ¿Desea ir a productos?",
+                            "Confirmar acción",
+                            JOptionPane.YES_NO_OPTION
+                    );
+
+                    // El usuario acepta cancelar la compra
+                    if (respuesta == JOptionPane.YES_OPTION) {
+
+                    }
+                }else if (comboBoxClientes.getSelectedItem().equals("CLIENTES")) {
+                    JOptionPane.showMessageDialog(null, "No se ha seleccionado un cliente");
+                }else if(cantidad <= 0){
+                    JOptionPane.showMessageDialog(null, "La cantidad ingresada es incorrecta");
+                }
+                else if(stock > 0 && stock > stockmin && cantidad > 0){
+
+                    //activar panel del carrito
+                    PanelCarrito.setVisible(true);
+
+
+                    //definir subtotal
+                    if(comboBoxTipo.getSelectedItem().toString().equals("unidad")){
+                        System.out.println("hola bola");
+                        sub_total= precio_u * cantidad;
+                    } else if (comboBoxTipo.getSelectedItem().toString().equals("blister")) {
+                        sub_total =  precio_u * (10 * cantidad);
+                    } else if (comboBoxTipo.getSelectedItem().toString().equals("caja")) {
+                        sub_total = precio_u * (100 * cantidad);
+                    }
+
+                    //incrementar total en cada producto
+                    total += sub_total;
+                    textField11.setText(String.valueOf(total));
+
+                    //agregar productos
+                    ArrayList lista = new ArrayList();
+                    lista.add(item+=1);
+                    lista.add(idProducto);
+                    lista.add(prod);
+                    lista.add(t_cantidad);
+                    lista.add(cantidad);
+                    lista.add(precio_u);
+                    lista.add(sub_total);
+
+                    Object[] ob = new Object[7];
+                    ob[0] = lista.get(0);
+                    ob[1] = lista.get(1);
+                    ob[2] = lista.get(2);
+                    ob[3] = lista.get(3);
+                    ob[4] = lista.get(4);
+                    ob[5] = lista.get(5);
+                    ob[6] = lista.get(6);
+
+                    model.addRow(ob);
+                    tablaCarrito.setModel(model); //le damos el modelo al carrito
+
+                }else{
+                    JOptionPane.showMessageDialog(null, "Ha ocurrido un error, intentelo de nuevo");
+                }
+            }catch(NumberFormatException ex){
+                JOptionPane.showMessageDialog(null, "Agregue un cliente y producto");
             }
 
-            if(stock == stockmin ){
-                JOptionPane.showMessageDialog(null, "Este producto ha llegado al stock mínimo");
-            }else if (comboBoxClientes.getSelectedItem().equals("CLIENTES")) {
-                JOptionPane.showMessageDialog(null, "No se ha seleccionado un cliente");
-            }else if(cantidad <= 0){
-                JOptionPane.showMessageDialog(null, "La cantidad ingresada es incorrecta");
-            }
-            else if(stock > 0 && stock > stockmin && cantidad > 0){
-
-                //activar panel del carrito
-                PanelCarrito.setVisible(true);
-
-                //definir subtotal
-                int sub_total = precio_u * cantidad;
-
-                //incrementar total en cada producto
-                total += sub_total;
-                textField11.setText(String.valueOf(total));
-
-                //agregar productos
-                ArrayList lista = new ArrayList();
-                lista.add(item+=1);
-                lista.add(idProducto);
-                lista.add(prod);
-                lista.add(t_cantidad);
-                lista.add(cantidad);
-                lista.add(precio_u);
-                lista.add(sub_total);
-
-                Object[] ob = new Object[7];
-                ob[0] = lista.get(0);
-                ob[1] = lista.get(1);
-                ob[2] = lista.get(2);
-                ob[3] = lista.get(3);
-                ob[4] = lista.get(4);
-                ob[5] = lista.get(5);
-                ob[6] = lista.get(6);
-
-                model.addRow(ob);
-                tablaCarrito.setModel(model); //le damos el modelo al carrito
-
-            }else{
-                JOptionPane.showMessageDialog(null, "Ha ocurrido un error, intentelo de nuevo");
-            }
 
         }
 
         /*-------------------------------------------------------------------------------------------------------------*/
-
-        //cargar productos en la tabla productos
-        public void Productos() {
-            DefaultTableModel pedidos = new DefaultTableModel();
-            pedidos.addColumn("No.");
-            pedidos.addColumn("Nombre");
-            tablaProductos.setModel(pedidos);
-
-            Connection con = cf.getConnection();
-
-            String[] Arreglo = new String[2];
-
-            try {
-                Statement stmt = con.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT id_producto, nombre FROM producto");
-
-                while (rs.next()) {
-                    Arreglo[0] = rs.getString(1);
-                    Arreglo[1] = rs.getString(2);
-
-                    pedidos.addRow(Arreglo);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        }
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
@@ -588,15 +575,16 @@ public class PedidosGUI {
 
     //clase para obtener el id del cliente
     class ProductosItem {
-        private int id_producto, stock, precio_unitario, stock_minimo;
+        private int id_producto, stock, stock_minimo, precio_unitario;
         private String nombre;
 
         public ProductosItem(int id_producto, String nombre, int stock, int stock_minimo, int precio_unitario) {
             this.id_producto = id_producto;
             this.nombre = nombre;
             this.stock = stock;
-            this.precio_unitario = precio_unitario;
             this.stock_minimo = stock_minimo;
+            this.precio_unitario = precio_unitario;
+
         }
 
         public int getId() {

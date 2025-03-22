@@ -46,6 +46,7 @@ public class PedidosGUI {
     private JTextField stockminimotxt;
     private JPanel Panelcantidad;
     private JPanel PanelCliente;
+    private JButton mostrarCajaButton;
     int sub_total = 0;
     JFrame frame = new JFrame("Main");
 
@@ -89,6 +90,9 @@ public class PedidosGUI {
 
         //textfield oculto
         stockminimotxt.setVisible(false);
+
+        //boton oculto
+        mostrarCajaButton.setVisible(false);
 
         //Reloj del sistema, hora y fecha.
         Timer timer = new Timer(1000, new ActionListener() {
@@ -210,8 +214,11 @@ public class PedidosGUI {
         agregarProductoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Panel_datos.setVisible(true);
-                agregarProducto();
+                if (comboBoxClientes.getSelectedItem().equals("CLIENTES")) {
+                    JOptionPane.showMessageDialog(null, "No se ha seleccionado un cliente");
+                }else{
+                    agregarProducto();
+                }
             }
         });
         /*----------------------------------------------------------------------------------------------------------------------*/
@@ -220,31 +227,34 @@ public class PedidosGUI {
         cancelarPedidoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int respuesta = JOptionPane.showConfirmDialog(null,
-                        "¿Estás seguro? Se borran los pedidos",
-                        "Confirmar acción",
-                        JOptionPane.YES_NO_OPTION
-                );
+                try{
+                    int respuesta = JOptionPane.showConfirmDialog(null,
+                            "¿Estás seguro? Se borran los pedidos",
+                            "Confirmar acción",
+                            JOptionPane.YES_NO_OPTION
+                    );
 
-                // El usuario acepta cancelar el pedido
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    model = (DefaultTableModel) tablaCarrito.getModel();
-                    model.setRowCount(0);
+                    // El usuario acepta cancelar el pedido
+                    if (respuesta == JOptionPane.YES_OPTION) {
+                        model = (DefaultTableModel) tablaCarrito.getModel();
+                        model.setRowCount(0);
 
-                    PanelCarrito.setVisible(false);
-                    Panel_datos.setVisible(false);
-                    spinnercantidad.setValue(0);
-                    comboBoxTipo.setSelectedIndex(0);
-                    comboBoxClientes.setSelectedIndex(0);
-                    comboBoxProductos.setSelectedIndex(0);
-                    cedulatxt.setText("");
-                    preciotxt.setText("");
-                    stocktxt.setText("");
-                    estadotxt.setText("");
-                    totaltxt.setText("");
-                    total = 0;
+                        PanelCarrito.setVisible(false);
+                        Panel_datos.setVisible(false);
+                        spinnercantidad.setValue(0);
+                        comboBoxTipo.setSelectedIndex(0);
+                        comboBoxClientes.setSelectedIndex(0);
+                        comboBoxProductos.setSelectedIndex(0);
+                        cedulatxt.setText("");
+                        preciotxt.setText("");
+                        stocktxt.setText("");
+                        estadotxt.setText("");
+                        totaltxt.setText("");
+                        total = 0;
+                    }
+                } catch (NumberFormatException ex) {
+                    throw new RuntimeException(ex);
                 }
-
             }
         });
         /*----------------------------------------------------------------------------------------------------------------------*/
@@ -254,18 +264,20 @@ public class PedidosGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                try{
+                    //Cliente y ID del cliente
+                    ClientesItem clientesItem = (ClientesItem) comboBoxClientes.getSelectedItem();
+                    int idcliente = clientesItem.getId();
+                    /////////////////////////////////////////////////////////////////////////////
 
-                //Cliente y ID del cliente
-                ClientesItem clientesItem = (ClientesItem) comboBoxClientes.getSelectedItem();
-                int idcliente = clientesItem.getId();
-                /////////////////////////////////////////////////////////////////////////////
+                    //variables
+                    String fecha_hora = textField4.getText();
+                    String estado = "Entregado";
+                    String metodo = comboBoxTipo.getSelectedItem().toString();
+                    int tot =Integer.parseInt(totaltxt.getText());
+                    ///////////////////////////////////////////////////////
 
-                //variables
-                String fecha_hora = textField4.getText();
-                String estado = "Entregado";
-                String metodo = comboBoxTipo.getSelectedItem().toString();
-                int tot =Integer.parseInt(totaltxt.getText());
-                ///////////////////////////////////////////////////////
+
 
                 //variables sql
                 Connection con = null;
@@ -274,93 +286,95 @@ public class PedidosGUI {
                 ResultSet rs = null;
                 /////////////////////////////////////
 
-                //bloque try
-                try {
-                    con = cf.getConnection();
-                    con.setAutoCommit(false);
-
-                    //insertar datos primero en los pedidos
-                    String sqlOrden = "INSERT INTO pedidos (id_cliente, fecha_hora, estado, metodo_pago, total) VALUES (?, ?, ?, ?, ?)";
-                    psOrden = con.prepareStatement(sqlOrden, Statement.RETURN_GENERATED_KEYS); // Retornar clave generada
-                    psOrden.setInt(1, idcliente);
-                    psOrden.setString(2, fecha_hora);
-                    psOrden.setString(3, estado);
-                    psOrden.setString(4, metodo);
-                    psOrden.setInt(5, tot);
-                    psOrden.executeUpdate();
-                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                    // Obtener el ID del pedidoo recién insertado
-                    rs = psOrden.getGeneratedKeys();
-                    int idPedido = -1;
-                    if (rs.next()) {
-                        idPedido = rs.getInt(1);
-                    } else {
-                        throw new SQLException("Error al obtener el ID");
-                    }
-                    ////////////////////////////////////////////////////
-
-                    /*----------------------------------------------------------------------------------------------------------------*/
-
-                    // Insertar los productos en detalle pedidos
-                    String sqlProductoOrden = "INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, tipo_cantidad, precio_unitario, subtotal) VALUES (?, ?, ?, ?, ?, ?)";
-                    psProductos = con.prepareStatement(sqlProductoOrden);
-
-                    DefaultTableModel model = (DefaultTableModel) tablaCarrito.getModel();
-                    int rowCount = model.getRowCount();
-
-                    if (rowCount == 0) {
-                        JOptionPane.showMessageDialog(null, "El carrito está vacío. Agregue productos antes de generar la venta.");
-                        con.rollback();
-                        return;
-                    }
-
-
-                    // Insertar cada producto en la tabla detalle_pedido usando la jtable carrito
-                    for (int i = 0; i < rowCount; i++) {
-                        /*----------------------------------------------------------------------------------------------------------------------*/
-                        int idPro = Integer.parseInt(model.getValueAt(i, 1).toString()); //id del producto
-                        int can = Integer.parseInt(tablaCarrito.getValueAt(i, 4).toString()); // cantidad
-                        String t_can = tablaCarrito.getValueAt(i, 3).toString(); //Obtener tipo_cantidad
-                        int pre_u = Integer.parseInt(tablaCarrito.getValueAt(i, 5).toString()); //precio_unitario
-                        int sub = Integer.parseInt(tablaCarrito.getValueAt(i, 6).toString()); //subtotal
-                        /*----------------------------------------------------------------------------------------------------------------------*/
-                        psProductos.setInt(1, idPedido);
-                        psProductos.setInt(2, idPro);
-                        psProductos.setInt(3, can);
-                        psProductos.setString(4, t_can);
-                        psProductos.setInt(5, pre_u);
-                        psProductos.setDouble(6, sub);
-                        psProductos.addBatch(); // Agregar al batch
-                    }
-                    psProductos.executeBatch();
-                    con.commit();
-                    /*----------------------------------------------------------------------------------------------------------------------*/
-                    JOptionPane.showMessageDialog(null, "Venta generada con éxito.");
-                    c.EnviarDinero(tot);
-                    /*----------------------------------------------------------------------------------------------------------------------*/
-
-                } catch (SQLException ex) {
+                    //bloque try
                     try {
-                        if (con != null) {
-                            con.rollback(); //si hay error
+                        con = cf.getConnection();
+                        con.setAutoCommit(false);
+
+                        //insertar datos primero en los pedidos
+                        String sqlOrden = "INSERT INTO pedidos (id_cliente, fecha_hora, estado, metodo_pago, total) VALUES (?, ?, ?, ?, ?)";
+                        psOrden = con.prepareStatement(sqlOrden, Statement.RETURN_GENERATED_KEYS); // Retornar clave generada
+                        psOrden.setInt(1, idcliente);
+                        psOrden.setString(2, fecha_hora);
+                        psOrden.setString(3, estado);
+                        psOrden.setString(4, metodo);
+                        psOrden.setInt(5, tot);
+                        psOrden.executeUpdate();
+                        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                        // Obtener el ID del pedidoo recién insertado
+                        rs = psOrden.getGeneratedKeys();
+                        int idPedido = -1;
+                        if (rs.next()) {
+                            idPedido = rs.getInt(1);
+                        } else {
+                            throw new SQLException("Error al obtener el ID");
                         }
-                    } catch (SQLException rollbackEx) {
-                        rollbackEx.printStackTrace();
+                        ////////////////////////////////////////////////////
+
+                        /*----------------------------------------------------------------------------------------------------------------*/
+
+                        // Insertar los productos en detalle pedidos
+                        String sqlProductoOrden = "INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, tipo_cantidad, precio_unitario, subtotal) VALUES (?, ?, ?, ?, ?, ?)";
+                        psProductos = con.prepareStatement(sqlProductoOrden);
+
+                        DefaultTableModel model = (DefaultTableModel) tablaCarrito.getModel();
+                        int rowCount = model.getRowCount();
+
+                        if (rowCount == 0) {
+                            JOptionPane.showMessageDialog(null, "El carrito está vacío. Agregue productos antes de generar la venta.");
+                            con.rollback();
+                            return;
+                        }
+
+
+                        // Insertar cada producto en la tabla detalle_pedido usando la jtable carrito
+                        for (int i = 0; i < rowCount; i++) {
+                            /*----------------------------------------------------------------------------------------------------------------------*/
+                            int idPro = Integer.parseInt(model.getValueAt(i, 1).toString()); //id del producto
+                            int can = Integer.parseInt(tablaCarrito.getValueAt(i, 4).toString()); // cantidad
+                            String t_can = tablaCarrito.getValueAt(i, 3).toString(); //Obtener tipo_cantidad
+                            int pre_u = Integer.parseInt(tablaCarrito.getValueAt(i, 5).toString()); //precio_unitario
+                            int sub = Integer.parseInt(tablaCarrito.getValueAt(i, 6).toString()); //subtotal
+                            /*----------------------------------------------------------------------------------------------------------------------*/
+                            psProductos.setInt(1, idPedido);
+                            psProductos.setInt(2, idPro);
+                            psProductos.setInt(3, can);
+                            psProductos.setString(4, t_can);
+                            psProductos.setInt(5, pre_u);
+                            psProductos.setDouble(6, sub);
+                            psProductos.addBatch(); // Agregar al batch
+                        }
+                        psProductos.executeBatch();
+                        con.commit();
+                        /*----------------------------------------------------------------------------------------------------------------------*/
+                        JOptionPane.showMessageDialog(null, "Venta generada con éxito.");
+                        c.EnviarDinero(tot); //enviar dinero a la caja
+                        /*----------------------------------------------------------------------------------------------------------------------*/
+
+                    } catch (SQLException ex) {
+                        try {
+                            if (con != null) {
+                                con.rollback(); //si hay error
+                            }
+                        } catch (SQLException rollbackEx) {
+                            rollbackEx.printStackTrace();
+                        }
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Error al generar la venta. Intente nuevamente.");
+                    } finally {
+                        try {
+                            if (rs != null) rs.close();
+                            if (psOrden != null) psOrden.close();
+                            if (psProductos != null) psProductos.close();
+                            if (con != null) con.close();
+                        } catch (SQLException closeEx) {
+                            closeEx.printStackTrace();
+                        }
                     }
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Error al generar la venta. Intente nuevamente.");
-                } finally {
-                    try {
-                        if (rs != null) rs.close();
-                        if (psOrden != null) psOrden.close();
-                        if (psProductos != null) psProductos.close();
-                        if (con != null) con.close();
-                    } catch (SQLException closeEx) {
-                        closeEx.printStackTrace();
-                    }
+                }catch (ClassCastException ex){
+                    JOptionPane.showMessageDialog(null, "Seleccione un cliente");
                 }
-            PanelCarrito.setVisible(false);
             cedulatxt.setText("");
             comboBoxClientes.setSelectedIndex(0);
             comboBoxProductos.setSelectedIndex(0);
@@ -368,6 +382,10 @@ public class PedidosGUI {
             stocktxt.setText("");
             preciotxt.setText("");
             totaltxt.setText("");
+            spinnercantidad.setValue(0);
+            mostrarCajaButton.setVisible(true);
+            model = (DefaultTableModel) tablaCarrito.getModel();
+            model.setRowCount(0);
             }
         });
     }
@@ -407,12 +425,12 @@ public class PedidosGUI {
                 /////////////////////////////////////////////////////////////////////////////////
 
 
-                if (idProducto != 0) {
-                    prod = comboBoxProductos.getSelectedItem().toString();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Seleccione un producto");
-                    return;
-                }
+                //if (idProducto != 0) {
+                  //  prod = comboBoxProductos.getSelectedItem().toString();
+                //} else {
+                    //JOptionPane.showMessageDialog(null, "Seleccione un producto");
+                    //return;
+                //}
                 //stock minimo
                 if(stock == stockmin ){
                     int respuesta = JOptionPane.showConfirmDialog(null,
@@ -428,8 +446,6 @@ public class PedidosGUI {
                         ProductoGUI p = new ProductoGUI();
                         p.runProducto();
                     }
-                }else if (comboBoxClientes.getSelectedItem().equals("CLIENTES")) {
-                    JOptionPane.showMessageDialog(null, "No se ha seleccionado un cliente");
                 }else if(cantidad <= 0){
                     JOptionPane.showMessageDialog(null, "La cantidad ingresada es incorrecta");
                 }
@@ -471,7 +487,6 @@ public class PedidosGUI {
                     ob[4] = lista.get(4);
                     ob[5] = lista.get(5);
                     ob[6] = lista.get(6);
-
                     model.addRow(ob);
                     tablaCarrito.setModel(model); //le damos el modelo al carrito
 

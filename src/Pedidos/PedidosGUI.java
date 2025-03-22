@@ -1,5 +1,6 @@
 package Pedidos;
 
+import Caja.CajaGUI;
 import Conexion.Conexion;
 import Producto.ProductoGUI;
 
@@ -72,6 +73,9 @@ public class PedidosGUI {
 /*************************************************************************************************************************/
     //conexion a la base de datos(cf:objeto de la conexion)
     Conexion cf = new Conexion();
+
+    //importar caja
+    CajaGUI c = new CajaGUI();
 /************************************************************************************************************************/
 
     public PedidosGUI() {
@@ -282,7 +286,7 @@ public class PedidosGUI {
                     psOrden.setString(2, fecha_hora);
                     psOrden.setString(3, estado);
                     psOrden.setString(4, metodo);
-                    psOrden.setDouble(5, tot);
+                    psOrden.setInt(5, tot);
                     psOrden.executeUpdate();
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -333,6 +337,7 @@ public class PedidosGUI {
                     con.commit();
                     /*----------------------------------------------------------------------------------------------------------------------*/
                     JOptionPane.showMessageDialog(null, "Venta generada con éxito.");
+                    c.EnviarDinero(tot);
                     /*----------------------------------------------------------------------------------------------------------------------*/
 
                 } catch (SQLException ex) {
@@ -355,9 +360,15 @@ public class PedidosGUI {
                         closeEx.printStackTrace();
                     }
                 }
-
+            PanelCarrito.setVisible(false);
+            cedulatxt.setText("");
+            comboBoxClientes.setSelectedIndex(0);
+            comboBoxProductos.setSelectedIndex(0);
+            comboBoxTipo.setSelectedIndex(0);
+            stocktxt.setText("");
+            preciotxt.setText("");
+            totaltxt.setText("");
             }
-
         });
     }
     //fin de las acciones

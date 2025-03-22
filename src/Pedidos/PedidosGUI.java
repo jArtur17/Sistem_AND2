@@ -103,6 +103,9 @@ public class PedidosGUI {
         //accion para identificar si se selecciono un producto en la tabla
         //agregarListenerTabla();
 
+        //cargar Productos
+        cargarProductos();
+
 /************************************************************************************************************************/
 
         //Paneles ocultos, (carrito y datos del producto)
@@ -179,7 +182,7 @@ public class PedidosGUI {
         agregarProductoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Panel_datos.setVisible(true);
+                //Panel_datos.setVisible(true);
                 agregarProducto();
             }
         });
@@ -527,6 +530,32 @@ public class PedidosGUI {
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error al cargar clientes.");
+            }
+        }
+
+        /*-------------------------------------------------------------------------------------------------------------*/
+
+        private void cargarProductos() {
+            try {
+                Connection con = cf.getConnection();
+                Statement statement = con.createStatement();
+
+                String query = "SELECT id_producto, nombre FROM producto";
+                ResultSet rs = statement.executeQuery(query);
+
+                // Agrega cada nombre al JComboBox
+                while (rs.next()) {
+                    int idcliente = rs.getInt("id_producto");
+                    String cliente = rs.getString("nombre");
+                    comboBoxProductos.addItem(new ClientesItem(idcliente, cliente));
+                }
+
+                rs.close();
+                statement.close();
+                con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error al cargar productos.");
             }
         }
         //fin de metodos

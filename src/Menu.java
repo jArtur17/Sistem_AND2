@@ -89,7 +89,7 @@ public class Menu {
                 Servidor servidor = new Servidor();
                 PedidosGUI pGUI = new PedidosGUI();
                 //pGUI.setServidor(servidor);
-                pGUI.PedidosMain();
+                pGUI.RunPedidos();
             }
         });
 

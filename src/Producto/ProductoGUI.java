@@ -215,6 +215,10 @@ public class ProductoGUI {
         });
     }
 
+    public ProductoGUI() {
+
+    }
+
     public void obtainInvent()
     {
         NonEditableTableModel modeloa = new NonEditableTableModel();

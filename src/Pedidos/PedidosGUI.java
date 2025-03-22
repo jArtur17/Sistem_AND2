@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class PedidosGUI {
     private JTextField textField4;
-    private JComboBox comboBox1;
+    private JComboBox comboBoxTipo;
     private JSpinner spinner1;
     private JComboBox comboBox2;
     private JPanel PanelPrincipal;
@@ -37,8 +37,14 @@ public class PedidosGUI {
     private JTextArea textArea1;
     private JTextField textField11;
     private JPanel PanelCarrito;
+    private JTextField textField12;
+    private JComboBox comboBoxProductos;
+    private JTextField textField13;
+    private JTextField textField14;
+    private JPanel Panelcantidad;
+    private JPanel PanelCliente;
 
-/************************************************************************************************************************/
+    /************************************************************************************************************************/
     //variables propias globales
 
     //total del pedido
@@ -56,6 +62,7 @@ public class PedidosGUI {
     //objeto defaultTableModel
     DefaultTableModel model = new DefaultTableModel();
 
+
 /*************************************************************************************************************************/
     //conexion a la base de datos(cf:objeto de la conexion)
     Conexion cf = new Conexion();
@@ -64,6 +71,11 @@ public class PedidosGUI {
     public PedidosGUI() {
 
 /************************************************************************************************************************/
+        //darle tamaño al combobox
+        comboBoxClientes.setPreferredSize(new Dimension(300, 20));
+        comboBoxProductos.setPreferredSize(new Dimension(300, 20));
+        comboBoxTipo.setPreferredSize(new Dimension(300, 20));
+        spinner1.setPreferredSize(new Dimension(300, 20));
 
         //Reloj del sistema, hora y fecha.
         Timer timer = new Timer(1000, new ActionListener() {
@@ -83,13 +95,13 @@ public class PedidosGUI {
         cargarClientes();
 
         //llamar los productos disponibles en la base de datos
-        Productos();
+        //Productos();
 
         //configurar la tabla carrito con sus respectivas columnas
         Carrito();
 
         //accion para identificar si se selecciono un producto en la tabla
-        agregarListenerTabla();
+        //agregarListenerTabla();
 
 /************************************************************************************************************************/
 
@@ -109,10 +121,12 @@ public class PedidosGUI {
         textField11.setEditable(false);
 
         //definir el tamaño del scrol de prodcutos en la tabla productos
-        Scrol_productos.setPreferredSize(new Dimension(200, 200));
+        //Scrol_productos.setPreferredSize(new Dimension(200, 200));
 
         //color del panel de datos (gris claro)
-        Panel_datos.setBackground(new Color(200, 200, 200));
+        Panelcantidad.setBackground(new Color(200, 200, 200));
+        PanelCliente.setBackground(new Color(200, 200, 200));
+
 
         //color de los textfield en el panel de datos (azul claro)
         textField1.setBackground(new Color(220, 230, 240));
@@ -144,16 +158,16 @@ public class PedidosGUI {
         /*----------------------------------------------------------------------------------------------------------------------*/
 
         //accion del combobox tipo de cantidad
-        comboBox1.addActionListener(new ActionListener() {
+        comboBoxTipo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (comboBox1.getSelectedItem().toString().equals("unidad")) {
+                if (comboBoxTipo.getSelectedItem().toString().equals("unidad")) {
                     spinner1.setEnabled(true);
                     spinner1.setValue(0);
-                } else if (comboBox1.getSelectedItem().toString().equals("blister")) {
+                } else if (comboBoxTipo.getSelectedItem().toString().equals("blister")) {
                     spinner1.setValue(10);
                     spinner1.setEnabled(false);
-                } else if (comboBox1.getSelectedItem().toString().equals("caja")) {
+                } else if (comboBoxTipo.getSelectedItem().toString().equals("caja")) {
                     spinner1.setValue(100);
                     spinner1.setEnabled(false);
                 }
@@ -189,7 +203,7 @@ public class PedidosGUI {
                     PanelCarrito.setVisible(false);
                     Panel_datos.setVisible(false);
                     spinner1.setValue(0);
-                    comboBox1.setSelectedIndex(0);
+                    comboBoxTipo.setSelectedIndex(0);
                     comboBox2.setSelectedIndex(0);
                     comboBoxClientes.setSelectedIndex(0);
                     textField1.setText("");
@@ -324,15 +338,15 @@ public class PedidosGUI {
         /*-------------------------------------------------------------------------------------------------------------*/
 
         //accion de la tabla para identificar la fila seleccionada
-        private void agregarListenerTabla () {
-            tablaProductos.getSelectionModel().addListSelectionListener(e -> {
-                if (!e.getValueIsAdjusting() && tablaProductos.getSelectedRow() != -1) {
-                    int filaSeleccionada = tablaProductos.getSelectedRow();
-                    mostrarDetallesProducto(filaSeleccionada);
-                }
-            });
+        //private void agregarListenerTabla () {
+            //tablaProductos.getSelectionModel().addListSelectionListener(e -> {
+                //if (!e.getValueIsAdjusting() && tablaProductos.getSelectedRow() != -1) {
+                    //int filaSeleccionada = tablaProductos.getSelectedRow();
+                   // mostrarDetallesProducto(filaSeleccionada);
+                //}
+            //});
 
-        }
+       // }
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
@@ -382,7 +396,7 @@ public class PedidosGUI {
             //variables normales para agregar al carrito
             int cantidad = (int) spinner1.getValue();
             String prod="";
-            String t_cantidad = comboBox1.getSelectedItem().toString();
+            String t_cantidad = comboBoxTipo.getSelectedItem().toString();
             int precio_u = Integer.parseInt(textField7.getText());
             ////////////////////////////////////////////////////////
 

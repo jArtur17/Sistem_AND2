@@ -407,22 +407,25 @@ public class PedidosGUI {
                 }catch (ClassCastException ex){
                     JOptionPane.showMessageDialog(null, "Seleccione un cliente");
                 }
+                        String fecha_hora = textField4.getText();
+                        String c = comboBoxClientes.getSelectedItem().toString();
+                        String metodo = comboBoxMetodo.getSelectedItem().toString();
 
-            cedulatxt.setText("");
-            comboBoxClientes.setSelectedIndex(0);
-            comboBoxProductos.setSelectedIndex(0);
-            comboBoxTipo.setSelectedIndex(0);
-            stocktxt.setText("");
-            preciotxt.setText("");
-            totaltxt.setText("");
-            spinnercantidad.setValue(0);
-            mostrarCajaButton.setVisible(true);
-            model = (DefaultTableModel) tablaCarrito.getModel();
-            model.setRowCount(0);
-            buscar_productos.setText("");
-            buscar_cliente.setText("");
-            }
-        });
+                cedulatxt.setText("");
+                comboBoxClientes.setSelectedIndex(0);
+                comboBoxProductos.setSelectedIndex(0);
+                comboBoxTipo.setSelectedIndex(0);
+                stocktxt.setText("");
+                preciotxt.setText("");
+                totaltxt.setText("");
+                spinnercantidad.setValue(0);
+                mostrarCajaButton.setVisible(true);
+                model = (DefaultTableModel) tablaCarrito.getModel();
+                model.setRowCount(0);
+                buscar_productos.setText("");
+                buscar_cliente.setText("");
+                }
+            });
 
         /*----------------------------------------------------------------------------------------------------------------------*/
 
@@ -437,6 +440,14 @@ public class PedidosGUI {
 
         /*----------------------------------------------------------------------------------------------------------------------*/
 
+        mostrarCajaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CajaGUI cajaGUI = new CajaGUI(frame);
+                cajaGUI.runCaja();
+                //frame.setVisible(false);
+            }
+        });
     }
     //fin de las acciones
 /************************************************************************************************************************/
@@ -703,8 +714,44 @@ public class PedidosGUI {
             }
         }
 
-
         /*-------------------------------------------------------------------------------------------------------------*/
+
+    // ... (resto del código) ...
+
+        public int insertarDetalleFinanciero(String concepto, int valor) {
+            Connection con = cf.getConnection();
+            PreparedStatement psDetalle = null;
+            ResultSet generatedKeys = null;
+
+            try {
+                String sqlDetalle = "INSERT INTO detalle_financiero (concepto, valor) VALUES (?, ?)";
+                psDetalle = con.prepareStatement(sqlDetalle, Statement.RETURN_GENERATED_KEYS);
+                psDetalle.setString(1, concepto);
+                psDetalle.setInt(2, valor);
+                psDetalle.executeUpdate();
+
+                generatedKeys = psDetalle.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1); // Devuelve el id generado
+                } else {
+                    throw new SQLException("No se pudo obtener el id generado.");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return -1; // O algún valor que indique error
+            } finally {
+                // Cerrar recursos
+                try {
+                    if (generatedKeys != null) generatedKeys.close();
+                    if (psDetalle != null) psDetalle.close();
+                    if (con != null) con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         //fin de metodos
 /************************************************************************************************************************/
     //main

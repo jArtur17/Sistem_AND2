@@ -109,31 +109,12 @@ public class CajaGUI {
     public void showdata() {
         NonEditableTableModel modelo = new NonEditableTableModel();
 
-        modelo.addColumn("ID Caja");
-        modelo.addColumn("ID Detalle Financiero");
-        modelo.addColumn("Concepto");
-        modelo.addColumn("Valor");
+        modelo.addColumn("Saldo Inicial");
+        modelo.addColumn("Total de ventas en efectivo");
+        modelo.addColumn("Total de egresos");
+        modelo.addColumn("Total de ingresos");
 
         table1.setModel(modelo);
-
-        Connection con = conexion.getConnection();
-        try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT id_caja, id_detallefinanciero, concepto, valor FROM caja");
-
-            while (rs.next()) {
-                modelo.addRow(new Object[]{
-                        rs.getInt("id_caja"),
-                        rs.getInt("id_detallefinanciero"),
-                        rs.getString("concepto"),
-                        rs.getInt("valor"),
-                });
-            }
-            rs.close();
-            stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
         actualizarSaldoActual();
     }
 

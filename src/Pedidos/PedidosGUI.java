@@ -5,12 +5,16 @@ import Conexion.Conexion;
 import Producto.ProductoGUI;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -125,6 +129,7 @@ public class PedidosGUI {
         //cargar Productos
         cargarProductos();
 
+
 /************************************************************************************************************************/
 
         //Paneles ocultos, (carrito y datos del producto)
@@ -226,8 +231,6 @@ public class PedidosGUI {
 
         /*----------------------------------------------------------------------------------------------------------------------*/
 
-        /*----------------------------------------------------------------------------------------------------------------------*/
-
         //accion de agregar productos (metodo agregarProducto)
         agregarProductoButton.addActionListener(new ActionListener() {
             @Override
@@ -237,6 +240,8 @@ public class PedidosGUI {
                         JOptionPane.showMessageDialog(null, "No se ha seleccionado un cliente");
                     }else{
                         agregarProducto();
+                        buscar_cliente.setText("");
+                        buscar_productos.setText("");
                     }
                 }catch(ClassCastException ex){
 
@@ -259,6 +264,7 @@ public class PedidosGUI {
 
                     // El usuario acepta cancelar el pedido
                     if (respuesta == JOptionPane.YES_OPTION) {
+                        comboBoxClientes.setEnabled(true);
                         model = (DefaultTableModel) tablaCarrito.getModel();
                         model.setRowCount(0);
 
@@ -274,6 +280,8 @@ public class PedidosGUI {
                         estadotxt.setText("");
                         totaltxt.setText("");
                         total = 0;
+                        buscar_cliente.setText("");
+                        buscar_productos.setText("");
                     }
                 } catch (NumberFormatException ex) {
                     throw new RuntimeException(ex);
@@ -373,6 +381,8 @@ public class PedidosGUI {
                         /*----------------------------------------------------------------------------------------------------------------------*/
                         JOptionPane.showMessageDialog(null, "Venta generada con éxito.");
                         c.EnviarDinero(tot); //enviar dinero a la caja
+                        estadotxt.setText("El pedido ha sido entregado ✔️");
+                        comboBoxClientes.setEnabled(true);
                         /*----------------------------------------------------------------------------------------------------------------------*/
 
                     } catch (SQLException ex) {
@@ -398,6 +408,7 @@ public class PedidosGUI {
                 }catch (ClassCastException ex){
                     JOptionPane.showMessageDialog(null, "Seleccione un cliente");
                 }
+
             cedulatxt.setText("");
             comboBoxClientes.setSelectedIndex(0);
             comboBoxProductos.setSelectedIndex(0);
@@ -409,14 +420,27 @@ public class PedidosGUI {
             mostrarCajaButton.setVisible(true);
             model = (DefaultTableModel) tablaCarrito.getModel();
             model.setRowCount(0);
+            buscar_productos.setText("");
+            buscar_cliente.setText("");
             }
         });
+
+        /*----------------------------------------------------------------------------------------------------------------------*/
+
+        tablaCarrito.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+                    borrarFilaSeleccionada();
+                }
+            }
+        });
+
+        /*----------------------------------------------------------------------------------------------------------------------*/
 
     }
     //fin de las acciones
 /************************************************************************************************************************/
-
-        /*-------------------------------------------------------------------------------------------------------------*/
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
@@ -634,38 +658,52 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
-    private void buscarProductos(String texto) {
-        new Thread(() -> {
-            try {
-                Connection con = cf.getConnection();
-                String query = "SELECT id_producto, nombre, stock, stock_minimo, precio_unitario FROM producto WHERE LOWER(nombre) LIKE ?";
-                PreparedStatement statement = con.prepareStatement(query);
-                statement.setString(1, "%" + texto + "%");
+        private void buscarProductos(String texto) {
+            new Thread(() -> {
+                try {
+                    Connection con = cf.getConnection();
+                    String query = "SELECT id_producto, nombre, stock, stock_minimo, precio_unitario FROM producto WHERE LOWER(nombre) LIKE ?";
+                    PreparedStatement statement = con.prepareStatement(query);
+                    statement.setString(1, "%" + texto + "%");
 
-                ResultSet resultSet = statement.executeQuery();
+                    ResultSet resultSet = statement.executeQuery();
 
-                DefaultComboBoxModel<ProductosItem> model = new DefaultComboBoxModel<>();
-                while (resultSet.next()) {
-                    int id_Producto = resultSet.getInt("id_producto");
-                    String nombre = resultSet.getString("nombre");
-                    int stock = resultSet.getInt("stock");
-                    int stockm = resultSet.getInt("stock_minimo");
-                    int prec = resultSet.getInt("precio_unitario");
-                    model.addElement(new ProductosItem(id_Producto, nombre, stock, prec, stockm));
+                    DefaultComboBoxModel<ProductosItem> model = new DefaultComboBoxModel<>();
+                    while (resultSet.next()) {
+                        int id_Producto = resultSet.getInt("id_producto");
+                        String nombre = resultSet.getString("nombre");
+                        int stock = resultSet.getInt("stock");
+                        int stockm = resultSet.getInt("stock_minimo");
+                        int prec = resultSet.getInt("precio_unitario");
+                        model.addElement(new ProductosItem(id_Producto, nombre, stock, prec, stockm));
+                    }
+
+                    SwingUtilities.invokeLater(() -> {
+                        comboBoxProductos.setModel(model);
+                    });
+
+                    resultSet.close();
+                    statement.close();
+                    con.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
+            }).start();
+        }
 
-                SwingUtilities.invokeLater(() -> {
-                    comboBoxProductos.setModel(model);
-                });
-
-                resultSet.close();
-                statement.close();
-                con.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
+        private void borrarFilaSeleccionada() {
+            int filaSeleccionada = tablaCarrito.getSelectedRow();
+            if (filaSeleccionada != -1) {
+                DefaultTableModel model = (DefaultTableModel) tablaCarrito.getModel();
+                int subtotal = Integer.parseInt(model.getValueAt(filaSeleccionada, 6).toString());
+                total -= subtotal;
+                totaltxt.setText(String.valueOf(total));
+                model.removeRow(filaSeleccionada);
+            } else {
+                JOptionPane.showMessageDialog(null, "Seleccione una fila para borrar.");
             }
-        }).start();
-    }
+        }
+
 
         /*-------------------------------------------------------------------------------------------------------------*/
         //fin de metodos

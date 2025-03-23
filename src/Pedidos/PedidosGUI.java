@@ -634,38 +634,38 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
-    private void buscarProductos(String texto) {
-        new Thread(() -> {
-            try {
-                Connection con = cf.getConnection();
-                String query = "SELECT id_producto, nombre, stock, stock_minimo, precio_unitario FROM producto WHERE LOWER(nombre) LIKE ?";
-                PreparedStatement statement = con.prepareStatement(query);
-                statement.setString(1, "%" + texto + "%");
+        private void buscarProductos(String texto) {
+            new Thread(() -> {
+                try {
+                    Connection con = cf.getConnection();
+                    String query = "SELECT id_producto, nombre, stock, stock_minimo, precio_unitario FROM producto WHERE LOWER(nombre) LIKE ?";
+                    PreparedStatement statement = con.prepareStatement(query);
+                    statement.setString(1, "%" + texto + "%");
 
-                ResultSet resultSet = statement.executeQuery();
+                    ResultSet resultSet = statement.executeQuery();
 
-                DefaultComboBoxModel<ProductosItem> model = new DefaultComboBoxModel<>();
-                while (resultSet.next()) {
-                    int id_Producto = resultSet.getInt("id_producto");
-                    String nombre = resultSet.getString("nombre");
-                    int stock = resultSet.getInt("stock");
-                    int stockm = resultSet.getInt("stock_minimo");
-                    int prec = resultSet.getInt("precio_unitario");
-                    model.addElement(new ProductosItem(id_Producto, nombre, stock, prec, stockm));
+                    DefaultComboBoxModel<ProductosItem> model = new DefaultComboBoxModel<>();
+                    while (resultSet.next()) {
+                        int id_Producto = resultSet.getInt("id_producto");
+                        String nombre = resultSet.getString("nombre");
+                        int stock = resultSet.getInt("stock");
+                        int stockm = resultSet.getInt("stock_minimo");
+                        int prec = resultSet.getInt("precio_unitario");
+                        model.addElement(new ProductosItem(id_Producto, nombre, stock, prec, stockm));
+                    }
+
+                    SwingUtilities.invokeLater(() -> {
+                        comboBoxProductos.setModel(model);
+                    });
+
+                    resultSet.close();
+                    statement.close();
+                    con.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
-
-                SwingUtilities.invokeLater(() -> {
-                    comboBoxProductos.setModel(model);
-                });
-
-                resultSet.close();
-                statement.close();
-                con.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        }).start();
-    }
+            }).start();
+        }
 
         /*-------------------------------------------------------------------------------------------------------------*/
         //fin de metodos

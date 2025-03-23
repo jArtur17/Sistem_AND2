@@ -49,7 +49,8 @@ public class PedidosGUI {
     private JPanel Panelcantidad;
     private JPanel PanelCliente;
     private JButton mostrarCajaButton;
-    private JTextField textField1;
+    private JTextField buscar_cliente;
+    private JTextField buscarproductos;
     private JButton button1;
     int sub_total = 0;
     JFrame frame = new JFrame("Main");
@@ -170,21 +171,34 @@ public class PedidosGUI {
         textArea1.setBackground(new Color(220, 230, 240));
 /************************************************************************************************************************/
         //acciones
+        buscar_cliente.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                buscarClientes(buscar_cliente.getText());
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                buscarClientes(buscar_cliente.getText());
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+        });
 
         /*----------------------------------------------------------------------------------------------------------------------*/
         //accion del combobox clientes
         comboBoxClientes.addActionListener(e -> {
-            try{
-                if(comboBoxClientes.getSelectedItem().toString().equals("CLIENTES")){
-                    cedulatxt.setText("");
-                }
+            try {
                 ClientesItem cliente = (ClientesItem) comboBoxClientes.getSelectedItem();
-
                 if (cliente != null) {
                     cedulatxt.setText(String.valueOf(cliente.getCedula()));
+                } else {
+                    cedulatxt.setText(""); // Limpiar cedulatxt si no hay cliente seleccionado
                 }
-            }catch (ClassCastException ex){
-
+            } catch (ClassCastException ex) {
+                cedulatxt.setText(""); // Limpiar cedulatxt en caso de error
             }
 
         });
@@ -406,6 +420,7 @@ public class PedidosGUI {
             model.setRowCount(0);
             }
         });
+
     }
     //fin de las acciones
 /************************************************************************************************************************/
@@ -595,6 +610,36 @@ public class PedidosGUI {
             }
         }
 
+    private void buscarClientes(String texto) {
+        new Thread(() -> {
+            try {
+                Connection con = cf.getConnection();
+                String query = "SELECT id_cliente, cedula, nombre FROM cliente WHERE nombre LIKE ?";
+                PreparedStatement statement = con.prepareStatement(query);
+                statement.setString(1, "%" + texto + "%");
+
+                ResultSet resultSet = statement.executeQuery();
+
+                DefaultComboBoxModel<ClientesItem> model = new DefaultComboBoxModel<>();
+                while (resultSet.next()) {
+                    int idCliente = resultSet.getInt("id_cliente");
+                    String cedula = resultSet.getString("cedula");
+                    String nombre = resultSet.getString("nombre");
+                    model.addElement(new ClientesItem(idCliente, cedula, nombre));
+                }
+
+                SwingUtilities.invokeLater(() -> {
+                    comboBoxClientes.setModel(model);
+                });
+
+                resultSet.close();
+                statement.close();
+                con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }).start();
+    }
 
 
         //fin de metodos

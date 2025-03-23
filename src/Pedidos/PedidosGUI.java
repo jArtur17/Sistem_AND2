@@ -5,8 +5,6 @@ import Conexion.Conexion;
 import Producto.ProductoGUI;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -55,6 +53,7 @@ public class PedidosGUI {
     private JButton mostrarCajaButton;
     private JTextField buscar_cliente;
     private JTextField buscar_productos;
+    private JComboBox comboBoxMetodo;
     private JButton button1;
     int sub_total = 0;
     JFrame frame = new JFrame("Main");
@@ -304,7 +303,7 @@ public class PedidosGUI {
                     //variables
                     String fecha_hora = textField4.getText();
                     String estado = "Entregado";
-                    String metodo = comboBoxTipo.getSelectedItem().toString();
+                    String metodo = comboBoxMetodo.getSelectedItem().toString();
                     int tot =Integer.parseInt(totaltxt.getText());
                     ///////////////////////////////////////////////////////
 

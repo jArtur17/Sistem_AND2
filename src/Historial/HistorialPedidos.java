@@ -16,7 +16,7 @@ public class HistorialPedidos {
     private JLabel subtitulo;
     Conexion conR = new Conexion();
 
-    public HistorialPedidos() {
+    public HistorialPedidos(JFrame frame) {
         //llamar los pedidos en la tabla
         Historialordenes();
         subtitulo.setOpaque(true);
@@ -129,10 +129,10 @@ public class HistorialPedidos {
     }
 
 
-    public static void main(String[] args) {
+    public void runHistorial() {
 
         JFrame frame = new JFrame("Historial Pedidos");
-        frame.setContentPane(new HistorialPedidos().Panel);
+        frame.setContentPane(new HistorialPedidos(frame).Panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setSize(700,700);

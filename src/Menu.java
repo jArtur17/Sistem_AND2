@@ -1,6 +1,7 @@
 import Caja.CajaGUI;
 import Cliente.ClienteGUI;
 import Detalle_Financiero.Detalle_FinancieroGUI;
+import Historial.HistorialPedidos;
 import Pedidos.PedidosGUI;
 import Producto.ProductoGUI;
 import Sockets.Servidor;
@@ -119,6 +120,15 @@ public class Menu {
             public void actionPerformed(ActionEvent e) {
                 ProductoGUI producto = new ProductoGUI(frame);
                 producto.runProducto();
+                frame.setVisible(false);
+            }
+        });
+
+        hisotrialPedidosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                HistorialPedidos h = new HistorialPedidos(frame);
+                h.runHistorial();
                 frame.setVisible(false);
             }
         });

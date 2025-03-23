@@ -5,6 +5,8 @@ import Conexion.Conexion;
 import Producto.ProductoGUI;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -94,6 +96,9 @@ public class PedidosGUI {
         //boton oculto
         mostrarCajaButton.setVisible(false);
 
+        //combobox editable
+        comboBoxClientes.setEditable(true);
+
         //Reloj del sistema, hora y fecha.
         Timer timer = new Timer(1000, new ActionListener() {
             @Override
@@ -170,13 +175,16 @@ public class PedidosGUI {
         //accion del combobox clientes
         comboBoxClientes.addActionListener(e -> {
             try{
+                if(comboBoxClientes.getSelectedItem().toString().equals("CLIENTES")){
+                    cedulatxt.setText("");
+                }
                 ClientesItem cliente = (ClientesItem) comboBoxClientes.getSelectedItem();
 
                 if (cliente != null) {
                     cedulatxt.setText(String.valueOf(cliente.getCedula()));
                 }
             }catch (ClassCastException ex){
-                JOptionPane.showMessageDialog(null, "Seleccione un cliente");
+
             }
 
         });
@@ -185,6 +193,11 @@ public class PedidosGUI {
         //accion del combobox clientes
         comboBoxProductos.addActionListener(e -> {
             try{
+                if(comboBoxProductos.getSelectedItem().toString().equals("PRODUCTOS")){
+                    stocktxt.setText("");
+                    stockminimotxt.setText("");
+                    preciotxt.setText("");
+                }
                 ProductosItem productosItem = (ProductosItem) comboBoxProductos.getSelectedItem();
 
                 if (productosItem != null) {
@@ -200,7 +213,7 @@ public class PedidosGUI {
                     }
                 }
             }catch (ClassCastException ex){
-                JOptionPane.showMessageDialog(null, "Seleccione un producto");
+
             }
 
 
@@ -214,11 +227,16 @@ public class PedidosGUI {
         agregarProductoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (comboBoxClientes.getSelectedItem().equals("CLIENTES")) {
-                    JOptionPane.showMessageDialog(null, "No se ha seleccionado un cliente");
-                }else{
-                    agregarProducto();
+                try{
+                    if (comboBoxClientes.getSelectedItem().equals("CLIENTES")) {
+                        JOptionPane.showMessageDialog(null, "No se ha seleccionado un cliente");
+                    }else{
+                        agregarProducto();
+                    }
+                }catch(ClassCastException ex){
+
                 }
+
             }
         });
         /*----------------------------------------------------------------------------------------------------------------------*/
@@ -414,14 +432,17 @@ public class PedidosGUI {
 
                 //variables normales para agregar al carrito
                 int cantidad = (int) spinnercantidad.getValue();
-                String prod="";
+                String prod= comboBoxProductos.getSelectedItem().toString();
                 String t_cantidad = comboBoxTipo.getSelectedItem().toString();
                 int precio_u = Integer.parseInt(preciotxt.getText());
                 ////////////////////////////////////////////////////////
 
                 //obtener el id del producto seleccionado
+
                 ProductosItem productosItem = (ProductosItem) comboBoxProductos.getSelectedItem();
                 int idProducto = productosItem.getId();
+
+
                 /////////////////////////////////////////////////////////////////////////////////
 
 
@@ -441,7 +462,6 @@ public class PedidosGUI {
 
                     // El usuario acepta cancelar la compra
                     if (respuesta == JOptionPane.YES_OPTION) {
-                        //abrir productos
                         frame.dispose();
                         ProductoGUI p = new ProductoGUI();
                         p.runProducto();
@@ -450,6 +470,7 @@ public class PedidosGUI {
                     JOptionPane.showMessageDialog(null, "La cantidad ingresada es incorrecta");
                 }
                 else if(stock > 0 && stock > stockmin && cantidad > 0){
+                    comboBoxClientes.setEnabled(false);
 
                     //activar panel del carrito
                     PanelCarrito.setVisible(true);
@@ -573,6 +594,9 @@ public class PedidosGUI {
                 JOptionPane.showMessageDialog(null, "Error al cargar productos.");
             }
         }
+
+
+
         //fin de metodos
 /************************************************************************************************************************/
     //main
@@ -639,6 +663,8 @@ public class PedidosGUI {
             return nombre;
         }
     }
+
+
 }
 
 //fin del codigo --jArtur

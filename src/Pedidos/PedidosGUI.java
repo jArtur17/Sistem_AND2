@@ -82,7 +82,9 @@ public class PedidosGUI {
 
     //importar caja
     CajaGUI c = new CajaGUI();
-/************************************************************************************************************************/
+    private String textico;
+
+    /************************************************************************************************************************/
 
     public PedidosGUI() {
 
@@ -161,22 +163,22 @@ public class PedidosGUI {
             }
         });
 
-        //buscar productos documentlistener
         buscar_productos.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                buscarClientes(buscar_productos.getText());
+                buscarProductos(buscar_productos.getText().trim().toLowerCase());
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                buscarClientes(buscar_productos.getText());
+                buscarProductos(buscar_productos.getText().trim().toLowerCase());
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
             }
         });
+
 
         /*----------------------------------------------------------------------------------------------------------------------*/
         //accion del combobox clientes
@@ -197,31 +199,29 @@ public class PedidosGUI {
 
         //accion del combobox clientes
         comboBoxProductos.addActionListener(e -> {
-            try{
-                if(comboBoxProductos.getSelectedItem().toString().equals("PRODUCTOS")){
-                    stocktxt.setText("");
-                    stockminimotxt.setText("");
-                    preciotxt.setText("");
-                }
+            try {
                 ProductosItem productosItem = (ProductosItem) comboBoxProductos.getSelectedItem();
-
                 if (productosItem != null) {
                     preciotxt.setText(String.valueOf(productosItem.getStock_minimo()));
                     stocktxt.setText(String.valueOf(productosItem.getStock()));
                     stockminimotxt.setText(String.valueOf(productosItem.getPrecio_unitario()));
                     int stock = Integer.parseInt(stocktxt.getText());
                     int stockm = Integer.parseInt(stockminimotxt.getText());
-                    if(stock == stockm){
+                    if (stock == stockm) {
                         stocktxt.setForeground(Color.red);
-                    }else{
+                    } else {
                         stocktxt.setForeground(Color.black);
                     }
+                } else {
+                    stocktxt.setText("");
+                    stockminimotxt.setText("");
+                    preciotxt.setText("");
                 }
-            }catch (ClassCastException ex){
-
+            } catch (ClassCastException ex) {
+                stocktxt.setText("");
+                stockminimotxt.setText("");
+                preciotxt.setText("");
             }
-
-
         });
 
         /*----------------------------------------------------------------------------------------------------------------------*/
@@ -529,8 +529,6 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
-        /*-------------------------------------------------------------------------------------------------------------*/
-
         //definir columnas en la tabla del carrito
         public void Carrito() {
             DefaultTableModel pedidos = new DefaultTableModel();
@@ -601,42 +599,46 @@ public class PedidosGUI {
             }
         }
 
-    private void buscarClientes(String texto) {
-        new Thread(() -> {
-            try {
-                Connection con = cf.getConnection();
-                String query = "SELECT id_cliente, cedula, nombre FROM cliente WHERE nombre LIKE ?";
-                PreparedStatement statement = con.prepareStatement(query);
-                statement.setString(1, "%" + texto + "%");
+        /*-------------------------------------------------------------------------------------------------------------*/
 
-                ResultSet resultSet = statement.executeQuery();
+        private void buscarClientes(String texto) {
+            new Thread(() -> {
+                try {
+                    Connection con = cf.getConnection();
+                    String query = "SELECT id_cliente, cedula, nombre FROM cliente WHERE nombre LIKE ?";
+                    PreparedStatement statement = con.prepareStatement(query);
+                    statement.setString(1, "%" + texto + "%");
 
-                DefaultComboBoxModel<ClientesItem> model = new DefaultComboBoxModel<>();
-                while (resultSet.next()) {
-                    int idCliente = resultSet.getInt("id_cliente");
-                    String cedula = resultSet.getString("cedula");
-                    String nombre = resultSet.getString("nombre");
-                    model.addElement(new ClientesItem(idCliente, cedula, nombre));
+                    ResultSet resultSet = statement.executeQuery();
+
+                    DefaultComboBoxModel<ClientesItem> model = new DefaultComboBoxModel<>();
+                    while (resultSet.next()) {
+                        int idCliente = resultSet.getInt("id_cliente");
+                        String cedula = resultSet.getString("cedula");
+                        String nombre = resultSet.getString("nombre");
+                        model.addElement(new ClientesItem(idCliente, cedula, nombre));
+                    }
+
+                    SwingUtilities.invokeLater(() -> {
+                        comboBoxClientes.setModel(model);
+                    });
+
+                    resultSet.close();
+                    statement.close();
+                    con.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
+            }).start();
+        }
 
-                SwingUtilities.invokeLater(() -> {
-                    comboBoxClientes.setModel(model);
-                });
-
-                resultSet.close();
-                statement.close();
-                con.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        }).start();
-    }
+        /*-------------------------------------------------------------------------------------------------------------*/
 
     private void buscarProductos(String texto) {
         new Thread(() -> {
             try {
                 Connection con = cf.getConnection();
-                String query = "SELECT id_producto, nombre, stock, stock_minimo, precio_unitario FROM producto WHERE nombre LIKE ?";
+                String query = "SELECT id_producto, nombre, stock, stock_minimo, precio_unitario FROM producto WHERE LOWER(nombre) LIKE ?";
                 PreparedStatement statement = con.prepareStatement(query);
                 statement.setString(1, "%" + texto + "%");
 
@@ -649,7 +651,7 @@ public class PedidosGUI {
                     int stock = resultSet.getInt("stock");
                     int stockm = resultSet.getInt("stock_minimo");
                     int prec = resultSet.getInt("precio_unitario");
-                    model.addElement(new ProductosItem(id_Producto, nombre, stock, stockm,prec));
+                    model.addElement(new ProductosItem(id_Producto, nombre, stock, prec, stockm));
                 }
 
                 SwingUtilities.invokeLater(() -> {
@@ -665,7 +667,7 @@ public class PedidosGUI {
         }).start();
     }
 
-
+        /*-------------------------------------------------------------------------------------------------------------*/
         //fin de metodos
 /************************************************************************************************************************/
     //main

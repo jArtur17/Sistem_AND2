@@ -50,7 +50,7 @@ public class PedidosGUI {
     private JPanel PanelCliente;
     private JButton mostrarCajaButton;
     private JTextField buscar_cliente;
-    private JTextField buscarproductos;
+    private JTextField buscar_productos;
     private JButton button1;
     int sub_total = 0;
     JFrame frame = new JFrame("Main");
@@ -117,14 +117,8 @@ public class PedidosGUI {
         //cargar clientes en el comboBox clientes
         cargarClientes();
 
-        //llamar los productos disponibles en la base de datos
-        //Productos();
-
         //configurar la tabla carrito con sus respectivas columnas
         Carrito();
-
-        //accion para identificar si se selecciono un producto en la tabla
-        //agregarListenerTabla();
 
         //cargar Productos
         cargarProductos();
@@ -136,18 +130,10 @@ public class PedidosGUI {
         PanelCarrito.setVisible(false);
 
         //textfield que no se pueden editar
-        textField6.setEditable(false);
-        textField8.setEditable(false);
-        textField7.setEditable(false);
-        textField3.setEditable(false);
-        textField5.setEditable(false);
-        textField2.setEditable(false);
-        textField9.setEditable(false);
-        textArea1.setEditable(false);
         totaltxt.setEditable(false);
-
-        //definir el tamaño del scrol de prodcutos en la tabla productos
-        //Scrol_productos.setPreferredSize(new Dimension(200, 200));
+        cedulatxt.setEditable(false);
+        stocktxt.setEditable(false);
+        preciotxt.setEditable(false);
 
         //color del panel de datos (gris claro)
         Panelcantidad.setBackground(new Color(200, 200, 200));
@@ -156,21 +142,9 @@ public class PedidosGUI {
 
         //color de los textfield en el panel de datos (azul claro)
         estadotxt.setBackground(new Color(220, 230, 240));
-        textField6.setBackground(new Color(220, 220, 220));
-        textField7.setBackground(new Color(220, 220, 220));
-        textField8.setBackground(new Color(220, 220, 220));
-        textField5.setBackground(new Color(220, 220, 220));
-        textField2.setBackground(new Color(220, 220, 220));
-        textField9.setBackground(new Color(220, 220, 220));
-        textField3.setBackground(new Color(220, 220, 220));
 
-        //darle formato al textArea para que muestre el texto en varios parrafos
-        textArea1.setLineWrap(true);
-
-        //color del textArea (azul claro)
-        textArea1.setBackground(new Color(220, 230, 240));
 /************************************************************************************************************************/
-        //acciones
+        //buscar cliente documentlistener
         buscar_cliente.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -180,6 +154,23 @@ public class PedidosGUI {
             @Override
             public void removeUpdate(DocumentEvent e) {
                 buscarClientes(buscar_cliente.getText());
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+        });
+
+        //buscar productos documentlistener
+        buscar_productos.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                buscarClientes(buscar_productos.getText());
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                buscarClientes(buscar_productos.getText());
             }
 
             @Override
@@ -630,6 +621,39 @@ public class PedidosGUI {
 
                 SwingUtilities.invokeLater(() -> {
                     comboBoxClientes.setModel(model);
+                });
+
+                resultSet.close();
+                statement.close();
+                con.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void buscarProductos(String texto) {
+        new Thread(() -> {
+            try {
+                Connection con = cf.getConnection();
+                String query = "SELECT id_producto, nombre, stock, stock_minimo, precio_unitario FROM producto WHERE nombre LIKE ?";
+                PreparedStatement statement = con.prepareStatement(query);
+                statement.setString(1, "%" + texto + "%");
+
+                ResultSet resultSet = statement.executeQuery();
+
+                DefaultComboBoxModel<ProductosItem> model = new DefaultComboBoxModel<>();
+                while (resultSet.next()) {
+                    int id_Producto = resultSet.getInt("id_producto");
+                    String nombre = resultSet.getString("nombre");
+                    int stock = resultSet.getInt("stock");
+                    int stockm = resultSet.getInt("stock_minimo");
+                    int prec = resultSet.getInt("precio_unitario");
+                    model.addElement(new ProductosItem(id_Producto, nombre, stock, stockm,prec));
+                }
+
+                SwingUtilities.invokeLater(() -> {
+                    comboBoxProductos.setModel(model);
                 });
 
                 resultSet.close();

@@ -49,6 +49,8 @@ public class PedidosGUI {
     private JPanel Panelcantidad;
     private JPanel PanelCliente;
     private JButton mostrarCajaButton;
+    private JTextField textField1;
+    private JButton button1;
     int sub_total = 0;
     JFrame frame = new JFrame("Main");
 
@@ -96,8 +98,6 @@ public class PedidosGUI {
         //boton oculto
         mostrarCajaButton.setVisible(false);
 
-        //combobox editable
-        comboBoxClientes.setEditable(true);
 
         //Reloj del sistema, hora y fecha.
         Timer timer = new Timer(1000, new ActionListener() {

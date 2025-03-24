@@ -2,6 +2,7 @@ package Pedidos;
 
 import Caja.CajaGUI;
 import Conexion.Conexion;
+import Historial.HistorialPedidos;
 import Producto.ProductoGUI;
 
 import javax.swing.*;
@@ -17,6 +18,8 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PedidosGUI {
     private JTextField textField4;
@@ -61,7 +64,8 @@ public class PedidosGUI {
     //private JFormattedTextField stockminimotxt;
 
     /************************************************************************************************************************/
-    //variables propias globales
+    //map para el stock simulado
+    private Map<Integer, Integer> stockSimulado = new HashMap<>();
 
     //total del pedido
     int total = 0;
@@ -85,6 +89,9 @@ public class PedidosGUI {
 
     //importar caja
     CajaGUI c = new CajaGUI();
+
+    //historial pedidos
+    HistorialPedidos h = new HistorialPedidos();
     private String textico;
 
     /************************************************************************************************************************/
@@ -266,6 +273,7 @@ public class PedidosGUI {
                         comboBoxClientes.setEnabled(true);
                         model = (DefaultTableModel) tablaCarrito.getModel();
                         model.setRowCount(0);
+                        stockSimulado.clear(); //limpiar el simulador de stock
 
                         PanelCarrito.setVisible(false);
                         Panel_datos.setVisible(false);
@@ -358,7 +366,6 @@ public class PedidosGUI {
                             return;
                         }
 
-
                         // Insertar cada producto en la tabla detalle_pedido usando la jtable carrito
                         for (int i = 0; i < rowCount; i++) {
                             /*----------------------------------------------------------------------------------------------------------------------*/
@@ -375,6 +382,7 @@ public class PedidosGUI {
                             psProductos.setInt(5, pre_u);
                             psProductos.setDouble(6, sub);
                             psProductos.addBatch(); // Agregar al batch
+
                         }
                         psProductos.executeBatch();
                         con.commit();
@@ -411,10 +419,6 @@ public class PedidosGUI {
                 }catch (ClassCastException ex){
                     JOptionPane.showMessageDialog(null, "Seleccione un cliente");
                 }
-                        String fecha_hora = textField4.getText();
-                        String c = comboBoxClientes.getSelectedItem().toString();
-                        String metodo = comboBoxMetodo.getSelectedItem().toString();
-
                 cedulatxt.setText("");
                 comboBoxClientes.setSelectedIndex(0);
                 comboBoxProductos.setSelectedIndex(0);
@@ -436,9 +440,7 @@ public class PedidosGUI {
         tablaCarrito.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-                    borrarFilaSeleccionada();
-                }
+                borrarFilaSeleccionada();
             }
         });
 
@@ -459,100 +461,96 @@ public class PedidosGUI {
         /*-------------------------------------------------------------------------------------------------------------*/
 
         //metodo de agregar productos al carrito
-        void agregarProducto(){
+        void agregarProducto() {
+            try {
+                DefaultTableModel model = (DefaultTableModel) tablaCarrito.getModel();
 
-            try{
-                //comienza la orden
-                estadotxt.setText("En preparacion...");
-                ///////////////////////////////////////
-
-
-                //variables de condición(obtenemos el stock normal y min)
+                // Variables de condición (obtenemos el stock normal y min)
                 int stockmin = Integer.parseInt(stockminimotxt.getText());
-                int stock = Integer.parseInt(stocktxt.getText());
-                ////////////////////////////////////////////////////////
+                int stockReal = Integer.parseInt(stocktxt.getText());
 
-                model=(DefaultTableModel)tablaCarrito.getModel();
-
-                //variables normales para agregar al carrito
+                // Variables normales para agregar al carrito
                 int cantidad = (int) spinnercantidad.getValue();
-                String prod= comboBoxProductos.getSelectedItem().toString();
+                String prod = comboBoxProductos.getSelectedItem().toString();
                 String t_cantidad = comboBoxTipo.getSelectedItem().toString();
                 int precio_u = Integer.parseInt(preciotxt.getText());
-                ////////////////////////////////////////////////////////
 
-                //obtener el id del producto seleccionado
-
+                // Obtener el id del producto seleccionado
                 ProductosItem productosItem = (ProductosItem) comboBoxProductos.getSelectedItem();
                 int idProducto = productosItem.getId();
 
-                //stock minimo
-                if(stock == stockmin ){
+                // Obtener el stock simulado actual (si existe)
+                int stockActual = stockSimulado.getOrDefault(idProducto, stockReal);
+
+                // Condiciones:
+                if (stockActual == stockmin) { // El producto llegó al stock mínimo en la base de datos
                     int respuesta = JOptionPane.showConfirmDialog(null,
                             "El producto ha llegado al stock minimo\n   ¿Desea ir a productos?",
                             "Confirmar acción",
-                            JOptionPane.YES_NO_OPTION
-                    );
-
-                    // El usuario acepta cancelar la compra
+                            JOptionPane.YES_NO_OPTION);
+                    // El admin rechaza ver productos
                     if (respuesta == JOptionPane.YES_OPTION) {
                         frame.dispose();
                         ProductoGUI p = new ProductoGUI();
                         p.runProducto();
                     }
-                }else if(cantidad <= 0){
+                    return;
+                } else if (cantidad <= 0) { // La cantidad es errónea
                     JOptionPane.showMessageDialog(null, "La cantidad ingresada es incorrecta");
+                    return;
                 }
-                else if(stock > 0 && stock > stockmin && cantidad > 0){
-                    comboBoxClientes.setEnabled(false);
 
-                    //activar panel del carrito
-                    PanelCarrito.setVisible(true);
-
-
-                    //definir subtotal
-                    if(comboBoxTipo.getSelectedItem().toString().equals("unidad")){
-                        System.out.println("hola bola");
-                        sub_total= precio_u * cantidad;
-                    } else if (comboBoxTipo.getSelectedItem().toString().equals("blister")) {
-                        sub_total =  precio_u * (10 * cantidad);
-                    } else if (comboBoxTipo.getSelectedItem().toString().equals("caja")) {
-                        sub_total = precio_u * (100 * cantidad);
-                    }
-
-                    //incrementar total en cada producto
-                    total += sub_total;
-                    totaltxt.setText(String.valueOf(total));
-
-                    //agregar productos
-                    ArrayList lista = new ArrayList();
-                    lista.add(item+=1);
-                    lista.add(idProducto);
-                    lista.add(prod);
-                    lista.add(t_cantidad);
-                    lista.add(cantidad);
-                    lista.add(precio_u);
-                    lista.add(sub_total);
-
-                    Object[] ob = new Object[7];
-                    ob[0] = lista.get(0);
-                    ob[1] = lista.get(1);
-                    ob[2] = lista.get(2);
-                    ob[3] = lista.get(3);
-                    ob[4] = lista.get(4);
-                    ob[5] = lista.get(5);
-                    ob[6] = lista.get(6);
-                    model.addRow(ob);
-                    tablaCarrito.setModel(model); //le damos el modelo al carrito
-
-                }else{
-                    JOptionPane.showMessageDialog(null, "Ha ocurrido un error, intentelo de nuevo");
+                // Ajustar cantidad y subtotal según el tipo
+                int cantidadReal = cantidad;
+                if (t_cantidad.equals("blister")) {
+                    cantidadReal = 10 * cantidad;
+                } else if (t_cantidad.equals("caja")) {
+                    cantidadReal = 100 * cantidad;
                 }
-            }catch(NumberFormatException ex){
-                JOptionPane.showMessageDialog(null, "Agregue un cliente y producto");
+
+                sub_total = precio_u * cantidadReal;
+
+                // Verificar stock mínimo
+                if (cantidadReal > stockActual) {
+                    JOptionPane.showMessageDialog(null, "La cantidad agregada sobrepasa el stock");
+                    return;
+                }else if (cantidadReal > stockReal) {
+                    JOptionPane.showMessageDialog(null, "La cantidad agregada sobrepasa el stock disponible");
+                    return;
+                }
+
+                // Actualizar stock simulado. llevar resta del stock falso
+                stockActual -= cantidadReal;
+                stockSimulado.put(idProducto, stockActual);
+
+                // Agregar producto al carrito
+                comboBoxClientes.setEnabled(false);
+
+                // Incrementar total en cada producto
+                total += sub_total;
+                totaltxt.setText(String.valueOf(total));
+
+                PanelCarrito.setVisible(true);
+
+                // Agregar productos a la tabla
+                Object[] ob = new Object[7];
+                ob[0] = model.getRowCount() + 1; // Número de ítem
+                ob[1] = idProducto;
+                ob[2] = prod;
+                ob[3] = t_cantidad;
+                ob[4] = cantidadReal;
+                ob[5] = precio_u;
+                ob[6] = sub_total;
+                model.addRow(ob);
+
+                // Se agregó el producto sin errores
+                estadotxt.setText("En preparacion...");
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Agregue un cliente y producto válidos.");
+                ex.printStackTrace(); // Imprimir el rastreo de la excepción para depuración
             }
-
-
+            System.out.println("Tipo de dato de idProducto: " + idProducto.getClass().getName());
         }
 
         /*-------------------------------------------------------------------------------------------------------------*/
@@ -561,7 +559,7 @@ public class PedidosGUI {
         public void Carrito() {
             DefaultTableModel pedidos = new DefaultTableModel();
             pedidos.addColumn("Item");
-            pedidos.addColumn("ID");
+            pedidos.addColumn("ID"); //definir columna id como integer
             pedidos.addColumn("Producto");
             pedidos.addColumn("tipo de Cant");
             pedidos.addColumn("Cantidad");
@@ -701,9 +699,26 @@ public class PedidosGUI {
             int filaSeleccionada = tablaCarrito.getSelectedRow();
             if (filaSeleccionada != -1) {
                 DefaultTableModel model = (DefaultTableModel) tablaCarrito.getModel();
+
+                // Obtener el ID del producto y la cantidad del producto eliminado
+                int idProducto = Integer.parseInt(model.getValueAt(filaSeleccionada, 1).toString());
+                int cantidadEliminada = Integer.parseInt(model.getValueAt(filaSeleccionada, 4).toString());
+
+
+                // Obtener el subtotal del producto eliminado
                 int subtotal = Integer.parseInt(model.getValueAt(filaSeleccionada, 6).toString());
+
+                // Restar el subtotal del total
                 total -= subtotal;
                 totaltxt.setText(String.valueOf(total));
+
+                // Obtener el stock simulado actual del producto
+                int stockSimuladoActual = stockSimulado.getOrDefault(idProducto, Integer.parseInt(stocktxt.getText()));
+
+                // Restablecer el stock simulado del producto eliminado
+                stockSimulado.put(idProducto, stockSimuladoActual + cantidadEliminada);
+
+                // Eliminar la fila de la tabla
                 model.removeRow(filaSeleccionada);
             } else {
                 JOptionPane.showMessageDialog(null, "Seleccione una fila para borrar.");
@@ -822,6 +837,6 @@ public class PedidosGUI {
 }
 
 //fin del codigo --jArtur
-//funciones a implementar: buscar por cedula, mejorar interfaz
+//mayoria del codigo finalizado ✔️
 
 

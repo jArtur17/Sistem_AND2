@@ -45,9 +45,12 @@ public class HistorialPedidos {
                         DefaultTableModel model = (DefaultTableModel) tablahistorial.getModel();
                         String nuevoEstado = model.getValueAt(fila, columna).toString();
                         int idPedido = Integer.parseInt(model.getValueAt(fila, 0).toString());
-                        System.out.println(idPedido);
-                        System.out.println(nuevoEstado);
+                        //System.out.println(idPedido);
+                        //System.out.println(nuevoEstado);
                         actualizarEstado(idPedido, nuevoEstado);
+                        actualizarStock(idPedido);
+                        JOptionPane.showMessageDialog(null, "El stock se ha actualizado!");
+
 
                     }
 
@@ -56,10 +59,15 @@ public class HistorialPedidos {
         });
     }
 
+    public HistorialPedidos() {
+
+    }
+
+
     public void Historialordenes() {
         DefaultTableModel orden = new DefaultTableModel();
         orden.addColumn("id_pedido");
-        orden.addColumn("id_cliente");
+        orden.addColumn("Cliente");
         orden.addColumn("fecha_hora");
         orden.addColumn("estado");
         orden.addColumn("metodo_pago");
@@ -73,16 +81,19 @@ public class HistorialPedidos {
 
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT id_pedido, id_cliente, fecha_hora, estado, metodo_pago, total FROM pedidos WHERE estado = 'Entregado'");
+            String sql = "SELECT p.id_pedido, c.nombre, p.fecha_hora, p.estado, p.metodo_pago, p.total " +
+                    "FROM pedidos p " +
+                    "JOIN cliente c ON p.id_cliente = c.id_cliente " +
+                    "WHERE p.estado = 'Entregado'"; //consulta join para mostrar el nombre del cliente
+            ResultSet rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
-                Arreglo[0] = rs.getString(1);
-                Arreglo[1] = rs.getString(2);
-                Arreglo[2] = rs.getString(3);
-                Arreglo[3] = rs.getString(4);
-                Arreglo[4] = rs.getString(5);
-                Arreglo[5] = rs.getString(6);
-
+                Arreglo[0] = rs.getString(1); // id_pedido
+                Arreglo[1] = rs.getString(2); // nombre del cliente
+                Arreglo[2] = rs.getString(3); // fecha_hora
+                Arreglo[3] = rs.getString(4); // estado
+                Arreglo[4] = rs.getString(5); // metodo_pago
+                Arreglo[5] = rs.getString(6); // total
 
                 orden.addRow(Arreglo);
             }
@@ -104,7 +115,7 @@ public class HistorialPedidos {
         }
     }
 
-    private void actualizarEstado(int idPedido, String nuevoEstado) {
+    public void actualizarEstado(int idPedido, String nuevoEstado) {
         Connection con = conR.getConnection();
 
         String sql = "UPDATE pedidos SET estado = ? WHERE id_pedido = ?";
@@ -115,16 +126,60 @@ public class HistorialPedidos {
             int filasActualizadas = ps.executeUpdate();
 
             if (filasActualizadas > 0) {
-                System.out.println("Estado actualizado correctamente en la base de datos.");
+                //System.out.println("Estado actualizado correctamente en la base de datos.");
                 JOptionPane.showMessageDialog(null, "Estado actualizado correctamente.");
                 Historialordenes(); // Recargar datos de la tabla
             } else {
-                System.out.println("No se pudo actualizar el estado en la base de datos.");
+                //System.out.println("No se pudo actualizar el estado en la base de datos.");
                 JOptionPane.showMessageDialog(null, "No se pudo actualizar el estado.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al actualizar el estado: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void actualizarStock(int idPedido) {
+        Connection con = conR.getConnection();
+
+        try {
+
+            //Obtener los productos del pedido desde detalle_pedidos
+            String sqlDetalle = "SELECT id_producto, cantidad FROM detalle_pedido WHERE id_pedido = ?";
+            PreparedStatement pstmtDetalle = con.prepareStatement(sqlDetalle);
+            pstmtDetalle.setInt(1, idPedido);
+            ResultSet rsDetalle = pstmtDetalle.executeQuery();
+
+            //Actualizar el stock de cada producto (detalle_pedido - tabla carrito)
+            while (rsDetalle.next()) {
+                int idProducto = rsDetalle.getInt("id_producto");
+                int cantidadPedido = rsDetalle.getInt("cantidad");
+
+                //Obtener el stock actual del producto
+                String sqlStock = "SELECT stock FROM producto WHERE id_producto = ?";
+                PreparedStatement pstmtStock = con.prepareStatement(sqlStock);
+                pstmtStock.setInt(1, idProducto);
+                ResultSet rsStock = pstmtStock.executeQuery();
+
+                if (rsStock.next()) {
+                    int stockActual = rsStock.getInt("stock"); //stock Actual del producto
+                    int nuevoStock = stockActual - cantidadPedido; //resta del stok con la cantidad
+
+                    //Actualizar el stock en la tabla producto
+                    String sqlUpdateStock = "UPDATE producto SET stock = ? WHERE id_producto = ?";
+                    PreparedStatement pstmtUpdateStock = con.prepareStatement(sqlUpdateStock);
+                    pstmtUpdateStock.setInt(1, nuevoStock);
+                    pstmtUpdateStock.setInt(2, idProducto);
+                    pstmtUpdateStock.executeUpdate();
+                }
+            }
+
+            // 4. Confirmar la transacción (si es necesario)
+            // con.commit();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // con.rollback(); // En caso de error, deshacer la transacción
         }
     }
 

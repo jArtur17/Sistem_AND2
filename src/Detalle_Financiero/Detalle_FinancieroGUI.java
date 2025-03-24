@@ -88,8 +88,6 @@ public class Detalle_FinancieroGUI {
                     }else{
                         int id = p.insertarDetalleFinanciero(tipo_pago, 0, monto, descripcion, String.valueOf(fecha_hora));
                         cj.EnviarDinero(id, monto, tipoOperacion);
-
-
                     }
 
                     //Detalle_Financiero detalle = new Detalle_Financiero(0, tipo_pago, ingreso, egreso, descripcion, fecha_hora);

@@ -6,6 +6,8 @@ import javax.swing.table.DefaultTableModel;
 
 import Caja.CajaDAO;
 import Conexion.Conexion;
+import Pedidos.PedidosGUI;
+
 import java.time.LocalDateTime;
 
 
@@ -38,6 +40,7 @@ public class Detalle_FinancieroGUI {
     private CajaDAO cajaDAO = new CajaDAO();
 
     private Conexion conexion = new Conexion();
+    PedidosGUI p = new PedidosGUI();
 
 
     public Detalle_FinancieroGUI(JFrame parentFrame)
@@ -76,23 +79,29 @@ public class Detalle_FinancieroGUI {
                     }
 
                     LocalDateTime fecha_hora = LocalDateTime.now();
+                    if(comboBox2.getSelectedItem().toString().equals("Ingreso")){
+                        p.insertarDetalleFinanciero(tipo_pago, monto, 0, descripcion, String.valueOf(fecha_hora));
+                    }else{
+                        p.insertarDetalleFinanciero(tipo_pago, 0, monto, descripcion, String.valueOf(fecha_hora));
+                    }
 
-                    Detalle_Financiero detalle = new Detalle_Financiero(0, 0, tipo_pago, ingreso, egreso, descripcion, fecha_hora);
+                    //Detalle_Financiero detalle = new Detalle_Financiero(0, tipo_pago, ingreso, egreso, descripcion, fecha_hora);
+
 
                     // Llamar solo una vez
-                    int idFinancieroGenerado = detalleFinancieroDAO.Agregar(detalle);
+                    //int idFinancieroGenerado = detalleFinancieroDAO.Agregar(detalle);
 
-                    if (idFinancieroGenerado != -1) {
+                    //if (idFinancieroGenerado != -1) {
                         String concepto = tipoOperacion + " - " + descripcion;
-                        cajaDAO.RegistrarMovimiento(concepto, ingreso - egreso, idFinancieroGenerado);
+                        //cajaDAO.RegistrarMovimiento(concepto, ingreso - egreso, idFinancieroGenerado);
 
                         clear();
                         showdata();
 
                         JOptionPane.showMessageDialog(null, "Registro agregado correctamente.");
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Error al agregar el detalle financiero.");
-                    }
+                    //} else {
+                       // JOptionPane.showMessageDialog(null, "Error al agregar el detalle financiero.");
+                    //}
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "El monto debe ser un número válido.");
                 }
@@ -103,15 +112,14 @@ public class Detalle_FinancieroGUI {
         actualizarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (textField2.getText().trim().isEmpty() || textField3.getText().trim().isEmpty() ||
-                        textField4.getText().trim().isEmpty() || textField5.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Complete todos los campos, incluyendo la descripción.");
-                    return;
-                }
+                //if (textField2.getText().trim().isEmpty() || textField3.getText().trim().isEmpty() ||
+                       // textField4.getText().trim().isEmpty() || textField5.getText().trim().isEmpty()) {
+                    //JOptionPane.showMessageDialog(null, "Complete todos los campos, incluyendo la descripción.");
+                    //return;
+                //}
 
                 try {
                     int id_detallefinanciero = Integer.parseInt(textField2.getText().trim());
-                    int id_venta = Integer.parseInt(textField3.getText().trim());
                     String tipo_pago = (String) comboBox1.getSelectedItem();
                     int monto = Integer.parseInt(textField4.getText().trim());
                     String tipoOperacion = (String) comboBox2.getSelectedItem();
@@ -131,24 +139,21 @@ public class Detalle_FinancieroGUI {
                     LocalDateTime fecha_hora = LocalDateTime.now();
 
 
-                    Detalle_Financiero detalle = new Detalle_Financiero(id_detallefinanciero, id_venta, tipo_pago, ingreso, egreso, descripcion, fecha_hora);
+                    Detalle_Financiero detalle = new Detalle_Financiero(id_detallefinanciero, tipo_pago, ingreso, egreso, descripcion, fecha_hora);
                     detalleFinancieroDAO.Actualizar(detalle);
 
                     // Obtener el ID del movimiento en caja basado en el ID del detalle financiero
                     int idCaja = cajaDAO.ObtenerIdCajaPorIdDetalleFinanciero(id_detallefinanciero);
 
-                    if (idCaja != -1) {
+                    //if (idCaja != -1) {
                         // Actualizar el movimiento en caja con la nueva información
-                        cajaDAO.ActualizarMovimiento(idCaja, tipoOperacion + " - " + descripcion, ingreso - egreso, id_detallefinanciero);
-                    } else {
-                        JOptionPane.showMessageDialog(null, "No se encontró un movimiento en caja con ese ID de detalle financiero.");
-                    }
-
-
+                       // cajaDAO.ActualizarMovimiento(idCaja, tipoOperacion + " - " + descripcion, ingreso - egreso, id_detallefinanciero);
+                    //} else {
+                        //OptionPane.showMessageDialog(null, "No se encontró un movimiento en caja con ese ID de detalle financiero.");
+                   // }
 
                     clear();
                     showdata();
-
 
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "El monto debe ser un número válido.");
@@ -217,13 +222,13 @@ public class Detalle_FinancieroGUI {
                 int fila = table1.getSelectedRow();
                 if (fila >= 0) {
                     textField2.setText(table1.getValueAt(fila, 0).toString()); // Id-Financiero
-                    textField3.setText(table1.getValueAt(fila, 1).toString()); // Id-Venta
-                    comboBox1.setSelectedItem(table1.getValueAt(fila, 2).toString()); // Tipo de Pago
-                    comboBox2.setSelectedItem(table1.getValueAt(fila, 3).toString()); // Operación
-                    textField4.setText(table1.getValueAt(fila, 4).toString()); // Monto
+                    //textField3.setText(table1.getValueAt(fila, 1).toString()); // Id-Venta
+                    comboBox1.setSelectedItem(table1.getValueAt(fila, 1).toString()); // Tipo de Pago
+                    comboBox2.setSelectedItem(table1.getValueAt(fila, 2).toString()); // Operación
+                    textField4.setText(table1.getValueAt(fila, 3).toString()); // Monto
 
                     //  Asignar la descripción correctamente sin importar el tipo de operación
-                    String descripcion = table1.getValueAt(fila, 5) != null ? table1.getValueAt(fila, 5).toString() : "";
+                    String descripcion = table1.getValueAt(fila, 4).toString();
                     textField5.setText(descripcion);
 
                     //  Habilitar el campo de descripción según el tipo de operación seleccionado
@@ -231,7 +236,7 @@ public class Detalle_FinancieroGUI {
                     textField5.setEditable(tipoOperacion.equals("Egreso") || tipoOperacion.equals("Ingreso"));
 
 
-                    textField1.setText(table1.getValueAt(fila, 6).toString()); // Fecha-Hora
+                    textField1.setText(table1.getValueAt(fila, 5).toString()); // Fecha-Hora
                 }
             }
         });
@@ -244,7 +249,6 @@ public class Detalle_FinancieroGUI {
 
         // Agregar columnas
         modelo.addColumn("Id-Financiero");
-        modelo.addColumn("Id-venta");
         modelo.addColumn("Tipo de pago");
         modelo.addColumn("Operación");
         modelo.addColumn("Monto");
@@ -258,7 +262,7 @@ public class Detalle_FinancieroGUI {
 
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT id_detallefinanciero, id_venta, tipo_pago, ingreso, egreso, descripcion, fecha_hora FROM detalle_Financiero");
+            ResultSet rs = stmt.executeQuery("SELECT id_detallefinanciero, tipo_pago, ingreso, egreso, descripcion, fecha_hora FROM detalle_financiero");
 
             while (rs.next()) {
                 int ingreso = rs.getInt("ingreso");
@@ -269,7 +273,6 @@ public class Detalle_FinancieroGUI {
 
                 modelo.addRow(new Object[]{
                         rs.getInt("id_detallefinanciero"),
-                        rs.getInt("id_venta"),
                         rs.getString("tipo_pago"),
                         tipoOperacion,
                         monto,

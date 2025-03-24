@@ -301,6 +301,7 @@ public class PedidosGUI {
                     /////////////////////////////////////////////////////////////////////////////
 
                     //variables
+                    String cliente = comboBoxClientes.getSelectedItem().toString();
                     String fecha_hora = textField4.getText();
                     String estado = "Entregado";
                     String metodo = comboBoxMetodo.getSelectedItem().toString();
@@ -379,7 +380,8 @@ public class PedidosGUI {
                         con.commit();
                         /*----------------------------------------------------------------------------------------------------------------------*/
                         JOptionPane.showMessageDialog(null, "Venta generada con éxito.");
-                        c.EnviarDinero(tot); //enviar dinero a la caja
+                        insertarDetalleFinanciero(metodo, tot, 0, "Pedido de: "+ cliente, fecha_hora); //se lleva el registro del pedido a movimientos
+                        //c.EnviarDinero(tot); //enviar dinero a la caja
                         estadotxt.setText("El pedido ha sido entregado ✔️");
                         comboBoxClientes.setEnabled(true);
                         /*----------------------------------------------------------------------------------------------------------------------*/
@@ -482,16 +484,6 @@ public class PedidosGUI {
                 ProductosItem productosItem = (ProductosItem) comboBoxProductos.getSelectedItem();
                 int idProducto = productosItem.getId();
 
-
-                /////////////////////////////////////////////////////////////////////////////////
-
-
-                //if (idProducto != 0) {
-                  //  prod = comboBoxProductos.getSelectedItem().toString();
-                //} else {
-                    //JOptionPane.showMessageDialog(null, "Seleccione un producto");
-                    //return;
-                //}
                 //stock minimo
                 if(stock == stockmin ){
                     int respuesta = JOptionPane.showConfirmDialog(null,
@@ -701,6 +693,8 @@ public class PedidosGUI {
             }).start();
         }
 
+        /*-------------------------------------------------------------------------------------------------------------*/
+
         private void borrarFilaSeleccionada() {
             int filaSeleccionada = tablaCarrito.getSelectedRow();
             if (filaSeleccionada != -1) {
@@ -716,30 +710,24 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
-    // ... (resto del código) ...
-
-        public int insertarDetalleFinanciero(String concepto, int valor) {
+        public void insertarDetalleFinanciero(String tipopago, int ingreso, int egreso, String descripcion, String fechah) {
             Connection con = cf.getConnection();
             PreparedStatement psDetalle = null;
             ResultSet generatedKeys = null;
 
             try {
-                String sqlDetalle = "INSERT INTO detalle_financiero (concepto, valor) VALUES (?, ?)";
+                String sqlDetalle = "INSERT INTO detalle_financiero (tipo_pago, ingreso, egreso, descripcion, fecha_hora) VALUES (?, ?, ?, ?, ?)";
                 psDetalle = con.prepareStatement(sqlDetalle, Statement.RETURN_GENERATED_KEYS);
-                psDetalle.setString(1, concepto);
-                psDetalle.setInt(2, valor);
+                psDetalle.setString(1, tipopago);
+                psDetalle.setInt(2, ingreso);
+                psDetalle.setInt(3, egreso);
+                psDetalle.setString(4, descripcion);
+                psDetalle.setString(5, fechah);
                 psDetalle.executeUpdate();
 
-                generatedKeys = psDetalle.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1); // Devuelve el id generado
-                } else {
-                    throw new SQLException("No se pudo obtener el id generado.");
-                }
 
             } catch (SQLException e) {
                 e.printStackTrace();
-                return -1; // O algún valor que indique error
             } finally {
                 // Cerrar recursos
                 try {
@@ -751,6 +739,8 @@ public class PedidosGUI {
                 }
             }
         }
+
+        /*-------------------------------------------------------------------------------------------------------------*/
 
         //fin de metodos
 /************************************************************************************************************************/

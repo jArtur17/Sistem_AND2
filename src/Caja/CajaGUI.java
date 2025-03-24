@@ -28,32 +28,30 @@ public class CajaGUI {
 
     }
 
-    public void EnviarDinero(int total){
+    public void EnviarDinero(int total, int idDetalleFinanciero) { // Recibe el id como parámetro
         sum_total += total;
         textField1.setText(String.valueOf(sum_total));
         System.out.println(sum_total);
 
         Connection con = conexion.getConnection();
-        PreparedStatement ps = null;
+        PreparedStatement psCaja = null;
 
         try {
-            String sql = "INSERT INTO caja (id_detallefinanciero, concepto, valor) VALUES (?, ?, ?)";
-            ps = con.prepareStatement(sql);
-
-            ps.setInt(1, 1);
-            ps.setString(2, "Pedido");
-            ps.setInt(3, total);
-
-            ps.executeUpdate();
-
-            //System.out.println("Dinero enviado a la caja con éxito.");
+            String sqlCaja = "INSERT INTO caja (id_detallefinanciero, concepto, valor) VALUES (?, ?, ?)";
+            psCaja = con.prepareStatement(sqlCaja);
+            psCaja.setInt(1, idDetalleFinanciero); // Usa el id recibido
+            psCaja.setString(2, "Pedido");
+            psCaja.setInt(3, total);
+            psCaja.executeUpdate();
 
             showdata(); // Actualizar la tabla de caja en la interfaz
+
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
+            // Cerrar recursos
             try {
-                if (ps != null) ps.close();
+                if (psCaja != null) psCaja.close();
                 if (con != null) con.close();
             } catch (SQLException e) {
                 e.printStackTrace();

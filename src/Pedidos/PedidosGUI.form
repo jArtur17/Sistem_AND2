@@ -153,9 +153,9 @@
                 </constraints>
                 <properties>
                   <model>
-                    <item value="efectivo"/>
-                    <item value="tarjeta"/>
-                    <item value="trasnferencia"/>
+                    <item value="Efectivo"/>
+                    <item value="Tarjeta"/>
+                    <item value="Trasnferencia"/>
                   </model>
                 </properties>
               </component>

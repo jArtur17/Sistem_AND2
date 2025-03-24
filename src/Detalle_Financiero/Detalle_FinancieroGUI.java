@@ -5,6 +5,7 @@ import javax.swing.table.DefaultTableModel;
 
 
 import Caja.CajaDAO;
+import Caja.CajaGUI;
 import Conexion.Conexion;
 import Pedidos.PedidosGUI;
 
@@ -35,12 +36,14 @@ public class Detalle_FinancieroGUI {
     private JComboBox comboBox2;
     private JFrame frame;
     private JFrame parentFrame;
+    ResultSet generatedKeys = null;
 
     private Detalle_FinancieroDAO detalleFinancieroDAO = new Detalle_FinancieroDAO();
     private CajaDAO cajaDAO = new CajaDAO();
 
     private Conexion conexion = new Conexion();
     PedidosGUI p = new PedidosGUI();
+    CajaGUI cj = new CajaGUI();
 
 
     public Detalle_FinancieroGUI(JFrame parentFrame)
@@ -80,9 +83,13 @@ public class Detalle_FinancieroGUI {
 
                     LocalDateTime fecha_hora = LocalDateTime.now();
                     if(comboBox2.getSelectedItem().toString().equals("Ingreso")){
-                        p.insertarDetalleFinanciero(tipo_pago, monto, 0, descripcion, String.valueOf(fecha_hora));
+                        int id_i = p.insertarDetalleFinanciero(tipo_pago, monto, 0, descripcion, String.valueOf(fecha_hora));
+                        cj.EnviarDinero(id_i, monto, tipoOperacion);
                     }else{
-                        p.insertarDetalleFinanciero(tipo_pago, 0, monto, descripcion, String.valueOf(fecha_hora));
+                        int id = p.insertarDetalleFinanciero(tipo_pago, 0, monto, descripcion, String.valueOf(fecha_hora));
+                        cj.EnviarDinero(id, monto, tipoOperacion);
+
+
                     }
 
                     //Detalle_Financiero detalle = new Detalle_Financiero(0, tipo_pago, ingreso, egreso, descripcion, fecha_hora);
@@ -97,11 +104,11 @@ public class Detalle_FinancieroGUI {
 
                         clear();
                         showdata();
-
                         JOptionPane.showMessageDialog(null, "Registro agregado correctamente.");
                     //} else {
                        // JOptionPane.showMessageDialog(null, "Error al agregar el detalle financiero.");
                     //}
+
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "El monto debe ser un número válido.");
                 }
@@ -307,6 +314,43 @@ public class Detalle_FinancieroGUI {
         textField3.setText("");
         textField4.setText("");
         textField5.setText("");
+    }
+
+    public int insertarDetalleFinanciero(String tipopago, int ingreso, int egreso, String descripcion, String fechah) {
+        Connection con = conexion.getConnection();
+        PreparedStatement psDetalle = null;
+
+
+        try {
+            String sqlDetalle = "INSERT INTO detalle_financiero (tipo_pago, ingreso, egreso, descripcion, fecha_hora) VALUES (?, ?, ?, ?, ?)";
+            psDetalle = con.prepareStatement(sqlDetalle, Statement.RETURN_GENERATED_KEYS);
+            psDetalle.setString(1, tipopago);
+            psDetalle.setInt(2, ingreso);
+            psDetalle.setInt(3, egreso);
+            psDetalle.setString(4, descripcion);
+            psDetalle.setString(5, fechah);
+            psDetalle.executeUpdate();
+
+            generatedKeys = psDetalle.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                return generatedKeys.getInt(1); // Devuelve el id generado
+            } else {
+                throw new SQLException("No se pudo obtener el id generado.");
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Cerrar recursos
+            try {
+                if (generatedKeys != null) generatedKeys.close();
+                if (psDetalle != null) psDetalle.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }return -1;
     }
 
     public void runFinanciero() {

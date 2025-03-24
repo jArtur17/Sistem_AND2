@@ -380,8 +380,10 @@ public class PedidosGUI {
                         con.commit();
                         /*----------------------------------------------------------------------------------------------------------------------*/
                         JOptionPane.showMessageDialog(null, "Venta generada con éxito.");
-                        insertarDetalleFinanciero(metodo, tot, 0, "Pedido de: "+ cliente, fecha_hora); //se lleva el registro del pedido a movimientos
-                        //c.EnviarDinero(tot); //enviar dinero a la caja
+                        int idDetalle = insertarDetalleFinanciero(metodo, tot, 0, "Pedido de: "+ cliente, fecha_hora); //se lleva el registro del pedido a movimientos
+                        if (idDetalle != -1) {
+                            c.EnviarDinero(idDetalle, tot, "Pedido de: " + cliente); // Pasar el id a EnviarDinero
+                        }
                         estadotxt.setText("El pedido ha sido entregado ✔️");
                         comboBoxClientes.setEnabled(true);
                         /*----------------------------------------------------------------------------------------------------------------------*/
@@ -710,7 +712,7 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
-        public void insertarDetalleFinanciero(String tipopago, int ingreso, int egreso, String descripcion, String fechah) {
+        public int insertarDetalleFinanciero(String tipopago, int ingreso, int egreso, String descripcion, String fechah) {
             Connection con = cf.getConnection();
             PreparedStatement psDetalle = null;
             ResultSet generatedKeys = null;
@@ -725,6 +727,13 @@ public class PedidosGUI {
                 psDetalle.setString(5, fechah);
                 psDetalle.executeUpdate();
 
+                generatedKeys = psDetalle.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1); // Devuelve el id generado
+                } else {
+                    throw new SQLException("No se pudo obtener el id generado.");
+                }
+
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -737,7 +746,7 @@ public class PedidosGUI {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-            }
+            }return -1;
         }
 
         /*-------------------------------------------------------------------------------------------------------------*/

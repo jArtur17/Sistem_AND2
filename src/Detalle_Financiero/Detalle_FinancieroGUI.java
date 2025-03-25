@@ -357,7 +357,7 @@ public class Detalle_FinancieroGUI {
         frame.setContentPane(this.main);
 //          frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setSize(570, 450);
+        frame.setSize(700,700);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
     }

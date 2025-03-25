@@ -1,11 +1,13 @@
 package Cliente;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,194 +16,130 @@ import Conexion.Conexion;
 
 public class ClienteGUI {
     private JPanel main;
-    private JTextField textField1;
-    private JTextField textField2;
-    private JTextField textField3;
-    private JTextField textField4;
-    private JTextField textField5;
-    private JTextField textField6;
+    private JTextField textField1, textField2, textField3, textField4, textField5, textField6;
     private JTable table1;
-    private JButton registrarButton;
-    private JButton actualizarButton;
-    private JButton eliminarButton;
-    private JButton BackButton;
-    private JFrame frame;
-    private JFrame parentFrame;
+    private JButton registrarButton, actualizarButton, eliminarButton, BackButton;
+    private JFrame frame, parentFrame;
     private ClienteDAO clienteDAO = new ClienteDAO();
     private Conexion connectionFA = new Conexion();
 
-    int rows = 0;
-
-    public ClienteGUI(JFrame parentFrame)
-    {
+    public ClienteGUI(JFrame parentFrame) {
+        this.parentFrame = parentFrame;
         textField1.setEditable(false);
         textField1.setVisible(false);
         showdata();
 
-        this.parentFrame = parentFrame;
+        // Cambiar color y fuente de los labels
+        for (Component c : main.getComponents()) {
+            if (c instanceof JLabel) {
+                JLabel label = (JLabel) c;
+                label.setForeground(Color.WHITE);
+                label.setFont(new Font("Arial", Font.BOLD, 14));
+            }
+        }
 
-        Dimension backButtonSize = new Dimension(86, 23);
-        BackButton.setPreferredSize(backButtonSize);
-        BackButton.setMinimumSize(backButtonSize);
-        BackButton.setMaximumSize(backButtonSize);
+        aplicarEstilos();
 
-        registrarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                if (textField2.getText().trim().isEmpty() || textField3.getText().trim().isEmpty() || textField4.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Complete todos los campos");
-                } else {
-                    String cedula = textField2.getText();
-                    String nombre = textField3.getText();
-                    String telefono = textField5.getText();
-                    String correo = textField4.getText();
-                    String direccion = textField6.getText();
-
-                    if (!telefono.matches("\\d+")) {
-                        JOptionPane.showMessageDialog(null, "The phone field should only contain numbers");
-                        return;
-                    }
-
-                    Cliente cliente = new Cliente(0, cedula, nombre, telefono, correo, direccion);
-                    clienteDAO.agregar(cliente);
-                    clear();
-                    showdata();
-                }
+        registrarButton.addActionListener(e -> {
+            if (textField2.getText().trim().isEmpty() || textField3.getText().trim().isEmpty() || textField4.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Complete todos los campos");
+            } else {
+                Cliente cliente = new Cliente(0, textField2.getText(), textField3.getText(), textField5.getText(), textField4.getText(), textField6.getText());
+                clienteDAO.agregar(cliente);
+                clear();
+                showdata();
             }
         });
 
-        actualizarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                if (textField2.getText().trim().isEmpty() || textField3.getText().trim().isEmpty() || textField4.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Complete todos los campos");
-                }else{
-                    String cedula = textField2.getText();
-                    String nombre = textField3.getText();
-                    String telefono = textField5.getText();
-                    String correo = textField4.getText();
-                    String direccion = textField6.getText();
-
-
-                    int id_cliente = Integer.parseInt(textField1.getText());
-
-                    if (!telefono.matches("\\d+")) {
-                        JOptionPane.showMessageDialog(null, "El campo de teléfono solo debe contener números");
-                        return;
-                    }
-
-                    Cliente cliente = new Cliente(id_cliente, cedula, nombre, telefono, correo, direccion);
-                    clienteDAO.actualizar(cliente);
-                    clear();
-                    showdata();
-                }
-
+        actualizarButton.addActionListener(e -> {
+            if (textField2.getText().trim().isEmpty() || textField3.getText().trim().isEmpty() || textField4.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Complete todos los campos");
+            } else {
+                int id_cliente = Integer.parseInt(textField1.getText());
+                Cliente cliente = new Cliente(id_cliente, textField2.getText(), textField3.getText(), textField5.getText(), textField4.getText(), textField6.getText());
+                clienteDAO.actualizar(cliente);
+                clear();
+                showdata();
             }
         });
 
-        eliminarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                if (textField2.getText().trim().isEmpty() || textField3.getText().trim().isEmpty() || textField4.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Completa los campos");
-                }else{
-                    int id_cliente = Integer.parseInt(textField1.getText());
-                    clienteDAO.eliminar(id_cliente);
-
-                    clear();
-                    showdata();
-                }
-
+        eliminarButton.addActionListener(e -> {
+            if (!textField1.getText().trim().isEmpty()) {
+                clienteDAO.eliminar(Integer.parseInt(textField1.getText()));
+                clear();
+                showdata();
             }
         });
 
-        BackButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (parentFrame != null){
-                    parentFrame.setVisible(true);
-                }
-                frame.dispose();
+        BackButton.addActionListener(e -> {
+            if (parentFrame != null) {
+                parentFrame.setVisible(true);
             }
+            frame.dispose();
         });
 
         table1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
-                super.mouseClicked(e);
-
-                int selectedRows = table1.getSelectedRow();
-
-                if(selectedRows>=0)
-                {
-                    textField1.setText((String)table1.getValueAt(selectedRows,0));
-                    textField2.setText((String)table1.getValueAt(selectedRows,1));
-                    textField3.setText((String)table1.getValueAt(selectedRows,2));
-                    textField4.setText((String)table1.getValueAt(selectedRows,4));
-                    textField5.setText((String)table1.getValueAt(selectedRows,3));
-                    textField6.setText((String)table1.getValueAt(selectedRows,5));
-
-
-                    rows = selectedRows;
+                int selectedRow = table1.getSelectedRow();
+                if (selectedRow >= 0) {
+                    textField1.setText((String) table1.getValueAt(selectedRow, 0));
+                    textField2.setText((String) table1.getValueAt(selectedRow, 1));
+                    textField3.setText((String) table1.getValueAt(selectedRow, 2));
+                    textField4.setText((String) table1.getValueAt(selectedRow, 4));
+                    textField5.setText((String) table1.getValueAt(selectedRow, 3));
+                    textField6.setText((String) table1.getValueAt(selectedRow, 5));
                 }
             }
         });
     }
 
-    public void showdata()
-    {
-        NonEditableTableModel modelo = new NonEditableTableModel();
+    public void aplicarEstilos() {
+        main.setBackground(Color.DARK_GRAY);
+        registrarButton.setBackground(new Color(0, 51, 102));
+        actualizarButton.setBackground(new Color(0, 51, 102));
+        eliminarButton.setBackground(new Color(0, 51, 102));
+        BackButton.setBackground(new Color(0, 51, 102));
 
+        registrarButton.setForeground(Color.WHITE);
+        actualizarButton.setForeground(Color.WHITE);
+        eliminarButton.setForeground(Color.WHITE);
+        BackButton.setForeground(Color.WHITE);
+
+        JTableHeader header = table1.getTableHeader();
+        header.setBackground(new Color(51, 153, 255));
+        header.setForeground(Color.WHITE);
+        header.setFont(new Font("Arial", Font.BOLD, 14));
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < table1.getColumnCount(); i++) {
+            table1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+    }
+
+
+    public void showdata() {
+        DefaultTableModel modelo = new DefaultTableModel();
         modelo.addColumn("Id_Cliente");
         modelo.addColumn("Cedula");
         modelo.addColumn("Nombre");
         modelo.addColumn("Numero");
-        modelo.addColumn("Coreeo");
+        modelo.addColumn("Correo");
         modelo.addColumn("Direccion");
-
         table1.setModel(modelo);
 
-        String[] dato = new String[6];
         Connection con = connectionFA.getConnection();
-
-        try
-        {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM cliente");
-
-            while (rs.next())
-            {
-                dato[0] = rs.getString(1);
-                dato[1] = rs.getString(2);
-                dato[2] = rs.getString(3);
-                dato[3] = rs.getString(4);
-                dato[4] = rs.getString(5);
-                dato[5] = rs.getString(6);
-
-                modelo.addRow(dato);
+        try (Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery("SELECT * FROM cliente")) {
+            while (rs.next()) {
+                modelo.addRow(new Object[]{rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)});
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-
-    public class NonEditableTableModel extends DefaultTableModel {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    }
-
-
-    public void clear()
-    {
+    public void clear() {
         textField1.setText("");
         textField2.setText("");
         textField3.setText("");
@@ -210,18 +148,41 @@ public class ClienteGUI {
         textField6.setText("");
     }
 
-    public void runCliente(){
+    public void runCliente() {
+        frame = new JFrame("Gestión de Clientes");
+        FondoPanel fondoPanel = new FondoPanel();
+        main.setOpaque(false);
+        fondoPanel.setLayout(new BorderLayout());
+        fondoPanel.add(main, BorderLayout.CENTER);
 
+        URL iconoURL = getClass().getClassLoader().getResource("imagenes/img_9.png");
+        if (iconoURL != null) {
+            frame.setIconImage(new ImageIcon(iconoURL).getImage());
+        }
 
-        frame = new JFrame("Data Base Game");
-        frame.setContentPane(this.main);
-//          frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setSize(600,600);
+        frame.setContentPane(fondoPanel);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(600, 650);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
     }
+
+    class FondoPanel extends JPanel {
+        private Image imagenFondo;
+
+        public FondoPanel() {
+            URL imagenURL = getClass().getClassLoader().getResource("imagenes/img_8.png");
+            if (imagenURL != null) {
+                this.imagenFondo = new ImageIcon(imagenURL).getImage();
+            }
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (imagenFondo != null) {
+                g.drawImage(imagenFondo, 0, 0, getWidth(), getHeight(), this);
+            }
+        }
+    }
 }
-
-
-

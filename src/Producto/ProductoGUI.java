@@ -1,15 +1,21 @@
 package Producto;
+import Cliente.ClienteGUI;
 import Conexion.Conexion;
 
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URL;
 import java.sql.*;
+
+import static java.sql.Date.valueOf;
 
 public class ProductoGUI {
     private JPanel main;
@@ -48,6 +54,21 @@ public class ProductoGUI {
         BackButton.setMaximumSize(backButtonSize);
 
         obtainInvent();
+        // Cambiar color y fuente de los labels
+        for (Component c : main.getComponents()) {
+            if (c instanceof JLabel) {
+                JLabel label = (JLabel) c;
+
+                // Cambiar color del texto a blanco
+                label.setForeground(Color.WHITE);
+
+                // Aplicar la misma fuente de la tabla
+                Font fontTabla = table1.getFont();
+                label.setFont(new Font("Arial", Font.BOLD, 14));
+            }
+        }
+
+        aplicarEstilos();
 
             registrarButton.addActionListener(new ActionListener() {
                 @Override
@@ -72,7 +93,7 @@ public class ProductoGUI {
                     String categoria = textField3.getText();
                     int stock = Integer.parseInt(textField4.getText());
                     int stock_minimo = Integer.parseInt(textField5.getText());
-                    Date fecha_vencimiento = Date.valueOf(textField6.getText());
+                    Date fecha_vencimiento = valueOf(textField6.getText());
                     String indicaciones = textField9.getText();
                     String almacen = textField8.getText();
                     String lote = textField10.getText();
@@ -122,7 +143,7 @@ public class ProductoGUI {
                     String categoria = textField3.getText();
                     int stock = Integer.parseInt(textField4.getText());
                     int stock_minimo = Integer.parseInt(textField7.getText());
-                    Date fecha_vencimiento = Date.valueOf(textField6.getText());
+                    Date fecha_vencimiento = valueOf(textField6.getText());
                     String indicaciones = textField9.getText();
                     String almacen = textField8.getText();
                     String lote = textField10.getText();
@@ -178,7 +199,8 @@ public class ProductoGUI {
         BackButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (parentFrame != null){
+                BackButton.setBackground(new Color(51, 153, 255)); // Azul claro al dar click
+                if (parentFrame != null) {
                     parentFrame.setVisible(true);
                 }
                 frame.dispose();
@@ -217,6 +239,30 @@ public class ProductoGUI {
 
     public ProductoGUI() {
 
+    }
+
+    public void aplicarEstilos() {
+        main.setBackground(Color.DARK_GRAY);
+        registrarButton.setBackground(new Color(0, 51, 102));
+        actualizarButton.setBackground(new Color(0, 51, 102));
+        eliminarButton.setBackground(new Color(0, 51, 102));
+        BackButton.setBackground(new Color(0, 51, 102));
+
+        registrarButton.setForeground(Color.WHITE);
+        actualizarButton.setForeground(Color.WHITE);
+        eliminarButton.setForeground(Color.WHITE);
+        BackButton.setForeground(Color.WHITE);
+
+        JTableHeader header = table1.getTableHeader();
+        header.setBackground(new Color(51, 153, 255));
+        header.setForeground(Color.WHITE);
+        header.setFont(new Font("Arial", Font.BOLD, 14));
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < table1.getColumnCount(); i++) {
+            table1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
     }
 
     public void obtainInvent()
@@ -294,16 +340,44 @@ public class ProductoGUI {
         textField9.setText("");
         textField10.setText("");
     }
+
     public  void runProducto(){
 
+        frame = new JFrame("Gestion de Productos");
+        FondoPanel fondoPanel = new FondoPanel();
+        main.setOpaque(false);
+        fondoPanel.setLayout(new BorderLayout());
+        fondoPanel.add(main, BorderLayout.CENTER);
 
-        frame = new JFrame("Data Base Game");
-        frame.setContentPane(this.main);
-//          frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setSize(600,600);
+        URL iconoURL = getClass().getClassLoader().getResource("imagenes/img.png");
+        if (iconoURL != null) {
+            frame.setIconImage(new ImageIcon(iconoURL).getImage());
+        }
+
+        frame.setContentPane(fondoPanel);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(700,700);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
+    }
+
+    class FondoPanel extends JPanel {
+        private Image imagenFondo;
+
+        public FondoPanel() {
+            URL imagenURL = getClass().getClassLoader().getResource("imagenes/img_5.png");
+            if (imagenURL != null) {
+                this.imagenFondo = new ImageIcon(imagenURL).getImage();
+            }
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (imagenFondo != null) {
+                g.drawImage(imagenFondo, 0, 0, getWidth(), getHeight(), this);
+            }
+        }
     }
 }
 

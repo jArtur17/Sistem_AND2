@@ -24,12 +24,12 @@
           <text value="Bienvenido "/>
         </properties>
       </component>
-      <component id="a5ed5" class="javax.swing.JButton" binding="movimientoFinancieroButton" default-binding="true">
+      <component id="a5ed5" class="javax.swing.JButton" binding="movimientoButton">
         <constraints>
           <grid row="8" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Movimiento Financiero"/>
+          <text value="Movimiento "/>
         </properties>
       </component>
       <component id="a9cac" class="javax.swing.JButton" binding="cajaButton" default-binding="true">
@@ -72,12 +72,12 @@
           <text value="Productos"/>
         </properties>
       </component>
-      <component id="e9fe1" class="javax.swing.JButton" binding="hisotrialPedidosButton" default-binding="true">
+      <component id="e9fe1" class="javax.swing.JButton" binding="hisotrialButton">
         <constraints>
           <grid row="4" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Hisotrial Pedidos"/>
+          <text value="Hisotrial"/>
         </properties>
       </component>
       <component id="7cac" class="javax.swing.JButton" binding="chatButton" default-binding="true">

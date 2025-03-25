@@ -390,7 +390,7 @@ public class PedidosGUI {
                         JOptionPane.showMessageDialog(null, "Venta generada con éxito.");
                         int idDetalle = insertarDetalleFinanciero(metodo, tot, 0, "Pedido de: "+ cliente, fecha_hora); //se lleva el registro del pedido a movimientos
                         if (idDetalle != -1) {
-                            c.EnviarDinero(idDetalle, tot, "Pedido de: " + cliente); // Pasar el id a EnviarDinero
+                            c.EnviarDinero(idDetalle,"Pedido de: " + cliente, tot); // Pasar el id a EnviarDinero
                         }
                         estadotxt.setText("El pedido ha sido entregado ✔️");
                         comboBoxClientes.setEnabled(true);

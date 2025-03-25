@@ -71,11 +71,10 @@ public class Detalle_FinancieroGUI {
                     String tipo_pago = (String) comboBox1.getSelectedItem();
                     int monto = Integer.parseInt(textField4.getText().trim());
 
-                    int tipoMovimiento = comboBox1.getSelectedItem().toString().equals("Ingreso") ? 1 : 0;
 
                     String tipoOperacion = (String) comboBox2.getSelectedItem();
-                    int ingreso = tipoOperacion.equals("Ingreso") ? monto : 0;
-                    int egreso = tipoOperacion.equals("Egreso") ? monto : 0;
+                    //int ingreso = tipoOperacion.equals("Ingreso") ? monto : 0;
+                    //int egreso = tipoOperacion.equals("Egreso") ? monto : 0;
 
                     String descripcion = textField5.getText().trim();
                     if (descripcion.isEmpty()) {
@@ -86,11 +85,11 @@ public class Detalle_FinancieroGUI {
                     LocalDateTime fecha_hora = LocalDateTime.now();
                     if(comboBox2.getSelectedItem().toString().equals("Ingreso")){
                         int id_i = p.insertarDetalleFinanciero(tipo_pago, monto, 0, descripcion, String.valueOf(fecha_hora));
-                        cj.EnviarDinero(id_i, monto, tipoOperacion);
+                        cj.EnviarDinero(id_i,"Ingreso",monto);
                         //cj.actualizarSaldo(monto, tipoMovimiento == 1);
                     }else{
                         int id = p.insertarDetalleFinanciero(tipo_pago, 0, monto, descripcion, String.valueOf(fecha_hora));
-                        cj.EnviarDinero(id, monto, tipoOperacion);
+                        cj.EnviarDinero(id,"Egreso",monto);
                         //cj.actualizarSaldo(monto, tipoMovimiento == 0);
                     }
 
@@ -101,7 +100,7 @@ public class Detalle_FinancieroGUI {
                     //int idFinancieroGenerado = detalleFinancieroDAO.Agregar(detalle);
 
                     //if (idFinancieroGenerado != -1) {
-                        String concepto = tipoOperacion + " - " + descripcion;
+                        //String concepto = tipoOperacion + " - " + descripcion;
                         //cajaDAO.RegistrarMovimiento(concepto, ingreso - egreso, idFinancieroGenerado);
 
                         clear();

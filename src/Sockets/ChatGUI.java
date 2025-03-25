@@ -1,4 +1,4 @@
-package socket;
+package Sockets;
 
 import javax.swing.*;
 import java.awt.*;

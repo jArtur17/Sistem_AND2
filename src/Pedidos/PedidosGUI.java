@@ -512,10 +512,13 @@ public class PedidosGUI {
 
                 // Verificar stock mínimo
                 if (cantidadReal > stockActual) {
-                    JOptionPane.showMessageDialog(null, "La cantidad agregada sobrepasa el stock");
+                    JOptionPane.showMessageDialog(null, "La cantidad agregada sobrepasaría el stock");
                     return;
                 }else if (cantidadReal > stockReal) {
-                    JOptionPane.showMessageDialog(null, "La cantidad agregada sobrepasa el stock disponible");
+                    JOptionPane.showMessageDialog(null, "La cantidad agregada sobrepasa el stock");
+                    return;
+                }else if(stockActual - cantidadReal < stockmin){
+                    JOptionPane.showMessageDialog(null, "La cantidad agregada sobrepasa el stock mínimo");
                     return;
                 }
 
@@ -765,6 +768,7 @@ public class PedidosGUI {
         }
 
         /*-------------------------------------------------------------------------------------------------------------*/
+
 
         //fin de metodos
 /************************************************************************************************************************/

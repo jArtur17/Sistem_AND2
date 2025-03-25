@@ -71,6 +71,8 @@ public class Detalle_FinancieroGUI {
                     String tipo_pago = (String) comboBox1.getSelectedItem();
                     int monto = Integer.parseInt(textField4.getText().trim());
 
+                    int tipoMovimiento = comboBox1.getSelectedItem().toString().equals("Ingreso") ? 1 : 0;
+
                     String tipoOperacion = (String) comboBox2.getSelectedItem();
                     int ingreso = tipoOperacion.equals("Ingreso") ? monto : 0;
                     int egreso = tipoOperacion.equals("Egreso") ? monto : 0;
@@ -85,9 +87,11 @@ public class Detalle_FinancieroGUI {
                     if(comboBox2.getSelectedItem().toString().equals("Ingreso")){
                         int id_i = p.insertarDetalleFinanciero(tipo_pago, monto, 0, descripcion, String.valueOf(fecha_hora));
                         cj.EnviarDinero(id_i, monto, tipoOperacion);
+                        //cj.actualizarSaldo(monto, tipoMovimiento == 1);
                     }else{
                         int id = p.insertarDetalleFinanciero(tipo_pago, 0, monto, descripcion, String.valueOf(fecha_hora));
                         cj.EnviarDinero(id, monto, tipoOperacion);
+                        //cj.actualizarSaldo(monto, tipoMovimiento == 0);
                     }
 
                     //Detalle_Financiero detalle = new Detalle_Financiero(0, tipo_pago, ingreso, egreso, descripcion, fecha_hora);

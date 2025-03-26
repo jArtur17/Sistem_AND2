@@ -10,6 +10,8 @@ import java.util.List;
 public class PedidosDAO {
     Conexion cf = new Conexion();
 
+
+    /*
     //1) Obtener clientes. cf: objeto de la conexion.
     public List<Pedidos> Obtener() {
         List<Pedidos> pedidos = new ArrayList<>();
@@ -143,5 +145,28 @@ public class PedidosDAO {
         }
         return null;
     }
+     */
+    public List<String> obtenerProductosPorPedido(int idPedido) {
+        List<String> productos = new ArrayList<>();
+        String query = "SELECT p.nombre, p.precio_unitario FROM detalle_pedido dp "
+                + "JOIN producto p ON dp.id_producto = p.id_producto "
+                + "WHERE dp.id_pedido = ?";
 
+        try (Connection conn = cf.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, idPedido);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String producto = rs.getString("nombre_") + " - $" + rs.getInt("precio_unitario");
+                productos.add(producto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productos;
+    }
 }
+
+

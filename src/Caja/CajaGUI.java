@@ -10,24 +10,81 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 import java.sql.*;
 import Conexion.Conexion;
-import java.sql.Connection;
 
 public class CajaGUI {
     private JPanel main;
     private JButton volverButton;
     private JTable table1;
-    private JTextField textField1;
+    private JTextField saldoactualtxt;
+    int sum_total = 0;
 
     private JFrame frame;
     private JFrame parentFrame;
 
     private CajaDAO cajaDAO = new CajaDAO();
     private Conexion conexion = new Conexion();
+    //private PedidosGUI p = new PedidosGUI();
+
+
+    public CajaGUI() {
+
+
+    }
+
+
+    public void EnviarDinero(int Detallef, String concepto, int total){
+        sum_total += total;
+        saldoactualtxt.setText(String.valueOf(sum_total));
+        System.out.println(sum_total);
+
+        Connection con = conexion.getConnection();
+        PreparedStatement ps = null;
+
+        try {
+            String sql = "INSERT INTO caja (id_detallefinanciero, concepto, valor) VALUES (?, ?, ?)";
+            ps = con.prepareStatement(sql);
+
+            ps.setInt(1, Detallef);
+            ps.setString(2, concepto);
+            ps.setInt(3, total);
+
+            ps.executeUpdate();
+
+
+            //System.out.println("Dinero enviado a la caja con éxito.");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public CajaGUI(JFrame parentFrame) {
         this.parentFrame = parentFrame;
-        textField1.setEditable(false);
+        saldoactualtxt.setEditable(false);
         showdata();
+        //actualizarTotal();
+        actualizarSaldoEnTextField();
+
+        // Cambiar color y fuente de los labels
+        for (Component c : main.getComponents()) {
+            if (c instanceof JLabel) {
+                JLabel label = (JLabel) c;
+                label.setForeground(Color.WHITE);
+                label.setFont(new Font("Arial", Font.BOLD, 14));
+            }
+        }
+
+        aplicarEstilos();
+
+
+
 
         // ** Configurar estilo de la tabla **
         table1.setBackground(Color.WHITE); // Fondo de las celdas blanco
@@ -65,6 +122,81 @@ public class CajaGUI {
         });
     }
 
+    public void actualizarTotal() {
+        Connection con = conexion.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            String sql = "SELECT SUM(valor) AS total FROM caja";
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                sum_total = rs.getInt("total");
+                saldoactualtxt.setText(String.valueOf(sum_total));
+                SwingUtilities.invokeLater(() -> saldoactualtxt.setText(String.valueOf(sum_total)));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public int obtenerSaldoTotal() {
+        int saldo = 0;
+        String sql = "SELECT COALESCE(SUM(Ingreso) - SUM(Egreso), 0) AS saldo_actual FROM detalle_financiero";
+
+        try (Connection con = conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                saldo = rs.getInt("saldo_actual");
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return saldo;
+    }
+
+
+    public void actualizarSaldoEnTextField() {
+        int saldo = obtenerSaldoTotal();
+        saldoactualtxt.setText(String.valueOf(saldo)); // Muestra el saldo en el JTextField
+    }
+
+    public void aplicarEstilos() {
+        main.setBackground(Color.DARK_GRAY);
+
+        volverButton.setBackground(new Color(0, 51, 102));
+
+
+        volverButton.setForeground(Color.WHITE);
+
+        JTableHeader header = table1.getTableHeader();
+        header.setBackground(new Color(51, 153, 255));
+        header.setForeground(Color.WHITE);
+        header.setFont(new Font("Arial", Font.BOLD, 14));
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < table1.getColumnCount(); i++) {
+            table1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+    }
+
+
     public void showdata() {
         NonEditableTableModel modelo = new NonEditableTableModel();
 
@@ -93,12 +225,9 @@ public class CajaGUI {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        actualizarSaldoActual();
+
     }
 
-    public void actualizarSaldoActual() {
-        textField1.setText("" + cajaDAO.ObtenerSaldoActual());
-    }
 
     public class NonEditableTableModel extends DefaultTableModel {
         @Override
@@ -117,7 +246,7 @@ public class CajaGUI {
         fondoPanel.add(main, BorderLayout.CENTER);
 
         // ** Cargar icono desde resources/imagenes/ **
-        URL iconoURL = getClass().getClassLoader().getResource("imagenes/img.png");
+        URL iconoURL = getClass().getClassLoader().getResource("imagenes/img_4.png");
         if (iconoURL != null) {
             ImageIcon icono = new ImageIcon(iconoURL);
             frame.setIconImage(icono.getImage());
@@ -133,12 +262,13 @@ public class CajaGUI {
         frame.setLocationRelativeTo(null);
     }
 
+/*************************************************************************************************************************************/
     // ** Clase interna para dibujar el fondo con imagen y degradado **
     class FondoPanel extends JPanel {
         private Image imagenFondo;
 
         public FondoPanel() {
-            URL imagenURL = getClass().getClassLoader().getResource("imagenes/img_1.png");
+            URL imagenURL = getClass().getClassLoader().getResource("imagenes/img_3.png");
             if (imagenURL != null) {
                 this.imagenFondo = new ImageIcon(imagenURL).getImage();
             } else {

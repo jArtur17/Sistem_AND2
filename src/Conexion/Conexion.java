@@ -1,23 +1,22 @@
 package Conexion;
 
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Conexion {
 
-    public Connection getConnection()
-    {
-        Connection connection= null;
+    public Connection getConnection() {
+        Connection con = null;
 
         try {
-            connection= DriverManager.getConnection("jdbc:mysql://localhost:3306/drogueria","root","");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/drogueria", "root", "");
+        }catch(SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al conectar con la base de datos"+e.toString());
         }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return connection;
+
+        return con;
+
     }
 }
-
-

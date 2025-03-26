@@ -1,21 +1,32 @@
 import Caja.CajaGUI;
+import Cliente.ClienteGUI;
 import Detalle_Financiero.Detalle_FinancieroGUI;
+import Historial.HistorialPedidosGUI;
+import Pedidos.PedidosGUI;
+import Producto.ProductoGUI;
+//import Sockets.GUIComunicacion;
+//import Sockets.GUIComunicacionServer;
+
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 
 
 
 public class Menu {
     private JPanel main;
-    private JButton movimientoFinancieroButton;
+    private JButton movimientoButton;
     private JButton cajaButton;
     private JButton reportesButton;
     private JButton pedidosButton;
     private JButton clientesButton;
     private JButton productosButton;
-    private JButton hisotrialPedidosButton;
+    private JButton hisotrialButton;
     private JButton chatButton;
 
     private JFrame frame;
@@ -29,26 +40,27 @@ public class Menu {
         main.setLayout(new BorderLayout());
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(1, 8, 10, 0)); // Botones en fila
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10)); // Espaciado horizontal: 20px, vertical: 10px
+
         buttonPanel.setOpaque(false);
 
         // Crear botones estilizados
         pedidosButton = createStyledButton("Pedidos");
-        hisotrialPedidosButton = createStyledButton("Historial Pedidos");
+        hisotrialButton = createStyledButton("Historial");
         chatButton = createStyledButton("Chat");
         clientesButton = createStyledButton("Clientes");
         productosButton = createStyledButton("Productos");
-        movimientoFinancieroButton = createStyledButton("Movimiento Financiero");
+        movimientoButton = createStyledButton("Movimiento");
         cajaButton = createStyledButton("Caja");
         reportesButton = createStyledButton("Reportes");
 
         // Agregar botones al panel
         buttonPanel.add(pedidosButton);
-        buttonPanel.add(hisotrialPedidosButton);
+        buttonPanel.add(hisotrialButton);
         buttonPanel.add(chatButton);
         buttonPanel.add(clientesButton);
         buttonPanel.add(productosButton);
-        buttonPanel.add(movimientoFinancieroButton);
+        buttonPanel.add(movimientoButton);
         buttonPanel.add(cajaButton);
         buttonPanel.add(reportesButton);
 
@@ -64,7 +76,7 @@ public class Menu {
         main.add(imageLabel, BorderLayout.SOUTH);
 
         // Configuración de eventos
-        movimientoFinancieroButton.addActionListener(e -> {
+        movimientoButton.addActionListener(e -> {
             Detalle_FinancieroGUI detalleFinancieroGUI = new Detalle_FinancieroGUI(frame);
             detalleFinancieroGUI.runFinanciero();
             frame.setVisible(false);
@@ -76,19 +88,81 @@ public class Menu {
             frame.setVisible(false);
         });
 
+        pedidosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                PedidosGUI pGUI = new PedidosGUI();
+                pGUI.RunPedidos();
+                frame.setVisible(false);
+            }
+        });
+
+        clientesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ClienteGUI clientes = new ClienteGUI(frame);
+                clientes.runCliente();
+                frame.setVisible(false);
+            }
+        });
+
+        chatButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //GUIComunicacionServer guiComunicacionServer = new GUIComunicacionServer();
+                //guiComunicacionServer.runservidor();
+                //GUIComunicacion guiComunicacion = new GUIComunicacion();
+                //guiComunicacion.runcliente();
+
+            }
+        });
+
+        productosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ProductoGUI producto = new ProductoGUI(frame);
+                producto.runProducto();
+                frame.setVisible(false);
+            }
+        });
+
+        hisotrialButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                HistorialPedidosGUI historialPedidosGUI  = new HistorialPedidosGUI(frame);
+                historialPedidosGUI.runHistorial();
+                frame.setVisible(false);
+            }
+        });
+
+
+        FondoPanel fondoPanel = new FondoPanel();
+        main.setOpaque(false);
+        fondoPanel.setLayout(new BorderLayout());
+        fondoPanel.add(main, BorderLayout.CENTER);
+
+        URL iconoURL = getClass().getClassLoader().getResource("imagenes/img_1.png");
+        if (iconoURL != null) {
+            frame.setIconImage(new ImageIcon(iconoURL).getImage());
+        }
+
         frame.setContentPane(main);
-        frame.setSize(800, 600);
+        frame.setSize(995, 620);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
+
     }
 
-    private JButton createStyledButton(String text) {
+    public JButton createStyledButton(String text) {
         JButton button = new JButton(text);
         button.setBackground(new Color(0, 51, 102)); // Azul oscuro
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.addActionListener(e -> button.setBackground(new Color(51, 153, 255))); // Azul claro al hacer clic
+        button.setFont(new Font("Arial", Font.BOLD, 14));
         return button;
     }
 
@@ -104,7 +178,7 @@ public class Menu {
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Data Base Game");
+        JFrame frame = new JFrame("Menu");
         new Menu(frame);
     }
 }

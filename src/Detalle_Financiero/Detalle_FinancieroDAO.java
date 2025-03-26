@@ -25,16 +25,14 @@ public class Detalle_FinancieroDAO
             }
 
             // Insertar el nuevo registro (corregido el nombre de la columna)
-            String query = "INSERT INTO detalle_financiero(id_detallefinanciero, id_venta, tipo_pago, ingreso, egreso, descripcion, fecha_hora) VALUES (?,?,?,?,?,?,?)";
+            String query = "INSERT INTO detalle_financiero(tipo_pago, ingreso, egreso, descripcion, fecha_hora) VALUES (?,?,?,?,?)";
             PreparedStatement pst = con.prepareStatement(query);
 
-            pst.setInt(1, nuevoIdFinanciero);
-            pst.setInt(2, nuevoIdFinanciero); // id_venta = id_financiero (hasta definirlo bien)
-            pst.setString(3, detalle_financiero.getTipo_pago());
-            pst.setInt(4, detalle_financiero.getIngreso());
-            pst.setInt(5, detalle_financiero.getEgreso());
-            pst.setString(6, detalle_financiero.getDescripcion());
-            pst.setTimestamp(7, Timestamp.valueOf(detalle_financiero.getFecha_hora()));
+            pst.setString(1, detalle_financiero.getTipo_pago());
+            pst.setInt(2, detalle_financiero.getIngreso());
+            pst.setInt(3, detalle_financiero.getEgreso());
+            pst.setString(4, detalle_financiero.getDescripcion());
+            pst.setTimestamp(5, Timestamp.valueOf(detalle_financiero.getFecha_hora()));
 
             int result = pst.executeUpdate();
 
@@ -55,17 +53,16 @@ public class Detalle_FinancieroDAO
     public void Actualizar(Detalle_Financiero detalle_financiero){
         Connection con = conexion.getConnection();
 
-        String query = "UPDATE detalle_financiero SET id_venta = ?, tipo_pago = ?, ingreso = ?,  egreso = ?, descripcion = ?,  fecha_hora = ?  WHERE id_detallefinanciero = ?";
+        String query = "UPDATE detalle_financiero SET tipo_pago = ?, ingreso = ?,  egreso = ?, descripcion = ?,  fecha_hora = ?  WHERE id_detallefinanciero = ?";
 
         try {
             PreparedStatement stmt = con.prepareStatement(query);
-            stmt.setInt(1, detalle_financiero.getId_venta());
-            stmt.setString(2, detalle_financiero.getTipo_pago());
-            stmt.setInt(3, detalle_financiero.getIngreso());
-            stmt.setInt(4, detalle_financiero.getEgreso());
-            stmt.setString(5, detalle_financiero.getDescripcion());
-            stmt.setTimestamp(6, Timestamp.valueOf(detalle_financiero.getFecha_hora()));
-            stmt.setInt(7,detalle_financiero.getId_detallefinanciero());
+            stmt.setString(1, detalle_financiero.getTipo_pago());
+            stmt.setInt(2, detalle_financiero.getIngreso());
+            stmt.setInt(3, detalle_financiero.getEgreso());
+            stmt.setString(4, detalle_financiero.getDescripcion());
+            stmt.setTimestamp(5, Timestamp.valueOf(detalle_financiero.getFecha_hora()));
+            stmt.setInt(6,detalle_financiero.getId_detallefinanciero());
 
 
             int result = stmt.executeUpdate();
@@ -79,6 +76,23 @@ public class Detalle_FinancieroDAO
         {
             e.printStackTrace();
         }
+    }
+
+    public int obtenerUltimoIdInsertado() {
+        int ultimoId = -1; // Valor predeterminado en caso de error
+        String query = "SELECT id_detallefinanciero FROM detalle_Financiero ORDER BY id_detallefinanciero DESC LIMIT 1";
+
+        try (Connection con = conexion.getConnection();
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            if (rs.next()) {
+                ultimoId = rs.getInt("id_detallefinanciero");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ultimoId;
     }
 
 

@@ -5,11 +5,10 @@ import java.time.LocalDateTime;
 
 public class Detalle_Financiero {
 
-    int id_detallefinanciero, id_venta; String tipo_pago; int ingreso, egreso; String descripcion; LocalDateTime fecha_hora;
+    int id_detallefinanciero; String tipo_pago; int ingreso, egreso; String descripcion; LocalDateTime fecha_hora;
 
-    public Detalle_Financiero(int id_detallefinanciero, int id_venta, String tipo_pago, int ingreso, int egreso, String descripcion, LocalDateTime fecha_hora) {
+    public Detalle_Financiero(int id_detallefinanciero, String tipo_pago, int ingreso, int egreso, String descripcion, LocalDateTime fecha_hora) {
         this.id_detallefinanciero = id_detallefinanciero;
-        this.id_venta = id_venta;
         this.tipo_pago = tipo_pago;
         this.ingreso = ingreso;
         this.egreso = egreso;
@@ -23,14 +22,6 @@ public class Detalle_Financiero {
 
     public void setId_detallefinanciero(int id_detallefinanciero) {
         this.id_detallefinanciero = id_detallefinanciero;
-    }
-
-    public int getId_venta() {
-        return id_venta;
-    }
-
-    public void setId_venta(int id_venta) {
-        this.id_venta = id_venta;
     }
 
     public String getTipo_pago() {

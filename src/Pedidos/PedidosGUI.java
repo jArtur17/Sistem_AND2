@@ -398,7 +398,9 @@ public class PedidosGUI {
                         //java.util.List<String> productos = pedidoDAO.obtenerProductosPorPedido(1); // ID del pedido
                         java.util.List<String> productos = pedidoDAO.obtenerProductosPorPedido(idPedido); // ID del pedido
                         pdf.generarFacturaPDF(1, productos, fecha_hora);
-                        int idDetalle = insertarDetalleFinanciero(metodo, tot, 0, "Pedido de: "+ cliente, fecha_hora); //se lleva el registro del pedido a movimientos
+                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        int idDetalle = insertarDetalleFinanciero(metodo, tot, 0, "Pedido de: "+ cliente, fecha_hora);
+                        ///////////////////////////////////////////////////////se lleva el registro del pedido a movimientos
                         if (idDetalle != -1) {
                             c.EnviarDinero(idDetalle,"Pedido de: " + cliente, tot); // Pasar el id a EnviarDinero
                         }

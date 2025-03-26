@@ -9,13 +9,14 @@ import java.util.List;
 
 public class PedidosDAO {
     Conexion cf = new Conexion();
+    Connection con = cf.getConnection();
 
 
     /*
     //1) Obtener clientes. cf: objeto de la conexion.
     public List<Pedidos> Obtener() {
         List<Pedidos> pedidos = new ArrayList<>();
-        Connection con = cf.getConnection();
+
 
         try {
             Statement stmt = con.createStatement();
@@ -147,10 +148,13 @@ public class PedidosDAO {
     }
      */
     public List<String> obtenerProductosPorPedido(int idPedido) {
-        List<String> productos = new ArrayList<>();
-        String query = "SELECT p.nombre, p.precio_unitario FROM detalle_pedido dp "
-                + "JOIN producto p ON dp.id_producto = p.id_producto "
-                + "WHERE dp.id_pedido = ?";
+        List<String> detalles = new ArrayList<>();
+        String query = "SELECT c.nombre AS cliente, p.nombre AS producto, dp.cantidad, dp.tipo_cantidad, dp.subtotal " +
+                "FROM detalle_pedido dp " +
+                "JOIN producto p ON dp.id_producto = p.id_producto " +
+                "JOIN pedidos ped ON dp.id_pedido = ped.id_pedido " +
+                "JOIN cliente c ON ped.id_cliente = c.id_cliente " +
+                "WHERE dp.id_pedido = ?";
 
         try (Connection conn = cf.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -158,15 +162,37 @@ public class PedidosDAO {
             stmt.setInt(1, idPedido);
             ResultSet rs = stmt.executeQuery();
 
+            String nombreCliente = ""; // Guardamos el nombre del cliente solo una vez
+
             while (rs.next()) {
-                String producto = rs.getString("nombre_") + " - $" + rs.getInt("precio_unitario");
-                productos.add(producto);
+                if (nombreCliente.isEmpty()) {
+                    nombreCliente = rs.getString("cliente");
+                    detalles.add("Cliente: " + nombreCliente);
+                    detalles.add("----------------------------------"); // Separador
+                }
+                String producto = rs.getInt("cantidad") + " / " + rs.getString("tipo_cantidad") +
+                        " de " + rs.getString("producto") +
+                        " - subtotal: $" + rs.getInt("subtotal");
+                detalles.add(producto);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return productos;
+
+        String totalQuery = "SELECT total FROM pedidos WHERE id_pedido = ?";
+        try (PreparedStatement totalStmt = con.prepareStatement(totalQuery)) {
+            totalStmt.setInt(1, idPedido);
+            ResultSet totalRs = totalStmt.executeQuery();
+            if (totalRs.next()) {
+                detalles.add("----------------------------------"); // Línea separadora
+                detalles.add("Total de la compra: $" + totalRs.getInt("total")); // Agregar total
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return detalles;
     }
+
 }
 
 

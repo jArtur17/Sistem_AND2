@@ -1,5 +1,5 @@
 package Pedidos;
-
+import Pedidos.GenerarPDF;
 import Caja.CajaGUI;
 import Conexion.Conexion;
 import Historial.HistorialPedidos;
@@ -67,6 +67,8 @@ public class PedidosGUI {
     //map para el stock simulado
     private Map<Integer, Integer> stockSimulado = new HashMap<>();
 
+
+
     //total del pedido
     int total = 0;
 
@@ -93,6 +95,9 @@ public class PedidosGUI {
     //historial pedidos
     HistorialPedidos h = new HistorialPedidos();
     private String textico;
+
+    //generador de pdf
+    GenerarPDF pdf = new GenerarPDF();
 
     /************************************************************************************************************************/
 
@@ -388,6 +393,11 @@ public class PedidosGUI {
                         con.commit();
                         /*----------------------------------------------------------------------------------------------------------------------*/
                         JOptionPane.showMessageDialog(null, "Venta generada con éxito.");
+                        //parte de PDF
+                        PedidosDAO pedidoDAO = new PedidosDAO();
+                        //java.util.List<String> productos = pedidoDAO.obtenerProductosPorPedido(1); // ID del pedido
+                        java.util.List<String> productos = pedidoDAO.obtenerProductosPorPedido(idPedido); // ID del pedido
+                        pdf.generarFacturaPDF(1, productos);
                         int idDetalle = insertarDetalleFinanciero(metodo, tot, 0, "Pedido de: "+ cliente, fecha_hora); //se lleva el registro del pedido a movimientos
                         if (idDetalle != -1) {
                             c.EnviarDinero(idDetalle,"Pedido de: " + cliente, tot); // Pasar el id a EnviarDinero

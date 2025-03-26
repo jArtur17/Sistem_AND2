@@ -1,8 +1,11 @@
 package Pedidos;
 
 import Conexion.Conexion;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -163,7 +166,6 @@ public class PedidosDAO {
             ResultSet rs = stmt.executeQuery();
 
             String nombreCliente = ""; // Guardamos el nombre del cliente solo una vez
-
             while (rs.next()) {
                 if (nombreCliente.isEmpty()) {
                     nombreCliente = rs.getString("cliente");

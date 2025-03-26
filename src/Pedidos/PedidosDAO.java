@@ -1,11 +1,16 @@
 package Pedidos;
 
 import Conexion.Conexion;
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.draw.LineSeparator;
+import org.w3c.dom.Text;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +18,7 @@ import java.util.List;
 public class PedidosDAO {
     Conexion cf = new Conexion();
     Connection con = cf.getConnection();
+    GenerarPDF g = new GenerarPDF();
 
 
     /*
@@ -152,7 +158,9 @@ public class PedidosDAO {
      */
     public List<String> obtenerProductosPorPedido(int idPedido) {
         List<String> detalles = new ArrayList<>();
-        String query = "SELECT c.nombre AS cliente, p.nombre AS producto, dp.cantidad, dp.tipo_cantidad, dp.subtotal " +
+        String query = "SELECT c.nombre AS cliente, c.direccion, c.cedula, " +
+                "p.nombre AS producto, dp.cantidad, dp.tipo_cantidad, dp.subtotal, " +
+                "ped.metodo_pago, ped.total " +
                 "FROM detalle_pedido dp " +
                 "JOIN producto p ON dp.id_producto = p.id_producto " +
                 "JOIN pedidos ped ON dp.id_pedido = ped.id_pedido " +
@@ -169,13 +177,27 @@ public class PedidosDAO {
             while (rs.next()) {
                 if (nombreCliente.isEmpty()) {
                     nombreCliente = rs.getString("cliente");
+                    String direccion = rs.getString("direccion");
+                    String cedula = rs.getString("cedula");
+                    String metodoPago = rs.getString("metodo_pago");
+                    detalles.add("");
                     detalles.add("Cliente: " + nombreCliente);
-                    detalles.add("----------------------------------"); // Separador
+                    detalles.add(cedula);
+                    detalles.add("Direccion: " + direccion);
+                    detalles.add("Método de pago: " + metodoPago);
+                    detalles.add("");
+                    detalles.add("");
+                    detalles.add("Productos: ");
+
+                    //detalles.add("----------------------------------"); // Separador
+
                 }
-                String producto = rs.getInt("cantidad") + " / " + rs.getString("tipo_cantidad") +
+
+                String producto = "   * " + rs.getInt("cantidad") + " / " + rs.getString("tipo_cantidad") +
                         " de " + rs.getString("producto") +
                         " - subtotal: $" + rs.getInt("subtotal");
                 detalles.add(producto);
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -186,7 +208,8 @@ public class PedidosDAO {
             totalStmt.setInt(1, idPedido);
             ResultSet totalRs = totalStmt.executeQuery();
             if (totalRs.next()) {
-                detalles.add("----------------------------------"); // Línea separadora
+                detalles.add("");
+                detalles.add("");// Línea separadora
                 detalles.add("Total de la compra: $" + totalRs.getInt("total")); // Agregar total
             }
         } catch (SQLException e) {
@@ -194,6 +217,7 @@ public class PedidosDAO {
         }
         return detalles;
     }
+
 
 }
 

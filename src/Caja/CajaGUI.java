@@ -228,6 +228,11 @@ public class CajaGUI {
 
     }
 
+    public int Obtenertotal(){
+        int total = obtenerSaldoTotal();
+        return total;
+    }
+
 
     public class NonEditableTableModel extends DefaultTableModel {
         @Override

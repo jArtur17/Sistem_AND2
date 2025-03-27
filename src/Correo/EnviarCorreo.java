@@ -16,12 +16,15 @@ public class EnviarCorreo {
 
 
 
-        public static void main(String[] args) {
+
+
+    public static void main(String[] args) {
+
             // Configuración del servidor SMTP
             final String host = "smtp.gmail.com"; // Servidor SMTP de Gmail
             final String port = "587"; // Puerto TLS
-            final String username = "tuemail@gmail.com"; // Cambia por tu correo
-            final String password = "tupassword"; // Cambia por tu contraseña o usa una clave de aplicación
+            final String username = "alejitoguzman.333@gmal.com"; // Cambia por tu correo
+            final String password = "Alejo2005"; // Cambia por tu contraseña o usa una clave de aplicación
 
             // Propiedades del correo
             Properties props = new Properties();
@@ -29,6 +32,8 @@ public class EnviarCorreo {
             props.put("mail.smtp.port", port);
             props.put("mail.smtp.auth", "true");
             props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.ssl.trust", "*");
+            props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
             // Crear sesión con autenticación
             Session session = Session.getInstance(props, new Authenticator() {

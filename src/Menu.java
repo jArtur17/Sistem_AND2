@@ -2,6 +2,7 @@ import Caja.CajaGUI;
 import Cliente.ClienteGUI;
 import Detalle_Financiero.Detalle_FinancieroGUI;
 import Historial.HistorialPedidos;
+import Historial.HistorialPedidosGUI;
 import Pedidos.PedidosGUI;
 import Producto.ProductoGUI;
 import Reportes.ReportesGUI;
@@ -133,7 +134,7 @@ public class Menu {
         hisotrialButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                HistorialPedidos h = new HistorialPedidos(frame);
+                HistorialPedidosGUI h = new HistorialPedidosGUI(frame);
                 h.runHistorial();
                 frame.setVisible(false);
             }

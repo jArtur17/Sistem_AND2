@@ -4,14 +4,15 @@ import Conexion.Conexion;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.sql.*;
+import javax.swing.*;
+
+
 
 public class HistorialPedidosGUI {
     private JButton volver;
@@ -114,13 +115,16 @@ public class HistorialPedidosGUI {
     public void Historialordenes() {
         DefaultTableModel orden = new DefaultTableModel();
         orden.addColumn("id_pedido");
-        orden.addColumn("Cliente");
+        orden.addColumn("cliente");
         orden.addColumn("fecha_hora");
         orden.addColumn("estado");
         orden.addColumn("metodo_pago");
         orden.addColumn("total");
+        orden.addColumn("acción");
         tablahistorial.setModel(orden);
-        tablahistorial.getColumnModel().getColumn(3).setCellEditor(new EstadoCellEditor());
+        TableColumn actionColumn = tablahistorial.getColumnModel().getColumn(3); // Ajusta el índice de la columna
+        actionColumn.setCellRenderer(new ButtonRenderer());
+        actionColumn.setCellEditor(new ButtonRenderer());
 
         Connection con = conR.getConnection();
 
@@ -144,6 +148,9 @@ public class HistorialPedidosGUI {
 
                 orden.addRow(Arreglo);
             }
+
+            tablahistorial.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
+            tablahistorial.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor(new JCheckBox(), tablahistorial));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -167,7 +174,7 @@ public class HistorialPedidosGUI {
 
     class EstadoCellEditor extends DefaultCellEditor {
         public EstadoCellEditor() {
-            super(new JComboBox<>(new String[]{"Entregado", "Enviado"}));
+            super(new JComboBox<>(new String[]{"Enviado"}));
         }
 
         @Override
@@ -266,7 +273,6 @@ public class HistorialPedidosGUI {
         } else {
             System.out.println("⚠ ERROR: No se encontró la imagen icono_medicina.png");
         }
-
         frame.setContentPane(fondoPanel);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -307,7 +313,167 @@ public class HistorialPedidosGUI {
     }
 
 
+    class ModeloTabla extends AbstractTableModel {
+        private final Object[][] datos;
+        private final String[] columnas;
+
+        public ModeloTabla(Object[][] datos, String[] columnas) {
+            this.datos = datos;
+            this.columnas = columnas;
+        }
+
+        @Override
+        public int getRowCount() {
+            return datos.length;
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columnas.length;
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            return datos[rowIndex][columnIndex];
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columnas[column];
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return columnIndex == 2;
+        }
+
+        @Override
+        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+            datos[rowIndex][columnIndex] = aValue;
+            fireTableCellUpdated(rowIndex, columnIndex);
+        }
+    }
+
+    public class ButtonRenderer extends AbstractCellEditor implements TableCellRenderer, TableCellEditor {
+        private JButton button;
+        private String text;
+        private boolean isPushed;
+
+        public ButtonRenderer() {
+            button = new JButton("Ver Detalles");
+            button.setForeground(Color.BLACK);
+            button.addActionListener(e -> fireEditingStopped()); // Evita problemas de edición
+
+        }
+
+        // Método para renderizar el botón en la tabla
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            button.setText(value == null ? "Ver Detalles" : value.toString());
+            return button;
+        }
+
+        // Método para editar la celda y mostrar el botón correctamente
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            text = value == null ? "Ver Detalles" : value.toString();
+            button.setText(text);
+            isPushed = true;
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            isPushed = false;
+            return text;
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            isPushed = false;
+            return super.stopCellEditing();
+        }
+    }
+
+    class ButtonEditor extends DefaultCellEditor {
+        private final JButton button;
+        private String label;
+        private boolean isPushed;
+        private final JTable table;
 
 
+        public ButtonEditor(JCheckBox checkBox, JTable table) {
+            super(checkBox);
+            this.table = table;
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(e -> fireEditingStopped());
+        }
+
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            label = "Ver Detalles";
+            button.setText(label);
+            isPushed = true;
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            Connection con = conR.getConnection();
+
+            if (isPushed) {
+                int row = tablahistorial.getSelectedRow();
+                int id = Integer.parseInt(tablahistorial.getValueAt(row, 0).toString());
+                try {
+                    int idPedido = Integer.parseInt(tablahistorial.getValueAt(row, 0).toString());
+
+                    // Consulta SQL para obtener detalles del pedido
+                    String sql = "SELECT dp.id_pedido, p.nombre AS nombre_producto, dp.cantidad, dp.precio_unitario FROM detalle_pedido dp JOIN producto p ON dp.id_producto = p.id_producto WHERE dp.id_pedido = ?";
+                    PreparedStatement pst = con.prepareStatement(sql);
+                    pst.setInt(1, idPedido);
+
+                    ResultSet rs = pst.executeQuery();
+
+                    StringBuilder detalles = new StringBuilder("Detalles del pedido ID: " + idPedido + "\n\n");
+
+                    while (rs.next()) {
+                        String producto = rs.getString("nombre_producto");
+                        int cantidad = rs.getInt("cantidad");
+                        double precio = rs.getDouble("precio_unitario");
+
+                        detalles.append("Producto: ").append(producto)
+                                .append("\nCantidad: ").append(cantidad)
+                                .append("\nPrecio: $").append(precio)
+                                .append("\n------------------------\n");
+                    }
+
+                    // Mostrar los detalles en un JOptionPane
+                    JOptionPane.showMessageDialog(null, detalles.toString(), "Detalles del Pedido", JOptionPane.INFORMATION_MESSAGE);
+
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Error: El ID no es válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (SQLException e) {
+                    JOptionPane.showMessageDialog(null, "Error al obtener los detalles del pedido.", "Error", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                }
+
+            }
+            isPushed = false;
+            return label;
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            isPushed = false;
+            return super.stopCellEditing();
+        }
+    }
 }
+
+
+
+
+
 

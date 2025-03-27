@@ -850,7 +850,7 @@ public class PedidosGUI {
         frame.setContentPane(fondoPanel);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.pack();
-        frame.setSize(700,700);
+        frame.setSize(800,800);
         frame.setResizable(false);
         frame.setVisible(true);
 

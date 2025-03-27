@@ -16,7 +16,6 @@ public class ReportesDAO {
         Connection con = conexion.getConnection();
         String query = "SELECT fecha_hora, SUM(total) as venta_diaria " +
                 "FROM pedidos " +
-                "WHERE estado = 'Entregado' " +
                 "GROUP BY fecha_hora " +
                 "ORDER BY fecha_hora DESC";
         try {
@@ -37,7 +36,6 @@ public class ReportesDAO {
                 "MAX(fecha_hora) as fin_semana, " +
                 "SUM(total) as venta_semanal " +
                 "FROM pedidos " +
-                "WHERE estado = 'Entregado' " +
                 "GROUP BY YEARWEEK(fecha_hora, 1) " +
                 "ORDER BY semana DESC";
         try {
@@ -57,7 +55,6 @@ public class ReportesDAO {
                 "MONTH(fecha_hora) as mes, " +
                 "SUM(total) as venta_mensual " +
                 "FROM pedidos " +
-                "WHERE estado = 'Entregado' " +
                 "GROUP BY YEAR(fecha_hora), MONTH(fecha_hora) " +
                 "ORDER BY año DESC, mes DESC";
         try {

@@ -3,6 +3,7 @@ package Caja;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,7 +16,6 @@ public class CajaGUI {
     private JButton volverButton;
     private JTable table1;
     private JTextField saldoactualtxt;
-    private JTextField Ventasefectivotxt;
     int sum_total = 0;
 
     private JFrame frame;
@@ -68,30 +68,41 @@ public class CajaGUI {
     public CajaGUI(JFrame parentFrame) {
         this.parentFrame = parentFrame;
         saldoactualtxt.setEditable(false);
-        //showdata();
+        showdata();
         //actualizarTotal();
         actualizarSaldoEnTextField();
+
+        // Cambiar color y fuente de los labels
+        for (Component c : main.getComponents()) {
+            if (c instanceof JLabel) {
+                JLabel label = (JLabel) c;
+                label.setForeground(Color.WHITE);
+                label.setFont(new Font("Arial", Font.BOLD, 14));
+            }
+        }
+
+        aplicarEstilos();
 
 
 
 
         // ** Configurar estilo de la tabla **
-        //table1.setBackground(Color.WHITE); // Fondo de las celdas blanco
-        //table1.setForeground(Color.BLACK); // Texto negro
-        //table1.setGridColor(Color.GRAY); // Bordes de la tabla
+        table1.setBackground(Color.WHITE); // Fondo de las celdas blanco
+        table1.setForeground(Color.BLACK); // Texto negro
+        table1.setGridColor(Color.GRAY); // Bordes de la tabla
 
         // ** Encabezado de la tabla personalizado **
-        //JTableHeader header = table1.getTableHeader();
-        //header.setBackground(new Color(0, 51, 102)); // Azul oscuro
-        //header.setForeground(Color.WHITE); // Letras blancas
-        //header.setFont(new Font("Arial", Font.BOLD, 14));
+        JTableHeader header = table1.getTableHeader();
+        header.setBackground(new Color(0, 51, 102)); // Azul oscuro
+        header.setForeground(Color.WHITE); // Letras blancas
+        header.setFont(new Font("Arial", Font.BOLD, 14));
 
         // ** Centrar texto en celdas de la tabla **
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        //for (int i = 0; i < table1.getColumnCount(); i++) {
-            //table1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-        //}
+        for (int i = 0; i < table1.getColumnCount(); i++) {
+            table1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
 
         // ** Estilo del botón "Volver" **
         volverButton.setBackground(new Color(0, 51, 102)); // Azul oscuro
@@ -150,7 +161,7 @@ public class CajaGUI {
 
             if (rs.next()) {
                 saldo = rs.getInt("saldo_actual");
-                System.out.println("Saldo obtenido de la BD: " + saldo);
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -165,7 +176,57 @@ public class CajaGUI {
         saldoactualtxt.setText(String.valueOf(saldo)); // Muestra el saldo en el JTextField
     }
 
+    public void aplicarEstilos() {
+        main.setBackground(Color.DARK_GRAY);
 
+        volverButton.setBackground(new Color(0, 51, 102));
+
+
+        volverButton.setForeground(Color.WHITE);
+
+        JTableHeader header = table1.getTableHeader();
+        header.setBackground(new Color(0, 51, 102));
+        header.setForeground(Color.WHITE);
+        header.setFont(new Font("Arial", Font.BOLD, 14));
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < table1.getColumnCount(); i++) {
+            table1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+    }
+
+
+    public void showdata() {
+        NonEditableTableModel modelo = new NonEditableTableModel();
+
+        modelo.addColumn("ID Caja");
+        modelo.addColumn("ID Detalle Financiero");
+        modelo.addColumn("Concepto");
+        modelo.addColumn("Valor");
+
+        table1.setModel(modelo);
+
+        Connection con = conexion.getConnection();
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id_caja, id_detallefinanciero, concepto, valor FROM caja");
+
+            while (rs.next()) {
+                modelo.addRow(new Object[]{
+                        rs.getInt("id_caja"),
+                        rs.getInt("id_detallefinanciero"),
+                        rs.getString("concepto"),
+                        rs.getInt("valor"),
+                });
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
     public class NonEditableTableModel extends DefaultTableModel {
@@ -185,7 +246,7 @@ public class CajaGUI {
         fondoPanel.add(main, BorderLayout.CENTER);
 
         // ** Cargar icono desde resources/imagenes/ **
-        URL iconoURL = getClass().getClassLoader().getResource("imagenes/img.png");
+        URL iconoURL = getClass().getClassLoader().getResource("imagenes/img_4.png");
         if (iconoURL != null) {
             ImageIcon icono = new ImageIcon(iconoURL);
             frame.setIconImage(icono.getImage());
@@ -207,7 +268,7 @@ public class CajaGUI {
         private Image imagenFondo;
 
         public FondoPanel() {
-            URL imagenURL = getClass().getClassLoader().getResource("imagenes/img_1.png");
+            URL imagenURL = getClass().getClassLoader().getResource("imagenes/img_3.png");
             if (imagenURL != null) {
                 this.imagenFondo = new ImageIcon(imagenURL).getImage();
             } else {

@@ -3,9 +3,13 @@ package Reportes;
 import Conexion.Conexion;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -26,6 +30,18 @@ public class ReportesGUI {
 
     public ReportesGUI(JFrame parentFrame) {
         this.parentFrame = parentFrame;
+
+        // Cambiar color y fuente de los labels
+        for (Component c : main.getComponents()) {
+            if (c instanceof JLabel) {
+                JLabel label = (JLabel) c;
+                label.setForeground(Color.WHITE);
+                label.setFont(new Font("Arial", Font.BOLD, 14));
+            }
+        }
+
+        aplicarEstilos();
+
         diariasButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -52,6 +68,7 @@ public class ReportesGUI {
             }
         });
 
+
         volverButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -62,9 +79,34 @@ public class ReportesGUI {
             }
         });
     }
+
+    public void aplicarEstilos() {
+        main.setBackground(Color.DARK_GRAY);
+
+        volverButton.setBackground(new Color(0, 51, 102));
+        diariasButton.setBackground(new Color(0, 51, 102));
+        semanalesButton.setBackground(new Color(0, 51, 102));
+        mensualesButton.setBackground(new Color(0, 51, 102));
+
+        diariasButton.setForeground(Color.WHITE);
+        semanalesButton.setForeground(Color.WHITE);
+        mensualesButton.setForeground(Color.WHITE);
+        volverButton.setForeground(Color.WHITE);
+
+        JTableHeader header = table1.getTableHeader();
+        header.setBackground(new Color(0, 51, 102));
+        header.setForeground(Color.WHITE);
+        header.setFont(new Font("Arial", Font.BOLD, 14));
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < table1.getColumnCount(); i++) {
+            table1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+    }
     public void showdata() {
         NonEditableTableModel modelo = new NonEditableTableModel();
-        modelo.addColumn("Fecha");
+        modelo.addColumn("fecha_hora");
         modelo.addColumn("Ventas Diarias");
         table1.setModel(modelo);
 
@@ -73,11 +115,11 @@ public class ReportesGUI {
 
             if (rs != null) {
                 while (rs.next()) {
-                    String fecha = rs.getString("fecha");
+                    String fecha_hora = rs.getString("fecha_hora");
                     int ventaDiaria = rs.getInt("venta_diaria");
 
                     modelo.addRow(new Object[]{
-                            fecha,
+                            fecha_hora,
                             ventaDiaria
                     });
                 }
@@ -154,7 +196,6 @@ public class ReportesGUI {
         }
     }
 
-
     public class NonEditableTableModel extends DefaultTableModel {
         @Override
         public boolean isCellEditable(int row, int column) {
@@ -167,13 +208,44 @@ public class ReportesGUI {
 
     public void runReport() {
 
-        frame = new JFrame("Data Base Game");
+        frame = new JFrame("Reportes");
         frame.setContentPane(this.main);
-//          frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setSize(640,450);
+
+        FondoPanel fondoPanel = new FondoPanel();
+        main.setOpaque(false);
+        fondoPanel.setLayout(new BorderLayout());
+        fondoPanel.add(main, BorderLayout.CENTER);
+
+        URL iconoURL = getClass().getClassLoader().getResource("imagenes/img_14.png");
+        if (iconoURL != null) {
+            frame.setIconImage(new ImageIcon(iconoURL).getImage());
+        }
+
+        frame.setContentPane(fondoPanel);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(500, 500);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
+    }
+
+    class FondoPanel extends JPanel {
+        private Image imagenFondo;
+
+        public FondoPanel() {
+            URL imagenURL = getClass().getClassLoader().getResource("imagenes/img_15.png");
+            if (imagenURL != null) {
+                this.imagenFondo = new ImageIcon(imagenURL).getImage();
+            }
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (imagenFondo != null) {
+                g.drawImage(imagenFondo, 0, 0, getWidth(), getHeight(), this);
+            }
+        }
     }
 }
 

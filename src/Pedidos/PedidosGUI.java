@@ -1,6 +1,7 @@
 package Pedidos;
-import Pedidos.GenerarPDF;
+
 import Caja.CajaGUI;
+import Cliente.ClienteGUI;
 import Conexion.Conexion;
 import Historial.HistorialPedidos;
 import Producto.ProductoGUI;
@@ -8,16 +9,18 @@ import Producto.ProductoGUI;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.net.URL;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,6 +60,8 @@ public class PedidosGUI {
     private JTextField buscar_cliente;
     private JTextField buscar_productos;
     private JComboBox comboBoxMetodo;
+    private JPanel main;
+    private JButton BackButton;
     private JButton button1;
     int sub_total = 0;
     JFrame frame = new JFrame("Main");
@@ -66,8 +71,6 @@ public class PedidosGUI {
     /************************************************************************************************************************/
     //map para el stock simulado
     private Map<Integer, Integer> stockSimulado = new HashMap<>();
-
-
 
     //total del pedido
     int total = 0;
@@ -96,12 +99,23 @@ public class PedidosGUI {
     HistorialPedidos h = new HistorialPedidos();
     private String textico;
 
-    //generador de pdf
     GenerarPDF pdf = new GenerarPDF();
 
     /************************************************************************************************************************/
 
     public PedidosGUI() {
+
+        // Cambiar color y fuente de los labels
+        for (Component c : main.getComponents()) {
+            if (c instanceof JLabel) {
+                JLabel label = (JLabel) c;
+                label.setForeground(Color.BLACK);
+                label.setFont(new Font("Arial", Font.BOLD, 14));
+            }
+        }
+
+        aplicarEstilos();
+
 
 /************************************************************************************************************************/
         //darle tamaño al combobox
@@ -113,8 +127,6 @@ public class PedidosGUI {
         //textfield oculto
         stockminimotxt.setVisible(false);
 
-        //boton oculto
-        mostrarCajaButton.setVisible(false);
 
 
         //Reloj del sistema, hora y fecha.
@@ -154,8 +166,8 @@ public class PedidosGUI {
         preciotxt.setEditable(false);
 
         //color del panel de datos (gris claro)
-        Panelcantidad.setBackground(new Color(200, 200, 200));
-        PanelCliente.setBackground(new Color(200, 200, 200));
+        Panelcantidad.setBackground(new Color(255, 255, 255));
+        PanelCliente.setBackground(new Color(255, 255, 255));
 
 
         //color de los textfield en el panel de datos (azul claro)
@@ -393,18 +405,16 @@ public class PedidosGUI {
                         con.commit();
                         /*----------------------------------------------------------------------------------------------------------------------*/
                         JOptionPane.showMessageDialog(null, "Venta generada con éxito.");
+                        int idDetalle = insertarDetalleFinanciero(metodo, tot, 0, "Pedido de: "+ cliente, fecha_hora); //se lleva el registro del pedido a movimientos
+                        if (idDetalle != -1) {
+                            c.EnviarDinero(idDetalle,"Pedido de: " + cliente, tot); // Pasar el id a EnviarDinero
+                        }
+                        estadotxt.setText("El pedido ha sido entregado ✔️");
                         //parte de PDF
                         PedidosDAO pedidoDAO = new PedidosDAO();
                         //java.util.List<String> productos = pedidoDAO.obtenerProductosPorPedido(1); // ID del pedido
                         java.util.List<String> productos = pedidoDAO.obtenerProductosPorPedido(idPedido); // ID del pedido
                         pdf.generarFacturaPDF(1, productos, fecha_hora);
-                        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                        int idDetalle = insertarDetalleFinanciero(metodo, tot, 0, "Pedido de: "+ cliente, fecha_hora);
-                        ///////////////////////////////////////////////////////se lleva el registro del pedido a movimientos
-                        if (idDetalle != -1) {
-                            c.EnviarDinero(idDetalle,"Pedido de: " + cliente, tot); // Pasar el id a EnviarDinero
-                        }
-                        estadotxt.setText("El pedido ha sido entregado ✔️");
                         comboBoxClientes.setEnabled(true);
                         /*----------------------------------------------------------------------------------------------------------------------*/
 
@@ -439,7 +449,7 @@ public class PedidosGUI {
                 preciotxt.setText("");
                 totaltxt.setText("");
                 spinnercantidad.setValue(0);
-                mostrarCajaButton.setVisible(true);
+                //mostrarCajaButton.setVisible(true);
                 model = (DefaultTableModel) tablaCarrito.getModel();
                 model.setRowCount(0);
                 buscar_productos.setText("");
@@ -458,17 +468,54 @@ public class PedidosGUI {
 
         /*----------------------------------------------------------------------------------------------------------------------*/
 
-        mostrarCajaButton.addActionListener(new ActionListener() {
+
+        BackButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CajaGUI cajaGUI = new CajaGUI(frame);
-                cajaGUI.runCaja();
-                //frame.setVisible(false);
+
             }
         });
     }
     //fin de las acciones
-/************************************************************************************************************************/
+
+    public void aplicarEstilos() {
+        Panelcantidad.setBackground(Color.WHITE);
+        agregarProductoButton.setBackground(new Color(0, 51, 102));
+        BackButton.setBackground(new Color(0, 51, 102));
+
+        agregarProductoButton.setForeground(Color.WHITE);
+        BackButton.setForeground(Color.WHITE);
+
+        PanelCarrito.setBackground(Color.WHITE);
+        generarVentaButton.setBackground(new Color(0, 51, 102));
+        cancelarPedidoButton.setBackground(new Color(0, 51, 102));
+
+        generarVentaButton.setForeground(Color.WHITE);
+        cancelarPedidoButton.setForeground(Color.WHITE);
+
+
+        JTableHeader header = tablaCarrito.getTableHeader();
+        header.setBackground(new Color(0, 51, 102));
+        header.setForeground(Color.WHITE);
+        header.setFont(new Font("Arial", Font.BOLD, 14));
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < tablaCarrito.getColumnCount(); i++) {
+            tablaCarrito.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+
+
+    }
+
+    private void agregarImagenFondo() {
+        JLabel labelFondo = new JLabel(new ImageIcon(getClass().getResource("imagenes/img_8.png")));
+        PanelPrincipal.add(labelFondo); // Agregar la imagen al panel
+        PanelPrincipal.revalidate(); // Refrescar la interfaz
+        PanelPrincipal.repaint(); // Redibujar el panel
+    }
+
+    /************************************************************************************************************************/
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
@@ -503,7 +550,7 @@ public class PedidosGUI {
                     // El admin rechaza ver productos
                     if (respuesta == JOptionPane.YES_OPTION) {
                         frame.dispose();
-                        ProductoGUI p = new ProductoGUI();
+                        ProductoGUI p = new ProductoGUI(frame);
                         p.runProducto();
                     }
                     return;
@@ -787,12 +834,50 @@ public class PedidosGUI {
     //main
     public void RunPedidos() {
         frame.setContentPane(new PedidosGUI().PanelPrincipal);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        FondoPanel fondoPanel = new FondoPanel();
+        PanelPrincipal.setOpaque(false);
+        fondoPanel.setLayout(new BorderLayout());
+        fondoPanel.add(PanelPrincipal, BorderLayout.CENTER);
+
+        URL iconoURL = getClass().getClassLoader().getResource("imagenes/img_16.png");
+        if (iconoURL != null) {
+            frame.setIconImage(new ImageIcon(iconoURL).getImage());
+        }
+
+        frame.setContentPane(fondoPanel);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.pack();
         frame.setSize(700,700);
         frame.setResizable(false);
         frame.setVisible(true);
+
+
     }
+
+    class FondoPanel extends JPanel {
+        private Image imagenFondo;
+
+        public FondoPanel() {
+            URL imagenURL = getClass().getClassLoader().getResource("imagenes/img_11.png");
+            if (imagenURL != null) {
+                this.imagenFondo = new ImageIcon(imagenURL).getImage();
+            }
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (imagenFondo != null) {
+                g.drawImage(imagenFondo, 0, 0, getWidth(), getHeight(), this);
+            }
+        }
+    }
+
+}
+
+
+
 /************************************************************************************************************************/
 
     //clase para obtener el id del cliente
@@ -850,7 +935,7 @@ public class PedidosGUI {
     }
 
 
-}
+
 
 //fin del codigo --jArtur
 //mayoria del codigo finalizado ✔️

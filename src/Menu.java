@@ -4,7 +4,9 @@ import Detalle_Financiero.Detalle_FinancieroGUI;
 import Historial.HistorialPedidos;
 import Pedidos.PedidosGUI;
 import Producto.ProductoGUI;
-import socket.ChatGUI;
+import Reportes.ReportesGUI;
+import Sockets.GUIComunicacion;
+import Sockets.GUIComunicacionServer;
 //import Sockets.GUIComunicacion;
 //import Sockets.GUIComunicacionServer;
 
@@ -111,6 +113,10 @@ public class Menu {
         chatButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                GUIComunicacionServer guiComunicacionServer = new GUIComunicacionServer();
+                guiComunicacionServer.runservidor();
+                GUIComunicacion guiComunicacion = new GUIComunicacion();
+                guiComunicacion.runcliente();
 
             }
         });
@@ -129,6 +135,15 @@ public class Menu {
             public void actionPerformed(ActionEvent e) {
                 HistorialPedidos h = new HistorialPedidos(frame);
                 h.runHistorial();
+                frame.setVisible(false);
+            }
+        });
+
+        reportesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ReportesGUI reportesGUI  = new ReportesGUI(frame);
+                reportesGUI.runReport();
                 frame.setVisible(false);
             }
         });

@@ -14,11 +14,11 @@ public class ReportesDAO {
 
     public ResultSet Diarias() {
         Connection con = conexion.getConnection();
-        String query = "SELECT fecha, SUM(total) as venta_diaria " +
-                "FROM ordenes " +
-                "WHERE estado = 'Paid' " +
-                "GROUP BY fecha " +
-                "ORDER BY fecha DESC";
+        String query = "SELECT fecha_hora, SUM(total) as venta_diaria " +
+                "FROM pedidos " +
+                "WHERE estado = 'Entregado' " +
+                "GROUP BY fecha_hora " +
+                "ORDER BY fecha_hora DESC";
         try {
             PreparedStatement pst = con.prepareStatement(query);
             return pst.executeQuery();
@@ -32,13 +32,13 @@ public class ReportesDAO {
     public ResultSet Semanales() {
         Connection con = conexion.getConnection();
         String query = "SELECT " +
-                "YEARWEEK(fecha, 1) as semana, " +
-                "MIN(fecha) as inicio_semana, " +
-                "MAX(fecha) as fin_semana, " +
+                "YEARWEEK(fecha_hora, 1) as semana, " +
+                "MIN(fecha_hora) as inicio_semana, " +
+                "MAX(fecha_hora) as fin_semana, " +
                 "SUM(total) as venta_semanal " +
-                "FROM ordenes " +
-                "WHERE estado = 'Paid' " +
-                "GROUP BY YEARWEEK(fecha, 1) " +
+                "FROM pedidos " +
+                "WHERE estado = 'Entregado' " +
+                "GROUP BY YEARWEEK(fecha_hora, 1) " +
                 "ORDER BY semana DESC";
         try {
             PreparedStatement pst = con.prepareStatement(query);
@@ -53,12 +53,12 @@ public class ReportesDAO {
     public ResultSet Mensuales() {
         Connection con = conexion.getConnection();
         String query = "SELECT " +
-                "YEAR(fecha) as año, " +
-                "MONTH(fecha) as mes, " +
+                "YEAR(fecha_hora) as año, " +
+                "MONTH(fecha_hora) as mes, " +
                 "SUM(total) as venta_mensual " +
-                "FROM ordenes " +
-                "WHERE estado = 'Paid' " +
-                "GROUP BY YEAR(fecha), MONTH(fecha) " +
+                "FROM pedidos " +
+                "WHERE estado = 'Entregado' " +
+                "GROUP BY YEAR(fecha_hora), MONTH(fecha_hora) " +
                 "ORDER BY año DESC, mes DESC";
         try {
             PreparedStatement pst = con.prepareStatement(query);

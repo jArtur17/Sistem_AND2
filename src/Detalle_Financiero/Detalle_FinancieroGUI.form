@@ -177,6 +177,7 @@
         </constraints>
         <properties>
           <model>
+            <item value="TIPO DE MOVIMIENTO"/>
             <item value="Ingreso"/>
             <item value="Egreso"/>
           </model>

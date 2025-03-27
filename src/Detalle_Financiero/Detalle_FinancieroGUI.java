@@ -119,6 +119,10 @@ public class Detalle_FinancieroGUI {
                         JOptionPane.showMessageDialog(null, "Debe ingresar una descripción.");
                         return;
                     }
+                    if(comboBox2.getSelectedItem().toString().equals("TIPO DE MOVIMIENTO")){
+                        JOptionPane.showMessageDialog(null, "No ha elegido un movimiento");
+                        return;
+                    }
 
                     //obtener el total de la caja en desde el metodo ObtenerTotal
                     int t = cj.Obtenertotal();

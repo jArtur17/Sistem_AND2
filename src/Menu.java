@@ -4,6 +4,9 @@ import Detalle_Financiero.Detalle_FinancieroGUI;
 import Historial.HistorialPedidosGUI;
 import Pedidos.PedidosGUI;
 import Producto.ProductoGUI;
+import Reportes.ReportesGUI;
+import Sockets.GUIComunicacion;
+import Sockets.GUIComunicacionServer;
 //import Sockets.GUIComunicacion;
 //import Sockets.GUIComunicacionServer;
 
@@ -110,10 +113,10 @@ public class Menu {
         chatButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //GUIComunicacionServer guiComunicacionServer = new GUIComunicacionServer();
-                //guiComunicacionServer.runservidor();
-                //GUIComunicacion guiComunicacion = new GUIComunicacion();
-                //guiComunicacion.runcliente();
+                GUIComunicacionServer guiComunicacionServer = new GUIComunicacionServer();
+                guiComunicacionServer.runservidor();
+                GUIComunicacion guiComunicacion = new GUIComunicacion();
+                guiComunicacion.runcliente();
 
             }
         });
@@ -132,6 +135,14 @@ public class Menu {
             public void actionPerformed(ActionEvent e) {
                 HistorialPedidosGUI historialPedidosGUI  = new HistorialPedidosGUI(frame);
                 historialPedidosGUI.runHistorial();
+                frame.setVisible(false);
+            }
+        });
+        reportesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ReportesGUI reportesGUI  = new ReportesGUI(frame);
+                reportesGUI.runReport();
                 frame.setVisible(false);
             }
         });
@@ -180,6 +191,8 @@ public class Menu {
     public static void main(String[] args) {
         JFrame frame = new JFrame("Menu");
         new Menu(frame);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
     }
 }
 

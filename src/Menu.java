@@ -95,9 +95,9 @@ public class Menu {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                PedidosGUI pGUI = new PedidosGUI();
-                //pGUI.setServidor(servidor);
+                PedidosGUI pGUI = new PedidosGUI(frame);
                 pGUI.RunPedidos();
+                frame.setVisible(false);
             }
         });
 

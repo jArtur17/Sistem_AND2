@@ -46,7 +46,7 @@ public class Detalle_FinancieroGUI {
     private CajaDAO cajaDAO = new CajaDAO();
 
     private Conexion conexion = new Conexion();
-    PedidosGUI p = new PedidosGUI();
+    PedidosGUI p = new PedidosGUI(frame);
     CajaGUI cj = new CajaGUI();
 
 

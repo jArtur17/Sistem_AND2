@@ -1,7 +1,6 @@
 package Pedidos;
 
 import Caja.CajaGUI;
-import Cliente.ClienteGUI;
 import Conexion.Conexion;
 import Historial.HistorialPedidos;
 import Producto.ProductoGUI;
@@ -64,7 +63,8 @@ public class PedidosGUI {
     private JButton BackButton;
     private JButton button1;
     int sub_total = 0;
-    JFrame frame = new JFrame("Main");
+    private JFrame frame, parentFrame;
+    //JFrame frame = new JFrame("Main");
 
     //private JFormattedTextField stockminimotxt;
 
@@ -103,7 +103,8 @@ public class PedidosGUI {
 
     /************************************************************************************************************************/
 
-    public PedidosGUI() {
+    public PedidosGUI(JFrame parentFrame) {
+        this.parentFrame = parentFrame;
 
         // Cambiar color y fuente de los labels
         for (Component c : main.getComponents()) {
@@ -469,11 +470,11 @@ public class PedidosGUI {
         /*----------------------------------------------------------------------------------------------------------------------*/
 
 
-        BackButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
+        BackButton.addActionListener(e -> {
+            if (parentFrame != null) {
+                parentFrame.setVisible(true);
             }
+            frame.dispose();
         });
     }
     //fin de las acciones
@@ -833,7 +834,8 @@ public class PedidosGUI {
 /************************************************************************************************************************/
     //main
     public void RunPedidos() {
-        frame.setContentPane(new PedidosGUI().PanelPrincipal);
+        frame = new JFrame("Pedidos");
+        frame.setContentPane(new PedidosGUI(frame).PanelPrincipal);
 
         FondoPanel fondoPanel = new FondoPanel();
         PanelPrincipal.setOpaque(false);

@@ -224,7 +224,7 @@ public class ReportesGUI {
 
         frame.setContentPane(fondoPanel);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(500, 500);
+        frame.setSize(600,650);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
     }

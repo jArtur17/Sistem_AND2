@@ -194,6 +194,17 @@ public class HistorialPedidosGUI {
         for (int i = 0; i < tablahistorial.getColumnCount(); i++) {
             tablahistorial.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
+
+        JTableHeader header2 = tabledetalles.getTableHeader();
+        header2.setBackground(new Color(0, 51, 102));
+        header2.setForeground(Color.WHITE);
+        header2.setFont(new Font("Arial", Font.BOLD, 14));
+
+        DefaultTableCellRenderer centerRenderer2 = new DefaultTableCellRenderer();
+        centerRenderer2.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < tablahistorial.getColumnCount(); i++) {
+            tablahistorial.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
     }
 
     class EstadoCellEditor extends DefaultCellEditor {
@@ -295,8 +306,6 @@ public class HistorialPedidosGUI {
 
             while (rs.next()) {
                 modeloDetalles.addRow(new Object[]{
-                        //rs.getInt("id_detallepedido"),
-                        //rs.getInt("id_pedido"),
                         rs.getString("nombre_producto"),
                         rs.getInt("cantidad"),
                         rs.getString("tipo_cantidad"),
@@ -311,6 +320,8 @@ public class HistorialPedidosGUI {
             e.printStackTrace();
         }
     }
+
+
 
 
     public void runHistorial() {

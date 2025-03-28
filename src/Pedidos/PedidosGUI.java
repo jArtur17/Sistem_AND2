@@ -648,7 +648,7 @@ public class PedidosGUI {
                 JOptionPane.showMessageDialog(null, "Agregue un cliente y producto válidos.");
                 ex.printStackTrace(); // Imprimir el rastreo de la excepción para depuración
             }
-            System.out.println("Tipo de dato de idProducto: " + idProducto.getClass().getName());
+
         }
 
         /*-------------------------------------------------------------------------------------------------------------*/

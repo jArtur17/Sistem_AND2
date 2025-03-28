@@ -107,7 +107,7 @@ public class ClienteGUI {
         BackButton.setForeground(Color.WHITE);
 
         JTableHeader header = table1.getTableHeader();
-        header.setBackground(new Color(51, 153, 255));
+        header.setBackground(new Color(0, 51, 102));
         header.setForeground(Color.WHITE);
         header.setFont(new Font("Arial", Font.BOLD, 14));
 

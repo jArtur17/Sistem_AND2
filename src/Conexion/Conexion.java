@@ -4,10 +4,7 @@ import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-/**
- * @author Arturo
- * @version 1.0
- */
+
 public class Conexion {
 
     public Connection getConnection() {

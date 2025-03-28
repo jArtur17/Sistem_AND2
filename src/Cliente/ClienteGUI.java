@@ -13,10 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import Conexion.Conexion;
-/**
- * @author Lasso
- * @version 1.0
- */
 
 public class ClienteGUI {
     private JPanel main;
@@ -27,11 +23,6 @@ public class ClienteGUI {
     private ClienteDAO clienteDAO = new ClienteDAO();
     private Conexion connectionFA = new Conexion();
 
-    /**
-     * This method is called by the UI to show the cliente.
-     *
-     * @param parent
-     */
     public ClienteGUI(JFrame parentFrame) {
         this.parentFrame = parentFrame;
         textField1.setEditable(false);
@@ -103,9 +94,6 @@ public class ClienteGUI {
         });
     }
 
-    /**
-     * AplicarEstilos.
-     */
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
         registrarButton.setBackground(new Color(0, 51, 102));
@@ -131,9 +119,6 @@ public class ClienteGUI {
     }
 
 
-    /**
-     * Show the data
-     */
     public void showdata() {
         DefaultTableModel modelo = new DefaultTableModel();
         modelo.addColumn("Id_Cliente");
@@ -154,9 +139,6 @@ public class ClienteGUI {
         }
     }
 
-    /**
-     * Clear the text field.
-     */
     public void clear() {
         textField1.setText("");
         textField2.setText("");
@@ -166,9 +148,6 @@ public class ClienteGUI {
         textField6.setText("");
     }
 
-    /**
-     * Run the cliente.
-     */
     public void runCliente() {
         frame = new JFrame("Gestión de Clientes");
         FondoPanel fondoPanel = new FondoPanel();

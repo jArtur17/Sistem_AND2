@@ -6,20 +6,12 @@ import javax.swing.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-/**
- * @author Lasso
- * @version 1.0
- */
+
 public class ClienteDAO {
         private Conexion connectionFA = new Conexion();
 
 
-    /**
-     * Añadido con éxito.
-     *
-     * @param cliente
-     */
-    public void agregar(Cliente cliente)
+        public void agregar(Cliente cliente)
         {
             Connection con = connectionFA.getConnection();
             String query = "INSERT INTO cliente(cedula, nombre, telefono, correo, direccion) VALUES (?,?,?,?,?)";
@@ -51,12 +43,7 @@ public class ClienteDAO {
             }
         }
 
-    /**
-     * Actualizar a cliente.
-     *
-     * @param cliente
-     */
-    public void actualizar(Cliente cliente){
+        public void actualizar(Cliente cliente){
             Connection con = connectionFA.getConnection();
 
             String query = "UPDATE `cliente` SET cedula = ?, nombre = ?, telefono = ?, correo = ?, direccion = ? WHERE id_cliente = ?";
@@ -85,12 +72,7 @@ public class ClienteDAO {
             }
         }
 
-    /**
-     * Eliminado de la id.
-     *
-     * @param id
-     */
-    public void eliminar(int id)
+        public void eliminar(int id)
         {
             Connection con = connectionFA.getConnection();
             String query = "DELETE FROM cliente WHERE id_cliente = ?";

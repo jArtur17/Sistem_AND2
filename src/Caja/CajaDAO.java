@@ -2,11 +2,7 @@ package Caja;
 
 import Conexion.Conexion;
 import java.sql.*;
-/**
 
- * @author Nicolle
- * @version 1.0
- */
 public class CajaDAO {
 
     private Conexion conexion = new Conexion();
@@ -28,9 +24,6 @@ public class CajaDAO {
         return saldo;
     }
 
-    /**
-     * Get ObtenerIdCajaPorIdDetalleFinanciero
-     */
     public int ObtenerIdCajaPorIdDetalleFinanciero(int id_detallefinanciero) {
         int id_caja = -1;
         String query = "SELECT id_caja FROM caja WHERE id_detallefinanciero = ?";
@@ -51,10 +44,7 @@ public class CajaDAO {
     }
 
 
-    /**
-     * Registrar Movimiento con el id_financiero
-     * @
-     */
+
     public void RegistrarMovimiento(String concepto, int valorMovimiento, int id_detallefinanciero) {
         Connection con = conexion.getConnection();
         try {
@@ -70,9 +60,6 @@ public class CajaDAO {
         }
     }
 
-    /**
-     * EliminarMovimientoPorIdDetalleFinanciero
-     */
     public void EliminarMovimientoPorIdDetalleFinanciero(int id_detallefinanciero) {
         String query = "DELETE FROM caja WHERE id_detallefinanciero = ?";
 
@@ -87,11 +74,6 @@ public class CajaDAO {
         }
     }
 
-    /**
-     * ActualizarMovimiento.
-     *
-     * @param id_caja
-     */
     public void ActualizarMovimiento(int id_caja, String concepto, int valor, int id_detallefinanciero) {
         String query = "UPDATE caja SET concepto = ?, valor = ?, id_detallefinanciero = ? WHERE id_caja = ?";
 

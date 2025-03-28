@@ -510,11 +510,6 @@ public class PedidosGUI {
     }
     //fin de las acciones
 
-    /**
-     * AplicarEstilos.
-     * se aplican los estilos al panel de pedidos GUI
-     * (botones, tabla)
-     */
     public void aplicarEstilos() {
         Panelcantidad.setBackground(Color.WHITE);
         agregarProductoButton.setBackground(new Color(0, 51, 102));
@@ -552,19 +547,12 @@ public class PedidosGUI {
         PanelPrincipal.repaint(); // Redibujar el panel
     }
 
-
     /************************************************************************************************************************/
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
-
-
-
-    /**
-     * Agregar de la producto.
-     *
-     */
-    void agregarProducto() {
+        //metodo de agregar productos al carrito
+        void agregarProducto() {
             try {
                 DefaultTableModel model = (DefaultTableModel) tablaCarrito.getModel();
 
@@ -665,11 +653,7 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
-    /**
-     * definir columnas en carrito
-     * se insertan las columnas en la tabla de carrito y se establece el modelo.
-     */
-    //definir columnas en la tabla del carrito
+        //definir columnas en la tabla del carrito
         public void Carrito() {
             DefaultTableModel pedidos = new DefaultTableModel();
             pedidos.addColumn("Item");
@@ -841,14 +825,7 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
-    /**
-     * Insert a detalle financiero to the database.
-     *Se piden los parametros: tipopago, ingreso, egreso, descripcion, fecha
-     * se conecta a la base de datos mediante el objeto cf
-     * se inserta en la tabla de detalle financiero
-     * @param
-     */
-    public int insertarDetalleFinanciero(String tipopago, int ingreso, int egreso, String descripcion, String fechah) {
+        public int insertarDetalleFinanciero(String tipopago, int ingreso, int egreso, String descripcion, String fechah) {
             Connection con = cf.getConnection();
             PreparedStatement psDetalle = null;
             ResultSet generatedKeys = null;
@@ -887,13 +864,7 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
-    /**
-     * Set the total number of IVA
-     * si el iva esta seleccionado se hacen los procedimientos
-     * se calcula el iva
-     * se define el subtotal del producto con el iva (subtototal+IVA)
-     */
-    public void IVA(){
+        public void IVA(){
             if(IVACheckBox.isSelected()){
                 double iva = sub_total * 0.19;
                 sub_total = (int) (sub_total+iva);
@@ -904,14 +875,7 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
-    /**
-     * Methode la consulta la conexión y los recursos
-     * Obtiene como parámetro el id del cliente
-     * se conecta a la base de datos mediante el objeto cf
-     * recibimos el id del cliente
-     * traemos el correo mediante String
-     */
-    public void FacturaPorGmail(int idCliente){
+        public void FacturaPorGmail(int idCliente){
             try {
                 Connection con = cf.getConnection();
 
@@ -947,16 +911,8 @@ public class PedidosGUI {
 
 
         //fin de metodos
-
-    /************************************************************************************************************************/
+/************************************************************************************************************************/
     //main
-    /**
-     * RunPedidos
-     * Ejecuta toda la parte de pedidos
-     * inicializa el panel principal
-     * se le define un background, borde
-     * tamaño (800, 800)
-     */
     public void RunPedidos() {
         frame = new JFrame("Pedidos");
         frame.setContentPane(new PedidosGUI(frame).PanelPrincipal);

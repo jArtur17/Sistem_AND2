@@ -10,10 +10,7 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 import java.sql.*;
 import Conexion.Conexion;
-/**
- * @author Nicolle
- * @version 1.0
- */
+
 public class CajaGUI {
     private JPanel main;
     private JButton volverButton;
@@ -35,9 +32,6 @@ public class CajaGUI {
     }
 
 
-    /**
-     * Enviar dinero enviado a la caja con éx
-     */
     public void EnviarDinero(int Detallef, String concepto, int total){
         sum_total += total;
         saldoactualtxt.setText(String.valueOf(sum_total));
@@ -71,12 +65,6 @@ public class CajaGUI {
         }
     }
 
-    /**
-     * CajaGUI de la tabla.
-     *
-     * @param parentFrame
-     * @return
-     */
     public CajaGUI(JFrame parentFrame) {
         this.parentFrame = parentFrame;
         saldoactualtxt.setEditable(false);
@@ -134,9 +122,6 @@ public class CajaGUI {
         });
     }
 
-    /**
-     * This method is called when the actualizar is done.
-     */
     public void actualizarTotal() {
         Connection con = conexion.getConnection();
         PreparedStatement ps = null;
@@ -166,11 +151,6 @@ public class CajaGUI {
         }
     }
 
-    /**
-     * Returns the total number of SALDOs in the detalle.
-     *
-     * @return
-     */
     public int obtenerSaldoTotal() {
         int saldo = 0;
         String sql = "SELECT COALESCE(SUM(Ingreso) - SUM(Egreso), 0) AS saldo_actual FROM detalle_financiero";
@@ -191,17 +171,11 @@ public class CajaGUI {
     }
 
 
-    /**
-     * Muestra el saldo en el JTextField
-     */
     public void actualizarSaldoEnTextField() {
         int saldo = obtenerSaldoTotal();
         saldoactualtxt.setText(String.valueOf(saldo)); // Muestra el saldo en el JTextField
     }
 
-    /**
-     * AplicarEstilos.
-     */
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
 
@@ -223,9 +197,6 @@ public class CajaGUI {
     }
 
 
-    /**
-     * Show the data
-     */
     public void showdata() {
         NonEditableTableModel modelo = new NonEditableTableModel();
 
@@ -257,11 +228,6 @@ public class CajaGUI {
 
     }
 
-    /**
-     * Returns the Obtener total of the obtener.
-     *
-     * @return the Ob
-     */
     public int Obtenertotal(){
         int total = obtenerSaldoTotal();
         return total;
@@ -275,9 +241,6 @@ public class CajaGUI {
         }
     }
 
-    /**
-     * Run Caja.
-     */
     public void runCaja() {
         frame = new JFrame("Gestión de Caja");
 

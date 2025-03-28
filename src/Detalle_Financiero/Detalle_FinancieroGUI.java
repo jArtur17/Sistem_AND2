@@ -22,11 +22,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.*;
 
-/**
 
- * @author Nicolle
- * @version 1.0
- */
 public class Detalle_FinancieroGUI {
 
     private JPanel main;
@@ -157,7 +153,10 @@ public class Detalle_FinancieroGUI {
                         int id_i = p.insertarDetalleFinanciero(tipo_pago, monto, 0, descripcion, String.valueOf(fecha_hora));
                         cj.EnviarDinero(id_i,"Ingreso",monto);
                         JOptionPane.showMessageDialog(null, "Se ha agregado el ingreso correctamente");
+
                     }
+                    clear();//actualizarTabla();
+                    showdata();
 
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "El monto debe ser un número válido.");
@@ -205,6 +204,7 @@ public class Detalle_FinancieroGUI {
 
                     clear();
                     showdata();
+
 
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(null, "El monto debe ser un número válido.");
@@ -288,6 +288,8 @@ public class Detalle_FinancieroGUI {
 
 
                     textField1.setText(table1.getValueAt(fila, 5).toString()); // Fecha-Hora
+                    //clear();
+                    //showdata();
                 }
             }
         });
@@ -295,9 +297,6 @@ public class Detalle_FinancieroGUI {
 
     }
 
-    /**
-     * AplicarEstilos.
-     */
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
 
@@ -370,6 +369,27 @@ public class Detalle_FinancieroGUI {
         }
     }
 
+    public void actualizarTabla() {
+        DefaultTableModel modelo = (DefaultTableModel) table1.getModel();
+        modelo.setRowCount(0); // Limpia la tabla
+
+        // Consulta para obtener los nuevos datos
+        try {
+            Connection con = conexion.getConnection();
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM detalle_financiero");
+
+                while (rs.next()) {
+                    modelo.addRow(new Object[]{rs.getInt("id_detallefinanciero"), rs.getString("tipo_pago"), rs.getInt("ingreso"), rs.getInt("egreso"), rs.getString("descripcion"), rs.getString("fecha_hora")});
+                }
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
 
 
     public class NonEditableTableModel extends DefaultTableModel {
@@ -380,9 +400,6 @@ public class Detalle_FinancieroGUI {
     }
 
 
-    /**
-     * Clear the text field.
-     */
     public void clear()
     {
         textField1.setText("");
@@ -392,10 +409,6 @@ public class Detalle_FinancieroGUI {
         textField5.setText("");
     }
 
-    /**
-     * Insert a detalle financiero in the database.
-     *
-     */
     public int insertarDetalleFinanciero(String tipopago, int ingreso, int egreso, String descripcion, String fechah) {
         Connection con = conexion.getConnection();
         PreparedStatement psDetalle = null;
@@ -432,7 +445,7 @@ public class Detalle_FinancieroGUI {
             }
         }return -1;
     }
-
+    // ** Clase interna para dibujar el fondo con imagen y degradado **
     class FondoPanel extends JPanel {
         private Image imagenFondo;
 
@@ -462,9 +475,6 @@ public class Detalle_FinancieroGUI {
         }
     }
 
-    /**
-     * Run the financiero.
-     */
     public void runFinanciero() {
 
         frame = new JFrame("Data Base Game");

@@ -1,4 +1,5 @@
 package Historial;
+import Caja.CajaGUI;
 import Conexion.Conexion;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -10,37 +11,24 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.sql.*;
+import javax.swing.*;
 
-/**
 
- * @author Arturo
- * @version 1.0
- */
+
 public class HistorialPedidosGUI {
     private JButton volver;
     private JTable tablahistorial;
     private JPanel Panel;
     private JLabel subtitulo;
-    private JTable tabledetalles;
-    private JScrollPane scrol;
     private JFrame frame;
     private JFrame parentFrame;
     Conexion conR = new Conexion();
 
     public HistorialPedidosGUI(JFrame parentFrame) {
-        //scrol.setVisible(false);
         this.parentFrame = parentFrame;
         //llamar los pedidos en la tabla
-
-        //ocultar tabla
-
-        tabledetalles.setEnabled(true);
-        tablahistorial.setDefaultEditor(Object.class, null);
-
         Historialordenes();
         subtitulo.setOpaque(true);
         subtitulo.setBackground(new Color(25, 25, 112));
@@ -95,22 +83,6 @@ public class HistorialPedidosGUI {
             }
         });
 
-        tablahistorial.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-                if (e.getClickCount() == 2) {
-
-                    int filaSeleccionada = tablahistorial.getSelectedRow();
-                    if (filaSeleccionada != -1) {
-                        int idPedido = Integer.parseInt(String.valueOf(tablahistorial.getValueAt(filaSeleccionada, 0))); //columna del id
-                        // Llamar a la función para mostrar los detalles del pedido
-                        mostrarDetallesPedido(idPedido);
-                    }
-                }
-            }
-        });
-
 
         tablahistorial.getModel().addTableModelListener(new TableModelListener() {
             @Override
@@ -130,28 +102,19 @@ public class HistorialPedidosGUI {
                         actualizarStock(idPedido);
                         JOptionPane.showMessageDialog(null, "El stock se ha actualizado!");
 
+
                     }
 
                 }
             }
         });
-
     }
 
-    /**
-     * Returns the GUI for the Historial Pedidos.
-     *
-     * @return the
-     */
     public HistorialPedidosGUI() {
 
     }
 
 
-    /**
-     * Harvesta la nombre del cliente
-     * @throws SQLException
-     */
     public void Historialordenes() {
         DefaultTableModel orden = new DefaultTableModel();
         orden.addColumn("id_pedido");
@@ -193,9 +156,6 @@ public class HistorialPedidosGUI {
         }
     }
 
-    /**
-     * AplicarEstilos.
-     */
     public void aplicarEstilos() {
         Panel.setBackground(Color.DARK_GRAY);
         volver.setForeground(Color.WHITE);
@@ -207,17 +167,6 @@ public class HistorialPedidosGUI {
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        for (int i = 0; i < tablahistorial.getColumnCount(); i++) {
-            tablahistorial.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-        }
-
-        JTableHeader header2 = tabledetalles.getTableHeader();
-        header2.setBackground(new Color(0, 51, 102));
-        header2.setForeground(Color.WHITE);
-        header2.setFont(new Font("Arial", Font.BOLD, 14));
-
-        DefaultTableCellRenderer centerRenderer2 = new DefaultTableCellRenderer();
-        centerRenderer2.setHorizontalAlignment(SwingConstants.CENTER);
         for (int i = 0; i < tablahistorial.getColumnCount(); i++) {
             tablahistorial.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
@@ -236,12 +185,6 @@ public class HistorialPedidosGUI {
         }
     }
 
-    /**
-     * Estado de la base de datos.
-     *
-     * @param idPedido
-     * @
-     */
     public void actualizarEstado(int idPedido, String nuevoEstado) {
         Connection con = conR.getConnection();
 
@@ -266,9 +209,6 @@ public class HistorialPedidosGUI {
         }
     }
 
-    /**
-     * Estado de Historial
-     */
     public void actualizarStock(int idPedido) {
         Connection con = conR.getConnection();
 
@@ -313,48 +253,7 @@ public class HistorialPedidosGUI {
         }
     }
 
-    /**
-     * Mostrar de detalles.
-     *
-     * @param idPedido
-     */
-    public void mostrarDetallesPedido(int idPedido) {
-        scrol.setVisible(true);
-        DefaultTableModel modeloDetalles = new DefaultTableModel();
-        //modeloDetalles.addColumn("ID Detalle");
-        //modeloDetalles.addColumn("ID Pedido");
-        modeloDetalles.addColumn("Producto");
-        modeloDetalles.addColumn("Cantidad");
-        modeloDetalles.addColumn("Tipo de cantidad");
-        modeloDetalles.addColumn("Precio u");
-        modeloDetalles.addColumn("Subtotal");
 
-        try (Connection con = conR.getConnection();
-             PreparedStatement ps = con.prepareStatement("SELECT dp.id_detallepedido, dp.id_pedido, dp.tipo_cantidad, dp.precio_unitario, p.nombre AS nombre_producto, dp.cantidad, dp.subtotal FROM detalle_pedido dp JOIN producto p ON dp.id_producto = p.id_producto WHERE dp.id_pedido = ?")) {
-            ps.setInt(1, idPedido);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                modeloDetalles.addRow(new Object[]{
-                        rs.getString("nombre_producto"),
-                        rs.getInt("cantidad"),
-                        rs.getString("tipo_cantidad"),
-                        rs.getInt("precio_unitario"),
-                        rs.getInt("subtotal"),
-                });
-            }
-            tabledetalles.setModel(modeloDetalles); // Actualiza la tabla de detalles
-             // Muestra la tabla de detalles
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    /**
-     * Run the historial.
-     */
     public void runHistorial() {
 
         frame = new JFrame("Historial Pedidos");
@@ -382,7 +281,6 @@ public class HistorialPedidosGUI {
         frame.setSize(600,650);
         frame.setResizable(false);
         frame.setVisible(true);
-        frame.setLocationRelativeTo(null);
     }
 
     // ** Clase interna para dibujar el fondo con imagen y degradado **

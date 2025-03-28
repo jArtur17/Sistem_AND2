@@ -4,6 +4,8 @@ import Caja.CajaGUI;
 import Conexion.Conexion;
 import Historial.HistorialPedidos;
 import Producto.ProductoGUI;
+import Sockets.ChatServer;
+import Sockets.GUIComunicacionServer;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -61,7 +63,7 @@ public class PedidosGUI {
     private JComboBox comboBoxMetodo;
     private JPanel main;
     private JButton BackButton;
-    private JButton button1;
+    private JCheckBox IVACheckBox;
     int sub_total = 0;
     private JFrame frame, parentFrame;
     //JFrame frame = new JFrame("Main");
@@ -75,6 +77,8 @@ public class PedidosGUI {
     //total del pedido
     int total = 0;
 
+    int tot = 0;
+
     //item del carrito (auto incremental)
     int item = 0;
 
@@ -84,7 +88,9 @@ public class PedidosGUI {
     //id del producto agregado
     String idProducto="";
 
-    //objeto defaultTableModel
+    int precio_u = 0;
+
+            //objeto defaultTableModel
     DefaultTableModel model = new DefaultTableModel();
 
 
@@ -94,6 +100,10 @@ public class PedidosGUI {
 
     //importar caja
     CajaGUI c = new CajaGUI();
+
+    //importarChat
+    //GUIComunicacionServer chat = new GUIComunicacionServer();
+    //ChatServer cs = new ChatServer();
 
     //historial pedidos
     HistorialPedidos h = new HistorialPedidos();
@@ -127,6 +137,12 @@ public class PedidosGUI {
 
         //textfield oculto
         stockminimotxt.setVisible(false);
+
+        //activar iva
+        IVACheckBox.setSelected(true);
+
+        //
+
 
 
 
@@ -259,6 +275,7 @@ public class PedidosGUI {
         agregarProductoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //chat.enviarMsj("Su pedido esta siendo preparado");
                 try{
                     if (comboBoxClientes.getSelectedItem().equals("CLIENTES")) {
                         JOptionPane.showMessageDialog(null, "No se ha seleccionado un cliente");
@@ -331,7 +348,7 @@ public class PedidosGUI {
                     String fecha_hora = textField4.getText();
                     String estado = "Entregado";
                     String metodo = comboBoxMetodo.getSelectedItem().toString();
-                    int tot =Integer.parseInt(totaltxt.getText());
+                    tot =Integer.parseInt(totaltxt.getText());
                     ///////////////////////////////////////////////////////
 
 
@@ -342,6 +359,7 @@ public class PedidosGUI {
                 PreparedStatement psProductos = null;
                 ResultSet rs = null;
                 /////////////////////////////////////
+                    IVA();
 
                     //bloque try
                     try {
@@ -533,7 +551,7 @@ public class PedidosGUI {
                 int cantidad = (int) spinnercantidad.getValue();
                 String prod = comboBoxProductos.getSelectedItem().toString();
                 String t_cantidad = comboBoxTipo.getSelectedItem().toString();
-                int precio_u = Integer.parseInt(preciotxt.getText());
+                precio_u = Integer.parseInt(preciotxt.getText());
 
                 // Obtener el id del producto seleccionado
                 ProductosItem productosItem = (ProductosItem) comboBoxProductos.getSelectedItem();
@@ -589,11 +607,15 @@ public class PedidosGUI {
                 // Agregar producto al carrito
                 comboBoxClientes.setEnabled(false);
 
+
+
+                PanelCarrito.setVisible(true);
+                //iva: se debe calcular el iva primero para que el total se incremente con el iva en cada producto
+                IVA();
+
                 // Incrementar total en cada producto
                 total += sub_total;
                 totaltxt.setText(String.valueOf(total));
-
-                PanelCarrito.setVisible(true);
 
                 // Agregar productos a la tabla
                 Object[] ob = new Object[7];
@@ -829,6 +851,16 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
+        public void IVA(){
+            if(IVACheckBox.isSelected()){
+                double iva = sub_total * 0.19;
+                sub_total = (int) (sub_total+iva);
+                //JOptionPane.showMessageDialog(null, "El total con IVA es: " + "$"+ tot);
+
+            }
+        }
+
+
 
         //fin de metodos
 /************************************************************************************************************************/
@@ -836,6 +868,8 @@ public class PedidosGUI {
     public void RunPedidos() {
         frame = new JFrame("Pedidos");
         frame.setContentPane(new PedidosGUI(frame).PanelPrincipal);
+        // Centrar el JFrame después de agregar el PanelPrincipal
+        frame.setLocationRelativeTo(null);
 
         FondoPanel fondoPanel = new FondoPanel();
         PanelPrincipal.setOpaque(false);

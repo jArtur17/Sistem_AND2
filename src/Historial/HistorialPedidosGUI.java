@@ -1,17 +1,19 @@
 package Historial;
-import Caja.CajaGUI;
 import Conexion.Conexion;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.sql.*;
-import javax.swing.*;
-
 
 
 public class HistorialPedidosGUI {
@@ -19,13 +21,22 @@ public class HistorialPedidosGUI {
     private JTable tablahistorial;
     private JPanel Panel;
     private JLabel subtitulo;
+    private JTable tabledetalles;
+    private JScrollPane scrol;
     private JFrame frame;
     private JFrame parentFrame;
     Conexion conR = new Conexion();
 
     public HistorialPedidosGUI(JFrame parentFrame) {
+        //scrol.setVisible(false);
         this.parentFrame = parentFrame;
         //llamar los pedidos en la tabla
+
+        //ocultar tabla
+
+        tabledetalles.setEnabled(true);
+        tablahistorial.setDefaultEditor(Object.class, null);
+
         Historialordenes();
         subtitulo.setOpaque(true);
         subtitulo.setBackground(new Color(25, 25, 112));
@@ -80,6 +91,22 @@ public class HistorialPedidosGUI {
             }
         });
 
+        tablahistorial.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                if (e.getClickCount() == 2) {
+
+                    int filaSeleccionada = tablahistorial.getSelectedRow();
+                    if (filaSeleccionada != -1) {
+                        int idPedido = Integer.parseInt(String.valueOf(tablahistorial.getValueAt(filaSeleccionada, 0))); //columna del id
+                        // Llamar a la función para mostrar los detalles del pedido
+                        mostrarDetallesPedido(idPedido);
+                    }
+                }
+            }
+        });
+
 
         tablahistorial.getModel().addTableModelListener(new TableModelListener() {
             @Override
@@ -99,12 +126,12 @@ public class HistorialPedidosGUI {
                         actualizarStock(idPedido);
                         JOptionPane.showMessageDialog(null, "El stock se ha actualizado!");
 
-
                     }
 
                 }
             }
         });
+
     }
 
     public HistorialPedidosGUI() {
@@ -115,16 +142,13 @@ public class HistorialPedidosGUI {
     public void Historialordenes() {
         DefaultTableModel orden = new DefaultTableModel();
         orden.addColumn("id_pedido");
-        orden.addColumn("cliente");
+        orden.addColumn("Cliente");
         orden.addColumn("fecha_hora");
         orden.addColumn("estado");
         orden.addColumn("metodo_pago");
         orden.addColumn("total");
-        orden.addColumn("acción");
         tablahistorial.setModel(orden);
-        TableColumn actionColumn = tablahistorial.getColumnModel().getColumn(3); // Ajusta el índice de la columna
-        actionColumn.setCellRenderer(new ButtonRenderer());
-        actionColumn.setCellEditor(new ButtonRenderer());
+        tablahistorial.getColumnModel().getColumn(3).setCellEditor(new EstadoCellEditor());
 
         Connection con = conR.getConnection();
 
@@ -149,8 +173,8 @@ public class HistorialPedidosGUI {
                 orden.addRow(Arreglo);
             }
 
-            tablahistorial.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
-            tablahistorial.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor(new JCheckBox(), tablahistorial));
+            //tablahistorial.getColumnModel().getColumn(2).setCellRenderer(new ButtonRenderer());
+            //tablahistorial.getColumnModel().getColumn(2).setCellEditor(new ButtonEditor(new JCheckBox(), tabla));
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -253,6 +277,41 @@ public class HistorialPedidosGUI {
         }
     }
 
+    private void mostrarDetallesPedido(int idPedido) {
+        scrol.setVisible(true);
+        DefaultTableModel modeloDetalles = new DefaultTableModel();
+        //modeloDetalles.addColumn("ID Detalle");
+        //modeloDetalles.addColumn("ID Pedido");
+        modeloDetalles.addColumn("Producto");
+        modeloDetalles.addColumn("Cantidad");
+        modeloDetalles.addColumn("Tipo de cantidad");
+        modeloDetalles.addColumn("Precio u");
+        modeloDetalles.addColumn("Subtotal");
+
+        try (Connection con = conR.getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT dp.id_detallepedido, dp.id_pedido, dp.tipo_cantidad, dp.precio_unitario, p.nombre AS nombre_producto, dp.cantidad, dp.subtotal FROM detalle_pedido dp JOIN producto p ON dp.id_producto = p.id_producto WHERE dp.id_pedido = ?")) {
+            ps.setInt(1, idPedido);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                modeloDetalles.addRow(new Object[]{
+                        //rs.getInt("id_detallepedido"),
+                        //rs.getInt("id_pedido"),
+                        rs.getString("nombre_producto"),
+                        rs.getInt("cantidad"),
+                        rs.getString("tipo_cantidad"),
+                        rs.getInt("precio_unitario"),
+                        rs.getInt("subtotal"),
+                });
+            }
+            tabledetalles.setModel(modeloDetalles); // Actualiza la tabla de detalles
+             // Muestra la tabla de detalles
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void runHistorial() {
 
@@ -273,6 +332,7 @@ public class HistorialPedidosGUI {
         } else {
             System.out.println("⚠ ERROR: No se encontró la imagen icono_medicina.png");
         }
+
         frame.setContentPane(fondoPanel);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -354,126 +414,8 @@ public class HistorialPedidosGUI {
         }
     }
 
-    public class ButtonRenderer extends AbstractCellEditor implements TableCellRenderer, TableCellEditor {
-        private JButton button;
-        private String text;
-        private boolean isPushed;
-
-        public ButtonRenderer() {
-            button = new JButton("Ver Detalles");
-            button.setForeground(Color.BLACK);
-            button.addActionListener(e -> fireEditingStopped()); // Evita problemas de edición
-
-        }
-
-        // Método para renderizar el botón en la tabla
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            button.setText(value == null ? "Ver Detalles" : value.toString());
-            return button;
-        }
-
-        // Método para editar la celda y mostrar el botón correctamente
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            text = value == null ? "Ver Detalles" : value.toString();
-            button.setText(text);
-            isPushed = true;
-            return button;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            isPushed = false;
-            return text;
-        }
-
-        @Override
-        public boolean stopCellEditing() {
-            isPushed = false;
-            return super.stopCellEditing();
-        }
-    }
-
-    class ButtonEditor extends DefaultCellEditor {
-        private final JButton button;
-        private String label;
-        private boolean isPushed;
-        private final JTable table;
 
 
-        public ButtonEditor(JCheckBox checkBox, JTable table) {
-            super(checkBox);
-            this.table = table;
-            button = new JButton();
-            button.setOpaque(true);
-            button.addActionListener(e -> fireEditingStopped());
-        }
 
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            label = "Ver Detalles";
-            button.setText(label);
-            isPushed = true;
-            return button;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            Connection con = conR.getConnection();
-
-            if (isPushed) {
-                int row = tablahistorial.getSelectedRow();
-                int id = Integer.parseInt(tablahistorial.getValueAt(row, 0).toString());
-                try {
-                    int idPedido = Integer.parseInt(tablahistorial.getValueAt(row, 0).toString());
-
-                    // Consulta SQL para obtener detalles del pedido
-                    String sql = "SELECT dp.id_pedido, p.nombre AS nombre_producto, dp.cantidad, dp.precio_unitario FROM detalle_pedido dp JOIN producto p ON dp.id_producto = p.id_producto WHERE dp.id_pedido = ?";
-                    PreparedStatement pst = con.prepareStatement(sql);
-                    pst.setInt(1, idPedido);
-
-                    ResultSet rs = pst.executeQuery();
-
-                    StringBuilder detalles = new StringBuilder("Detalles del pedido ID: " + idPedido + "\n\n");
-
-                    while (rs.next()) {
-                        String producto = rs.getString("nombre_producto");
-                        int cantidad = rs.getInt("cantidad");
-                        double precio = rs.getDouble("precio_unitario");
-
-                        detalles.append("Producto: ").append(producto)
-                                .append("\nCantidad: ").append(cantidad)
-                                .append("\nPrecio: $").append(precio)
-                                .append("\n------------------------\n");
-                    }
-
-                    // Mostrar los detalles en un JOptionPane
-                    JOptionPane.showMessageDialog(null, detalles.toString(), "Detalles del Pedido", JOptionPane.INFORMATION_MESSAGE);
-
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(null, "Error: El ID no es válido.", "Error", JOptionPane.ERROR_MESSAGE);
-                } catch (SQLException e) {
-                    JOptionPane.showMessageDialog(null, "Error al obtener los detalles del pedido.", "Error", JOptionPane.ERROR_MESSAGE);
-                    e.printStackTrace();
-                }
-
-            }
-            isPushed = false;
-            return label;
-        }
-
-        @Override
-        public boolean stopCellEditing() {
-            isPushed = false;
-            return super.stopCellEditing();
-        }
-    }
 }
-
-
-
-
-
 

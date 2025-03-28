@@ -142,6 +142,13 @@ public class GUIComunicacionServer {
         }
     }
 
+    public void enviarMsj(String sendMessage) { //enviar que el pedido está listo, enviado o en preparación
+        if (!sendMessage.isEmpty() && out != null) {
+            out.println("Servidor: " + sendMessage); // Agregar prefijo "Servidor"
+            textArea1.append("Yo: " + sendMessage + "\n"); // Mostrarlo como "Yo" en la interfaz
+        }
+    }
+
 
 
     public void runservidor() {

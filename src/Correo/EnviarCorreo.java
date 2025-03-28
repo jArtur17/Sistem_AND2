@@ -1,15 +1,17 @@
 package Correo;
 
 
-import jakarta.mail.Authenticator;
-import jakarta.mail.Message;
-import jakarta.mail.PasswordAuthentication;
-import jakarta.mail.Session;
+import jakarta.activation.DataHandler;
+import jakarta.activation.DataSource;
+import jakarta.activation.FileDataSource;
+import jakarta.mail.*;
+
 import java.util.Properties;
-import jakarta.mail.MessagingException;
-import jakarta.mail.Transport;
+
 import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 
 
 public class EnviarCorreo {
@@ -23,8 +25,8 @@ public class EnviarCorreo {
             // Configuración del servidor SMTP
             final String host = "smtp.gmail.com"; // Servidor SMTP de Gmail
             final String port = "587"; // Puerto TLS
-            final String username = "alejitoguzman.333@gmal.com"; // Cambia por tu correo
-            final String password = "Alejo2005"; // Cambia por tu contraseña o usa una clave de aplicación
+            final String username = "alejitoguzman.333@gmail.com"; // Cambia por tu correo
+            final String password = "bklo nlxo dsvd ehuq"; // Cambia por tu contraseña o usa una clave de aplicación
 
             // Propiedades del correo
             Properties props = new Properties();
@@ -46,9 +48,31 @@ public class EnviarCorreo {
                 // Crear mensaje de correo
                 Message message = new MimeMessage(session);
                 message.setFrom(new InternetAddress(username));
-                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("destinatario@gmail.com"));
-                message.setSubject("Prueba de envío de correo");
-                message.setText("Hola, este es un correo enviado desde Jakarta Mail en Java.");
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("arturobanol21@gmail.com"));
+
+                BodyPart messageBodyPart = new MimeBodyPart();
+                messageBodyPart.setText("Hola, esta es tu factura del día de hoy!");
+
+
+                // Crear la parte del archivo adjunto
+                MimeBodyPart attachmentPart = new MimeBodyPart();
+                String filename = "C:\\Users\\artur\\Desktop\\factura_pedido_1.pdf"; // ruta del correo
+                DataSource source = new FileDataSource(filename);
+                attachmentPart.setDataHandler(new DataHandler(source));
+                attachmentPart.setFileName("factura.pdf"); // Nombre que se mostrará en el correo
+
+                // Crear el multipart para combinar el texto y el adjunto
+                Multipart multipart = new MimeMultipart();
+                multipart.addBodyPart(messageBodyPart);
+                multipart.addBodyPart(attachmentPart);
+
+                // Asignar el multipart al mensaje
+                message.setContent(multipart);
+
+                // Enviar correo
+                Transport.send(message);
+
+                System.out.println("Correo enviado con éxito!");
 
                 // Enviar correo
                 Transport.send(message);

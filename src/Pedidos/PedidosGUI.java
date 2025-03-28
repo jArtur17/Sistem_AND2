@@ -362,13 +362,13 @@ public class PedidosGUI {
                 PreparedStatement psProductos = null;
                 ResultSet rs = null;
                 /////////////////////////////////////
-                    IVA();
+
 
                     //bloque try
                     try {
                         con = cf.getConnection();
                         con.setAutoCommit(false);
-
+                        IVA();
                         //insertar datos primero en los pedidos
                         String sqlOrden = "INSERT INTO pedidos (id_cliente, fecha_hora, estado, metodo_pago, total) VALUES (?, ?, ?, ?, ?)";
                         psOrden = con.prepareStatement(sqlOrden, Statement.RETURN_GENERATED_KEYS); // Retornar clave generada
@@ -624,7 +624,6 @@ public class PedidosGUI {
 
                 PanelCarrito.setVisible(true);
                 //iva: se debe calcular el iva primero para que el total se incremente con el iva en cada producto
-                IVA();
 
                 // Incrementar total en cada producto
                 total += sub_total;
@@ -866,9 +865,9 @@ public class PedidosGUI {
 
         public void IVA(){
             if(IVACheckBox.isSelected()){
-                double iva = sub_total * 0.19;
-                sub_total = (int) (sub_total+iva);
-                //JOptionPane.showMessageDialog(null, "El total con IVA es: " + "$"+ tot);
+                double iva = tot * 0.19;
+                tot = (int) (tot+iva);
+                JOptionPane.showMessageDialog(null, "El total con IVA es: " + "$"+ tot);
 
             }
         }

@@ -116,10 +116,6 @@ public class Menu {
         chatButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //ChatServer server = new ChatServer();
-                //server.runServer();
-                //ChatClient client = new ChatClient();
-                //client.runClient();
                 //GUIComunicacionServer guiComunicacionServer = new GUIComunicacionServer();
                 //guiComunicacionServer.runservidor();
                 GUIComunicacion guiComunicacion = new GUIComunicacion();

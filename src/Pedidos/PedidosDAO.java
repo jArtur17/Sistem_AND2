@@ -15,6 +15,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Arturo Bañol
+ * @version 1.0
+ */
 public class PedidosDAO {
     Conexion cf = new Conexion();
     Connection con = cf.getConnection();
@@ -155,6 +159,10 @@ public class PedidosDAO {
         }
         return null;
     }
+     */
+
+    /**
+     * Returns a list of productos
      */
     public List<String> obtenerProductosPorPedido(int idPedido) {
         List<String> detalles = new ArrayList<>();

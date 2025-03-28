@@ -547,12 +547,19 @@ public class PedidosGUI {
         PanelPrincipal.repaint(); // Redibujar el panel
     }
 
+
     /************************************************************************************************************************/
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
-        //metodo de agregar productos al carrito
-        void agregarProducto() {
+
+
+
+    /**
+     * Agregar de la producto.
+     *
+     */
+    void agregarProducto() {
             try {
                 DefaultTableModel model = (DefaultTableModel) tablaCarrito.getModel();
 

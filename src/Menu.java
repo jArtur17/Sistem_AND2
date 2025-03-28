@@ -6,6 +6,8 @@ import Historial.HistorialPedidosGUI;
 import Pedidos.PedidosGUI;
 import Producto.ProductoGUI;
 import Reportes.ReportesGUI;
+import Sockets.ChatClient;
+import Sockets.ChatServer;
 import Sockets.GUIComunicacion;
 import Sockets.GUIComunicacionServer;
 //import Sockets.GUIComunicacion;
@@ -114,8 +116,12 @@ public class Menu {
         chatButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GUIComunicacionServer guiComunicacionServer = new GUIComunicacionServer();
-                guiComunicacionServer.runservidor();
+                //ChatServer server = new ChatServer();
+                //server.runServer();
+                //ChatClient client = new ChatClient();
+                //client.runClient();
+                //GUIComunicacionServer guiComunicacionServer = new GUIComunicacionServer();
+                //guiComunicacionServer.runservidor();
                 GUIComunicacion guiComunicacion = new GUIComunicacion();
                 guiComunicacion.runcliente();
 

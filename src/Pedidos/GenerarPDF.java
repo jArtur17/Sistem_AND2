@@ -20,7 +20,12 @@ import java.util.List;
 public class GenerarPDF {
 
 
-        public void generarFacturaPDF(int idPedido, List<String> productos, String fecha) {
+    /**
+     * generar factura en pdf
+     * se lleva el pdf a una ruta especifica
+     * se agrega el logo y titulo
+     */
+    public void generarFacturaPDF(int idPedido, List<String> productos, String fecha) {
             String ruta = "C:\\Users\\artur\\Desktop\\factura_pedido_" + idPedido + ".pdf";
 
             try {

@@ -12,6 +12,10 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+/**
+ * @author Nicolle
+ * @version 1.0
+ */
 
 public class ReportesGUI {
     private JPanel main;
@@ -28,6 +32,11 @@ public class ReportesGUI {
 
     private Conexion conexion = new Conexion();
 
+    /**
+     * Set the GUI to be used to show the reportes.
+     *
+     * @param parentFrame
+     */
     public ReportesGUI(JFrame parentFrame) {
         this.parentFrame = parentFrame;
 
@@ -80,6 +89,9 @@ public class ReportesGUI {
         });
     }
 
+    /**
+     * AplicarEstilos.
+     */
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
 
@@ -104,6 +116,9 @@ public class ReportesGUI {
             table1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     }
+    /**
+     * Show the data
+     */
     public void showdata() {
         NonEditableTableModel modelo = new NonEditableTableModel();
         modelo.addColumn("fecha_hora");
@@ -133,6 +148,9 @@ public class ReportesGUI {
         }
     }
 
+    /**
+     * Reportes semanales.
+     */
     public void ReportesSemanales() {
         NonEditableTableModel modelo = new NonEditableTableModel();
         modelo.addColumn("Semana");
@@ -166,6 +184,9 @@ public class ReportesGUI {
         }
     }
 
+    /**
+     * Reportes monthly data.
+     */
     public void ReportesMensuales() {
         NonEditableTableModel modelo = new NonEditableTableModel();
         modelo.addColumn("Año");
@@ -204,8 +225,9 @@ public class ReportesGUI {
     }
 
 
-
-
+    /**
+     * Run the report.
+     */
     public void runReport() {
 
         frame = new JFrame("Reportes");

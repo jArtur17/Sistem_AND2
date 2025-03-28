@@ -17,9 +17,10 @@ import jakarta.mail.internet.MimeMultipart;
 public class EnviarCorreo {
 
 
-
-
-
+    /**
+     * Enviar correo al gmail del cliente
+     * estructura estandar de jakarta enviar correo
+     */
     public  void EnviarCorreo(String correoCliente) {
 
             // Configuración del servidor SMTP

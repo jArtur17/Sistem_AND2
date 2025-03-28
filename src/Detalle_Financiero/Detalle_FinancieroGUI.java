@@ -22,7 +22,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.*;
 
+/**
 
+ * @author Nicolle
+ * @version 1.0
+ */
 public class Detalle_FinancieroGUI {
 
     private JPanel main;
@@ -291,6 +295,9 @@ public class Detalle_FinancieroGUI {
 
     }
 
+    /**
+     * AplicarEstilos.
+     */
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
 
@@ -373,6 +380,9 @@ public class Detalle_FinancieroGUI {
     }
 
 
+    /**
+     * Clear the text field.
+     */
     public void clear()
     {
         textField1.setText("");
@@ -382,6 +392,10 @@ public class Detalle_FinancieroGUI {
         textField5.setText("");
     }
 
+    /**
+     * Insert a detalle financiero in the database.
+     *
+     */
     public int insertarDetalleFinanciero(String tipopago, int ingreso, int egreso, String descripcion, String fechah) {
         Connection con = conexion.getConnection();
         PreparedStatement psDetalle = null;
@@ -418,7 +432,7 @@ public class Detalle_FinancieroGUI {
             }
         }return -1;
     }
-    // ** Clase interna para dibujar el fondo con imagen y degradado **
+
     class FondoPanel extends JPanel {
         private Image imagenFondo;
 
@@ -448,6 +462,9 @@ public class Detalle_FinancieroGUI {
         }
     }
 
+    /**
+     * Run the financiero.
+     */
     public void runFinanciero() {
 
         frame = new JFrame("Data Base Game");

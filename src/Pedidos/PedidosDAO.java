@@ -163,6 +163,7 @@ public class PedidosDAO {
 
     /**
      * Returns a list of productos
+     * se obtiene la lista de los productos disponibles
      */
     public List<String> obtenerProductosPorPedido(int idPedido) {
         List<String> detalles = new ArrayList<>();

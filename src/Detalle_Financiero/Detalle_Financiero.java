@@ -2,7 +2,10 @@ package Detalle_Financiero;
 
 
 import java.time.LocalDateTime;
-
+/**
+ * @author Nicolle
+ * @version 1.0
+ */
 public class Detalle_Financiero {
 
     int id_detallefinanciero; String tipo_pago; int ingreso, egreso; String descripcion; LocalDateTime fecha_hora;

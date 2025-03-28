@@ -22,7 +22,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 
-
+/**
+ * @author Nicolle
+ * @version 1.0
+ */
 
 public class Menu {
     private JPanel main;
@@ -172,6 +175,11 @@ public class Menu {
         frame.setVisible(true);
     }
 
+    /**
+     * Creates a styled button.
+     *
+     * @param text the text to be styled
+     */
     public JButton createStyledButton(String text) {
         JButton button = new JButton(text);
         button.setBackground(new Color(0, 51, 102)); // Azul oscuro
@@ -194,6 +202,11 @@ public class Menu {
         }
     }
 
+    /**
+     * Main method.
+     *
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         JFrame frame = new JFrame("Menu");
         new Menu(frame);

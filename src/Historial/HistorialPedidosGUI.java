@@ -15,7 +15,11 @@ import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.sql.*;
 
+/**
 
+ * @author Arturo
+ * @version 1.0
+ */
 public class HistorialPedidosGUI {
     private JButton volver;
     private JTable tablahistorial;
@@ -134,11 +138,20 @@ public class HistorialPedidosGUI {
 
     }
 
+    /**
+     * Returns the GUI for the Historial Pedidos.
+     *
+     * @return the
+     */
     public HistorialPedidosGUI() {
 
     }
 
 
+    /**
+     * Harvesta la nombre del cliente
+     * @throws SQLException
+     */
     public void Historialordenes() {
         DefaultTableModel orden = new DefaultTableModel();
         orden.addColumn("id_pedido");
@@ -180,6 +193,9 @@ public class HistorialPedidosGUI {
         }
     }
 
+    /**
+     * AplicarEstilos.
+     */
     public void aplicarEstilos() {
         Panel.setBackground(Color.DARK_GRAY);
         volver.setForeground(Color.WHITE);
@@ -220,6 +236,12 @@ public class HistorialPedidosGUI {
         }
     }
 
+    /**
+     * Estado de la base de datos.
+     *
+     * @param idPedido
+     * @
+     */
     public void actualizarEstado(int idPedido, String nuevoEstado) {
         Connection con = conR.getConnection();
 
@@ -244,6 +266,9 @@ public class HistorialPedidosGUI {
         }
     }
 
+    /**
+     * Estado de Historial
+     */
     public void actualizarStock(int idPedido) {
         Connection con = conR.getConnection();
 
@@ -288,7 +313,12 @@ public class HistorialPedidosGUI {
         }
     }
 
-    private void mostrarDetallesPedido(int idPedido) {
+    /**
+     * Mostrar de detalles.
+     *
+     * @param idPedido
+     */
+    public void mostrarDetallesPedido(int idPedido) {
         scrol.setVisible(true);
         DefaultTableModel modeloDetalles = new DefaultTableModel();
         //modeloDetalles.addColumn("ID Detalle");
@@ -322,8 +352,9 @@ public class HistorialPedidosGUI {
     }
 
 
-
-
+    /**
+     * Run the historial.
+     */
     public void runHistorial() {
 
         frame = new JFrame("Historial Pedidos");

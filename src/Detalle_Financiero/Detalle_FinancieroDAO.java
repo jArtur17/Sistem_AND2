@@ -4,12 +4,18 @@ import Conexion.Conexion;
 
 import javax.swing.*;
 import java.sql.*;
-
+/**
+ * @author Nicolle
+ * @version 1.0
+ */
 public class Detalle_FinancieroDAO
 {
     private Conexion conexion = new Conexion();
 
 
+    /**
+     * Agregar de la nuevo de la nuevo de la nuevo
+     */
     public int Agregar(Detalle_Financiero detalle_financiero) {
         Connection con = conexion.getConnection();
         int nuevoIdFinanciero = -1;
@@ -49,7 +55,9 @@ public class Detalle_FinancieroDAO
     }
 
 
-
+    /**
+     * Actualizo de detalle Financiero
+     */
     public void Actualizar(Detalle_Financiero detalle_financiero){
         Connection con = conexion.getConnection();
 
@@ -78,6 +86,9 @@ public class Detalle_FinancieroDAO
         }
     }
 
+    /**
+     * Estado de Caja
+     */
     public int obtenerUltimoIdInsertado() {
         int ultimoId = -1; // Valor predeterminado en caso de error
         String query = "SELECT id_detallefinanciero FROM detalle_Financiero ORDER BY id_detallefinanciero DESC LIMIT 1";
@@ -96,6 +107,9 @@ public class Detalle_FinancieroDAO
     }
 
 
+    /**
+     * Eliminar de detalle Financiero
+     */
     public void Eliminar(int id_detallefinanciero)
     {
         Connection con = conexion.getConnection();

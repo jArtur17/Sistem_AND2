@@ -16,6 +16,10 @@ import java.net.URL;
 import java.sql.*;
 
 import static java.sql.Date.valueOf;
+/**
+ * @author Lasso
+ * @version 1.0
+ */
 
 public class ProductoGUI {
     private JPanel main;
@@ -41,6 +45,11 @@ public class ProductoGUI {
     ProductoDAO productoDAO = new ProductoDAO();
     int rows = 0;
 
+    /**
+     * This method is called to show the dialog for a producto.
+     *
+     * @param parent
+     */
     public ProductoGUI(JFrame parentFrame)
     {
         textField1.setEditable(false);
@@ -241,6 +250,9 @@ public class ProductoGUI {
 
     }
 
+    /**
+     * AplicarEstilos.
+     */
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
         registrarButton.setBackground(new Color(0, 51, 102));
@@ -265,6 +277,9 @@ public class ProductoGUI {
         }
     }
 
+    /**
+     * obtain an invent.
+     */
     public void obtainInvent()
     {
         NonEditableTableModel modeloa = new NonEditableTableModel();
@@ -326,7 +341,9 @@ public class ProductoGUI {
     }
 
 
-
+    /**
+     * Clear the text field.
+     */
     public void clear()
     {
         textField1.setText("");
@@ -341,6 +358,9 @@ public class ProductoGUI {
         textField10.setText("");
     }
 
+    /**
+     * Run the producto.
+     */
     public  void runProducto(){
 
         frame = new JFrame("Gestion de Productos");

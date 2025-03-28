@@ -7,11 +7,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+/**
+ * @author Nicolle
+ * @version 1.0
+ */
 
 public class ReportesDAO {
 
     private Conexion conexion = new Conexion();
 
+    /**
+     * Returns a list of diarias for the current user.
+     *
+     * @return a list
+     */
     public ResultSet Diarias() {
         Connection con = conexion.getConnection();
         String query = "SELECT fecha_hora, SUM(total) as venta_diaria " +
@@ -28,6 +37,11 @@ public class ReportesDAO {
         }
     }
 
+    /**
+     * Returns a list of semanales for the current user.
+     *
+     * @return a list
+     */
     public ResultSet Semanales() {
         Connection con = conexion.getConnection();
         String query = "SELECT " +
@@ -48,6 +62,10 @@ public class ReportesDAO {
         }
     }
 
+
+    /**
+     * Mensuales
+     */
     public ResultSet Mensuales() {
         Connection con = conexion.getConnection();
         String query = "SELECT " +

@@ -8,7 +8,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+/**
 
+ * @author Nombre Arturo
+ * @version 1.0
+ */
 public class HistorialPedidos {
     private JButton button1;
     private JTable tablahistorial;
@@ -59,11 +63,21 @@ public class HistorialPedidos {
         });
     }
 
+    /**
+     * Returns the Historial Pedidos.
+     *
+     * @return the Historial
+     */
     public HistorialPedidos() {
 
     }
 
 
+    /**
+     * /*
+     * (non-Javadoc)
+     *
+     */
     public void Historialordenes() {
         DefaultTableModel orden = new DefaultTableModel();
         orden.addColumn("id_pedido");
@@ -115,6 +129,12 @@ public class HistorialPedidos {
         }
     }
 
+    /**
+     * Estado de la base de datos.
+     *
+     * @param idPedido
+     * @
+     */
     public void actualizarEstado(int idPedido, String nuevoEstado) {
         Connection con = conR.getConnection();
 
@@ -139,6 +159,9 @@ public class HistorialPedidos {
         }
     }
 
+    /**
+     * Estado de historial
+     */
     public void actualizarStock(int idPedido) {
         Connection con = conR.getConnection();
 
@@ -184,6 +207,9 @@ public class HistorialPedidos {
     }
 
 
+    /**
+     * Runs the Historial Pedidos.
+     */
     public void runHistorial() {
 
         JFrame frame = new JFrame("Historial Pedidos");

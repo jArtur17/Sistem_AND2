@@ -6,11 +6,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Date;
+/**
+ * @author Lasso
+ * @version 1.0
+ */
 
 
 public class ProductoDAO {
     private Conexion connectionFA = new Conexion();
 
+    /**
+     * Agregar añadido con éxito.
+     *
+     * @
+     */
     public void agregar(Producto producto) {
         Connection con = connectionFA.getConnection();
         String query = "INSERT INTO producto(nombre, categoria, stock, stock_minimo, precio_unitario, fecha_vencimiento, indicaciones, almacen, lote) VALUES (?,?,?,?,?,?,?,?,?)";
@@ -42,6 +51,11 @@ public class ProductoDAO {
         }
     }
 
+    /**
+     * Actualización de producto.
+     *
+     * @param producto
+     */
     public void actualizar(Producto producto){
         Connection con = connectionFA.getConnection();
 
@@ -79,7 +93,11 @@ public class ProductoDAO {
     }
 
 
-
+    /**
+     * Edition de eliminar.
+     *
+     * @param id
+     */
     public void eliminar(int id)
     {
         Connection con = connectionFA.getConnection();

@@ -25,8 +25,8 @@ public class EnviarCorreo {
             // Configuración del servidor SMTP
             final String host = "smtp.gmail.com"; // Servidor SMTP de Gmail
             final String port = "587"; // Puerto TLS
-            final String username = "alejitoguzman.333@gmail.com"; // Cambia por tu correo
-            final String password = "bklo nlxo dsvd ehuq"; // Cambia por tu contraseña o usa una clave de aplicación
+            final String username = "alejitoguzman.333@gmail.com"; //coreo
+            final String password = "bklo nlxo dsvd ehuq"; // clave
 
             // Propiedades del correo
             Properties props = new Properties();

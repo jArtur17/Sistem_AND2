@@ -162,7 +162,7 @@
                   <model>
                     <item value="Efectivo"/>
                     <item value="Tarjeta"/>
-                    <item value="Trasnferencia"/>
+                    <item value="Transferencia"/>
                   </model>
                 </properties>
               </component>

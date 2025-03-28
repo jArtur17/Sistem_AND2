@@ -340,6 +340,7 @@ public class HistorialPedidosGUI {
         frame.setSize(600,650);
         frame.setResizable(false);
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
 
     // ** Clase interna para dibujar el fondo con imagen y degradado **

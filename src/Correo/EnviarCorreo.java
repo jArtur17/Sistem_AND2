@@ -20,7 +20,7 @@ public class EnviarCorreo {
 
 
 
-    public static void main(String[] args) {
+    public  void EnviarCorreo(String correoCliente) {
 
             // Configuración del servidor SMTP
             final String host = "smtp.gmail.com"; // Servidor SMTP de Gmail
@@ -48,7 +48,7 @@ public class EnviarCorreo {
                 // Crear mensaje de correo
                 Message message = new MimeMessage(session);
                 message.setFrom(new InternetAddress(username));
-                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("arturobanol21@gmail.com"));
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(correoCliente));
 
                 BodyPart messageBodyPart = new MimeBodyPart();
                 messageBodyPart.setText("Hola, esta es tu factura del día de hoy!");

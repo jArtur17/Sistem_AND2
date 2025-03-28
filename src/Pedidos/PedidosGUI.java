@@ -2,6 +2,7 @@ package Pedidos;
 
 import Caja.CajaGUI;
 import Conexion.Conexion;
+import Correo.EnviarCorreo;
 import Historial.HistorialPedidos;
 import Producto.ProductoGUI;
 import Sockets.ChatServer;
@@ -110,6 +111,8 @@ public class PedidosGUI {
     private String textico;
 
     GenerarPDF pdf = new GenerarPDF();
+
+    EnviarCorreo correo = new EnviarCorreo();
 
     /************************************************************************************************************************/
 
@@ -431,9 +434,19 @@ public class PedidosGUI {
                         estadotxt.setText("El pedido ha sido entregado ✔️");
                         //parte de PDF
                         PedidosDAO pedidoDAO = new PedidosDAO();
-                        //java.util.List<String> productos = pedidoDAO.obtenerProductosPorPedido(1); // ID del pedido
                         java.util.List<String> productos = pedidoDAO.obtenerProductosPorPedido(idPedido); // ID del pedido
-                        pdf.generarFacturaPDF(1, productos, fecha_hora);
+                        int respuesta = JOptionPane.showConfirmDialog(null,
+                                "Desea enviar la factura al cliente",
+                                "Confirmar acción",
+                                JOptionPane.YES_NO_OPTION
+                        );
+
+                        // El usuario acepta agregar el egreso aunque reste en la caja
+                        if (respuesta == JOptionPane.YES_OPTION) {
+                            pdf.generarFacturaPDF(1, productos, fecha_hora);
+                            FacturaPorGmail(idcliente);
+                        }
+
                         comboBoxClientes.setEnabled(true);
                         /*----------------------------------------------------------------------------------------------------------------------*/
 
@@ -860,6 +873,41 @@ public class PedidosGUI {
             }
         }
 
+        /*-------------------------------------------------------------------------------------------------------------*/
+
+        public void FacturaPorGmail(int idCliente){
+            try {
+                Connection con = cf.getConnection();
+
+                //Preparar la consulta SQL para obtener el correo electrónico del cliente
+                String consulta = "SELECT correo FROM cliente WHERE id_cliente = ?";
+                PreparedStatement sentencia = con.prepareStatement(consulta);
+                sentencia.setInt(1, idCliente); //recibir el id del cliente
+
+                //Ejecutar la consulta y obtener el resultado
+                ResultSet resultado = sentencia.executeQuery();
+
+                //Verificar si se encontró el correo electrónico y obtenerlo
+                if (resultado.next()) {
+                    String correoCliente = resultado.getString("correo");
+                    correo.EnviarCorreo(correoCliente);
+                } else {
+                    System.out.println("No se encontró el correo electrónico del cliente.");
+                }
+
+                // 6. Cerrar la conexión y los recursos
+                resultado.close();
+                sentencia.close();
+                con.close();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+
 
 
         //fin de metodos
@@ -887,7 +935,7 @@ public class PedidosGUI {
         frame.setSize(800,800);
         frame.setResizable(false);
         frame.setVisible(true);
-
+        frame.setLocationRelativeTo(null);
 
     }
 

@@ -2,12 +2,14 @@ package Pedidos;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.*;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.itextpdf.text.pdf.draw.LineSeparator;
+import java.io.FileOutputStream;
 
 
 import java.awt.*;
@@ -87,7 +89,6 @@ public class GenerarPDF {
                 for (String producto : productos) {
                     documento.add(new Paragraph(" " + producto));
                 }
-
                 documento.close();
                 System.out.println("Factura generada en: " + ruta);
 
@@ -95,6 +96,5 @@ public class GenerarPDF {
                 e.printStackTrace();
             }
         }
-
     }
 

@@ -18,6 +18,11 @@ public class Producto {
         this.lote = lote;
 
     }
+
+    public Producto() {
+
+    }
+
     public int getId_producto() {
         return id_producto;
     }

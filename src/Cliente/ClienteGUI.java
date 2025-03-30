@@ -41,6 +41,12 @@ public class ClienteGUI {
         aplicarEstilos();
 
         registrarButton.addActionListener(e -> {
+            String cedula = textField2.getText();
+            if(clienteDAO.existeCliente(cedula)){
+                JOptionPane.showMessageDialog(null, "la cédula ya se encuentra registrada");
+                return;
+            }
+
             if (textField2.getText().trim().isEmpty() || textField3.getText().trim().isEmpty() || textField4.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Complete todos los campos");
             } else {

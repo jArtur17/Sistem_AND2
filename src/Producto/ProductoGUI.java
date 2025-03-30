@@ -14,6 +14,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.sql.*;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ArrayList;
 
 import static java.sql.Date.valueOf;
 
@@ -34,11 +36,14 @@ public class ProductoGUI {
     private JTextField textField9;
     private JTextField textField8;
     private JTextField textField10;
+    private JButton button1;
+    private JTextField campoBusqueda;
     private JFrame frame;
     private JFrame parentFrame;
 
     private Conexion connectionFA = new Conexion();
     ProductoDAO productoDAO = new ProductoDAO();
+    Producto producto = new Producto();
     int rows = 0;
 
     public ProductoGUI(JFrame parentFrame)
@@ -105,13 +110,22 @@ public class ProductoGUI {
                         return;
                     }
 
-                    int precio_unitario = Integer.parseInt(precio_t);
+                    String nombreProducto = textField2.getText();
+                    if(productoDAO.existeProducto(nombreProducto)){
+                        JOptionPane.showMessageDialog(null, "El producto ya existe");
+                        return;
+                    }else{
+                        int precio_unitario = Integer.parseInt(precio_t);
 
-                    Producto producto = new Producto(0,  nombre, categoria, stock, stock_minimo, precio_unitario, fecha_vencimiento, indicaciones, almacen, lote);
-                    productoDAO.agregar(producto);
+                        //se agrega el producto
+                        Producto producto = new Producto(0,  nombre, categoria, stock, stock_minimo, precio_unitario, fecha_vencimiento, indicaciones, almacen, lote);
+                        productoDAO.agregar(producto);
+                        JOptionPane.showMessageDialog(null, "Producto agregado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                        clear();
+                        obtainInvent();
+                    }
 
-                    clear();
-                    obtainInvent();
+
                 }
             });
 
@@ -207,6 +221,22 @@ public class ProductoGUI {
             }
         });
 
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String terminoBusqueda = campoBusqueda.getText();
+                try {
+                    java.util.List<Producto> productos = buscarProductos(terminoBusqueda);
+                    // Actualizar la tabla con los resultados
+                    actualizarTablaProductos(productos);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error al buscar productos");
+                }
+            }
+        });
+
+
 
         table1.addMouseListener(new MouseAdapter() {
             @Override
@@ -215,31 +245,25 @@ public class ProductoGUI {
 
                 int selectedRows = table1.getSelectedRow();
 
-                if(selectedRows >= 0)
-                {
-                    textField1.setText((String) table1.getValueAt(selectedRows,0));
-                    textField2.setText((String) table1.getValueAt(selectedRows,1));
-                    textField3.setText((String) table1.getValueAt(selectedRows,2));
-                    textField4.setText((String) table1.getValueAt(selectedRows,3));
-                    textField7.setText((String) table1.getValueAt(selectedRows,4));
-                    textField5.setText((String) table1.getValueAt(selectedRows,5));
-                    textField6.setText((String) table1.getValueAt(selectedRows,6));
-                    textField9.setText((String) table1.getValueAt(selectedRows,7));
-                    textField8.setText((String) table1.getValueAt(selectedRows,8));
-                    textField10.setText((String) table1.getValueAt(selectedRows,9));
-
+                if (selectedRows >= 0) {
+                    textField1.setText(String.valueOf(table1.getValueAt(selectedRows, 0))); // id_producto (Integer)
+                    textField2.setText((String) table1.getValueAt(selectedRows, 1)); // Nombre (String)
+                    textField3.setText((String) table1.getValueAt(selectedRows, 2)); // Categoria (String)
+                    textField4.setText(String.valueOf(table1.getValueAt(selectedRows, 3))); // Stock (Integer)
+                    textField7.setText(String.valueOf(table1.getValueAt(selectedRows, 4))); // Stock_Minimo (Integer)
+                    textField5.setText(String.valueOf(table1.getValueAt(selectedRows, 5))); // Precio_Unitario (Integer)
+                    textField6.setText(String.valueOf(table1.getValueAt(selectedRows, 6))); // Fecha Vencimiento (Date)
+                    textField9.setText(String.valueOf(table1.getValueAt(selectedRows, 7))); // Indicaciones (String)
+                    textField8.setText(String.valueOf(table1.getValueAt(selectedRows, 8))); // Almacen (String)
+                    textField10.setText(String.valueOf(table1.getValueAt(selectedRows, 9))); // Lote (String)
 
                     rows = selectedRows;
                 }
-
-
             }
         });
     }
 
-    public ProductoGUI() {
 
-    }
 
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
@@ -378,6 +402,74 @@ public class ProductoGUI {
                 g.drawImage(imagenFondo, 0, 0, getWidth(), getHeight(), this);
             }
         }
+    }
+
+    public java.util.List<Producto> buscarProductos(String terminoBusqueda) throws SQLException {
+
+        PreparedStatement consulta = null;
+        ResultSet resultado = null;
+        java.util.List<Producto> productos = new ArrayList<>();
+
+        try {
+            Connection con = connectionFA.getConnection();
+            String sql = "SELECT * FROM producto WHERE nombre LIKE ?";
+            consulta = con.prepareStatement(sql);
+            consulta.setString(1, "%" + terminoBusqueda + "%"); // Búsqueda parcial
+            resultado = consulta.executeQuery();
+
+            while (resultado.next()) {
+                Producto producto = new Producto();
+                producto.setId_producto(resultado.getInt("id_producto"));
+                producto.setNombre(resultado.getString("nombre"));
+                producto.setCategoria(resultado.getString("categoria"));
+                producto.setStock(resultado.getInt("stock"));
+                producto.setStock_minimo(resultado.getInt("stock_minimo"));
+                producto.setPrecio_unitario(resultado.getInt("precio_unitario"));
+                producto.setFecha_vencimiento(resultado.getDate("fecha_vencimiento"));
+                producto.setIndicaciones(resultado.getString("indicaciones"));
+                producto.setAlmacen(resultado.getString("almacen"));
+                producto.setLote(resultado.getString("lote"));
+                productos.add(producto);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return productos;
+    }
+
+    public void actualizarTablaProductos(java.util.List<Producto> productos) {
+        DefaultTableModel modeloa = new DefaultTableModel();
+
+        // Definir las columnas
+        modeloa.addColumn("id_product");
+        modeloa.addColumn("Nombre");
+        modeloa.addColumn("Categoria");
+        modeloa.addColumn("Stock");
+        modeloa.addColumn("Stock_Minimo");
+        modeloa.addColumn("Precio_Unitario");
+        modeloa.addColumn("Fecha Vencimiento");
+        modeloa.addColumn("Indicaciones");
+        modeloa.addColumn("Almacen");
+        modeloa.addColumn("Lote");
+
+        for (Producto producto : productos) {
+            Object[] fila = {
+                    producto.getId_producto(),
+                    producto.getNombre(),
+                    producto.getCategoria(),
+                    producto.getStock(),
+                    producto.getStock_minimo(),
+                    producto.getPrecio_unitario(),
+                    producto.getFecha_vencimiento(),
+                    producto.getIndicaciones(),
+                    producto.getAlmacen(),
+                    producto.getLote()
+            };
+            modeloa.addRow(fila);
+        }
+
+        // Establecer el modelo en la tabla
+        table1.setModel(modeloa);
     }
 }
 

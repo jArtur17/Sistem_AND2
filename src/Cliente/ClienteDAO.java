@@ -5,6 +5,7 @@ import Conexion.Conexion;
 import javax.swing.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ClienteDAO {
@@ -97,6 +98,21 @@ public class ClienteDAO {
                 JOptionPane.showMessageDialog(null,"No se elimino");
 
             }
+        }
+
+        public boolean existeCliente(String cedula) {
+            Connection conexion = connectionFA.getConnection();
+            String query = "SELECT * FROM cliente WHERE cedula = ?";
+            try {
+                PreparedStatement pst = conexion.prepareStatement(query);
+                pst.setString(1, cedula);
+                try (ResultSet rs = pst.executeQuery()){
+                    return  rs.next();
+                }
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+            return false;
         }
     }
 

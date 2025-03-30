@@ -2,10 +2,9 @@ package Producto;
 
 import Conexion.Conexion;
 import javax.swing.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Date;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ProductoDAO {
@@ -35,10 +34,10 @@ public class ProductoDAO {
 
             else
                 JOptionPane.showMessageDialog(null, "No añadido");
-
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "No añadido");
+            return;
         }
     }
 
@@ -105,6 +104,21 @@ public class ProductoDAO {
             JOptionPane.showMessageDialog(null,"No se elimino");
 
         }
+    }
+
+    public boolean existeProducto(String nombre) {
+        Connection conexion = connectionFA.getConnection();
+        String query = "SELECT * FROM producto WHERE nombre = ?";
+        try {
+          PreparedStatement pst = conexion.prepareStatement(query);
+          pst.setString(1, nombre);
+          try (ResultSet rs = pst.executeQuery()){
+              return  rs.next();
+          }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

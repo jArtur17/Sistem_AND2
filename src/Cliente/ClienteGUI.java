@@ -5,20 +5,24 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+
 import Conexion.Conexion;
+import Producto.Producto;
 
 public class ClienteGUI {
     private JPanel main;
     private JTextField textField1, textField2, textField3, textField4, textField5, textField6;
     private JTable table1;
     private JButton registrarButton, actualizarButton, eliminarButton, BackButton;
+    private JButton button1;
+    private JTextField campoBusqueda;
     private JFrame frame, parentFrame;
     private ClienteDAO clienteDAO = new ClienteDAO();
     private Conexion connectionFA = new Conexion();
@@ -84,17 +88,32 @@ public class ClienteGUI {
             frame.dispose();
         });
 
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String terminoBusqueda = campoBusqueda.getText();
+                try {
+                    java.util.List<Cliente> clientes = buscarClientes(terminoBusqueda);
+                    // Actualizar la tabla con los resultados
+                    actualizarTablaClientes(clientes);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error al buscar productos");
+                }
+            }
+        });
+
         table1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int selectedRow = table1.getSelectedRow();
                 if (selectedRow >= 0) {
-                    textField1.setText((String) table1.getValueAt(selectedRow, 0));
-                    textField2.setText((String) table1.getValueAt(selectedRow, 1));
-                    textField3.setText((String) table1.getValueAt(selectedRow, 2));
-                    textField4.setText((String) table1.getValueAt(selectedRow, 4));
-                    textField5.setText((String) table1.getValueAt(selectedRow, 3));
-                    textField6.setText((String) table1.getValueAt(selectedRow, 5));
+                    textField1.setText(String.valueOf(table1.getValueAt(selectedRow, 0)));
+                    textField2.setText(String.valueOf(table1.getValueAt(selectedRow, 1)));
+                    textField3.setText(String.valueOf( table1.getValueAt(selectedRow, 2)));
+                    textField4.setText(String.valueOf(table1.getValueAt(selectedRow, 4)));
+                    textField5.setText(String.valueOf(table1.getValueAt(selectedRow, 3)));
+                    textField6.setText(String.valueOf( table1.getValueAt(selectedRow, 5)));
                 }
             }
         });
@@ -107,10 +126,12 @@ public class ClienteGUI {
         eliminarButton.setBackground(new Color(0, 51, 102));
         BackButton.setBackground(new Color(0, 51, 102));
 
+
         registrarButton.setForeground(Color.WHITE);
         actualizarButton.setForeground(Color.WHITE);
         eliminarButton.setForeground(Color.WHITE);
         BackButton.setForeground(Color.WHITE);
+
 
         JTableHeader header = table1.getTableHeader();
         header.setBackground(new Color(0, 51, 102));
@@ -190,5 +211,61 @@ public class ClienteGUI {
                 g.drawImage(imagenFondo, 0, 0, getWidth(), getHeight(), this);
             }
         }
+    }
+
+    public java.util.List<Cliente> buscarClientes(String terminoBusqueda) throws SQLException {
+
+        PreparedStatement consulta = null;
+        ResultSet resultado = null;
+        java.util.List<Cliente> clientes = new ArrayList<>();
+
+        try {
+            Connection con = connectionFA.getConnection();
+            String sql = "SELECT * FROM cliente WHERE nombre LIKE ?";
+            consulta = con.prepareStatement(sql);
+            consulta.setString(1, "%" + terminoBusqueda + "%"); // Búsqueda parcial
+            resultado = consulta.executeQuery();
+
+            while (resultado.next()) {
+                Cliente cliente = new Cliente();
+                cliente.setId_cliente(resultado.getInt("id_cliente"));
+                cliente.setCedula(resultado.getString("cedula"));
+                cliente.setNombre(resultado.getString("nombre"));
+                cliente.setTelefono(resultado.getString("telefono"));
+                cliente.setCorreo(resultado.getString("correo"));
+                cliente.setDireccion(resultado.getString("direccion"));
+                clientes.add(cliente);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return clientes;
+    }
+
+    public void actualizarTablaClientes(java.util.List<Cliente> clientes) {
+        DefaultTableModel modelo = new DefaultTableModel();
+
+        // Definir las columnas
+        modelo.addColumn("Id_Cliente");
+        modelo.addColumn("Cedula");
+        modelo.addColumn("Nombre");
+        modelo.addColumn("Numero");
+        modelo.addColumn("Correo");
+        modelo.addColumn("Direccion");
+
+        for (Cliente cliente : clientes) {
+            Object[] fila = {
+                    cliente.getId_cliente(),
+                    cliente.getCedula(),
+                    cliente.getNombre(),
+                    cliente.getTelefono(),
+                    cliente.getCorreo(),
+                    cliente.getDireccion(),
+            };
+            modelo.addRow(fila);
+        }
+
+        // Establecer el modelo en la tabla
+        table1.setModel(modelo);
     }
 }

@@ -12,6 +12,10 @@ public class Cliente {
         this.direccion = direccion;
     }
 
+    public Cliente() {
+
+    }
+
     public int getId_cliente() {
         return id_cliente;
     }

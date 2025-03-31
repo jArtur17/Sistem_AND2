@@ -537,7 +537,6 @@ public class PedidosGUI {
             tablaCarrito.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
 
-
     }
 
     private void agregarImagenFondo() {

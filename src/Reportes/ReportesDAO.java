@@ -14,7 +14,7 @@ public class ReportesDAO {
 
     public ResultSet StockMin() {
         Connection con = conexion.getConnection();
-        String query = "SELECT nombre, categoria, stock, stock_minimo FROM producto WHERE stock <= stock_minimo";
+        String query = "SELECT id_producto, nombre, categoria, stock, stock_minimo FROM producto WHERE stock <= stock_minimo";
 
         try {
             PreparedStatement pst = con.prepareStatement(query);
@@ -25,6 +25,8 @@ public class ReportesDAO {
             return null;
         }
     }
+
+
 
     public ResultSet Diarias() {
         Connection con = conexion.getConnection();

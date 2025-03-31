@@ -10,6 +10,7 @@ import Caja.CajaDAO;
 import Caja.CajaGUI;
 import Conexion.Conexion;
 import Pedidos.PedidosGUI;
+import org.w3c.dom.ls.LSOutput;
 
 import java.awt.*;
 import java.net.URL;
@@ -48,6 +49,7 @@ public class Detalle_FinancieroGUI {
     private Conexion conexion = new Conexion();
     PedidosGUI p = new PedidosGUI(frame);
     CajaGUI cj = new CajaGUI();
+
 
 
     public Detalle_FinancieroGUI(JFrame parentFrame)

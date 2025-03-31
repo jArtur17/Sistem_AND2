@@ -200,8 +200,6 @@ public class CajaGUI {
     public void showdata() {
         NonEditableTableModel modelo = new NonEditableTableModel();
 
-        //modelo.addColumn("ID Caja");
-        //modelo.addColumn("ID Detalle Financiero");
         modelo.addColumn("Concepto");
         modelo.addColumn("Valor");
 
@@ -210,13 +208,24 @@ public class CajaGUI {
         Connection con = conexion.getConnection();
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT df.tipo_pago AS tipo_pago FROM detalle_financiero JOIN c.valor FROM caja");
+            ResultSet rs = stmt.executeQuery("SELECT\n" +
+                    "    tipo_pago,\n" +
+                    "    CASE\n" +
+                    "        WHEN Ingreso IS NOT NULL AND Ingreso != 0 THEN 'ingreso'\n" +
+                    "        WHEN Egreso IS NOT NULL AND Egreso != 0 THEN 'egreso'\n" +
+                    "        ELSE 'Sin movimiento'\n" +
+                    "    END AS Tipo_Movimiento,\n" +
+                    "    CASE\n" +
+                    "        WHEN Ingreso IS NOT NULL AND Ingreso != 0 THEN Ingreso\n" +
+                    "        WHEN Egreso IS NOT NULL AND Egreso != 0 THEN -Egreso\n" +
+                    "        ELSE 0\n" +
+                    "    END AS Valor\n" +
+                    "FROM\n" +
+                    "    detalle_financiero;");
 
             while (rs.next()) {
                 modelo.addRow(new Object[]{
-                        rs.getInt("id_caja"),
-                        rs.getInt("id_detallefinanciero"),
-                        rs.getString("concepto"),
+                        rs.getString("tipo_pago"),
                         rs.getInt("valor"),
                 });
             }

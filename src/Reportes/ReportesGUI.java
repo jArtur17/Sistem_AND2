@@ -1,8 +1,11 @@
 package Reportes;
 
 import Conexion.Conexion;
+import Producto.ProductoGUI;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -10,6 +13,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -21,6 +26,7 @@ public class ReportesGUI {
     private JButton semanalesButton;
     private JButton mensualesButton;
     private JButton controlStockButton;
+    private JButton actualizarButton;
 
     private ReportesDAO reportesDAO = new ReportesDAO();
 
@@ -30,6 +36,7 @@ public class ReportesGUI {
     private Conexion conexion = new Conexion();
 
     public ReportesGUI(JFrame parentFrame) {
+        actualizarButton.setVisible(false);
         this.parentFrame = parentFrame;
 
         // Cambiar color y fuente de los labels
@@ -46,6 +53,7 @@ public class ReportesGUI {
         diariasButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                actualizarButton.setVisible(false);
                 reportesDAO.Diarias();
                 showdata();
 
@@ -55,6 +63,7 @@ public class ReportesGUI {
         semanalesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                actualizarButton.setVisible(false);
                 reportesDAO.Semanales();
                 ReportesSemanales();
             }
@@ -63,6 +72,7 @@ public class ReportesGUI {
         mensualesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                actualizarButton.setVisible(false);
                 reportesDAO.Mensuales();
                 ReportesMensuales();
 
@@ -73,6 +83,7 @@ public class ReportesGUI {
         volverButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                actualizarButton.setVisible(false);
                 if (parentFrame != null){
                     parentFrame.setVisible(true);
                 }
@@ -83,11 +94,44 @@ public class ReportesGUI {
         controlStockButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                actualizarButton.setVisible(true);
                 reportesDAO.StockMin();
                 StockMinimo();
             }
         });
+        actualizarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                ProductoGUI p = new ProductoGUI(frame);
+                p.runProducto();
+            }
+        });
     }
+
+    public void actualizarEstado(int idProducto, String nuevoStock) {
+        Connection con = conexion.getConnection();
+
+        String sql = "UPDATE pedidos SET stock = ? WHERE nombre = ?";
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, nuevoStock);
+            ps.setInt(2, idProducto);
+            int filasActualizadas = ps.executeUpdate();
+
+            if (filasActualizadas > 0) {
+                //System.out.println("Estado actualizado correctamente en la base de datos.");
+                JOptionPane.showMessageDialog(null, "El stock se actualizó exitosamente");
+                StockMinimo();// Recargar datos de la tabla
+            } else {
+                JOptionPane.showMessageDialog(null, "No se pudo actualizar el stock.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al actualizar el estado: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
@@ -97,12 +141,15 @@ public class ReportesGUI {
         diariasButton.setBackground(new Color(0, 51, 102));
         semanalesButton.setBackground(new Color(0, 51, 102));
         mensualesButton.setBackground(new Color(0, 51, 102));
+        actualizarButton.setBackground(new Color(0, 51, 102));
+
 
 
         controlStockButton.setForeground(Color.WHITE);
         diariasButton.setForeground(Color.WHITE);
         semanalesButton.setForeground(Color.WHITE);
         mensualesButton.setForeground(Color.WHITE);
+        actualizarButton.setForeground(Color.WHITE);
         volverButton.setForeground(Color.WHITE);
 
         JTableHeader header = table1.getTableHeader();
@@ -146,7 +193,8 @@ public class ReportesGUI {
     }
 
     public void StockMinimo() {
-        NonEditableTableModel modelo = new NonEditableTableModel();
+        DefaultTableModel modelo = new DefaultTableModel();
+        modelo.addColumn("ID");
         modelo.addColumn("Nombre");
         modelo.addColumn("Categoria");
         modelo.addColumn("Stock");
@@ -158,12 +206,14 @@ public class ReportesGUI {
 
             if (rs != null) {
                 while (rs.next()) {
+                    int id = rs.getInt("id_producto");
                     String nombre = rs.getString("nombre");
                     String categoria = rs.getString("categoria");
                     int stock = rs.getInt("stock");
                     int stock_minimo = rs.getInt("stock_minimo");
 
                     modelo.addRow(new Object[]{
+                            id,
                             nombre,
                             categoria,
                             stock,

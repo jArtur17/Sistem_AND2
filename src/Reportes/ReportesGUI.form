@@ -58,30 +58,6 @@
           <text value=""/>
         </properties>
       </component>
-      <component id="63a2f" class="javax.swing.JButton" binding="diariasButton" default-binding="true">
-        <constraints>
-          <grid row="4" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Diarias"/>
-        </properties>
-      </component>
-      <component id="a9b9e" class="javax.swing.JButton" binding="semanalesButton" default-binding="true">
-        <constraints>
-          <grid row="5" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Semanales"/>
-        </properties>
-      </component>
-      <component id="78d2e" class="javax.swing.JButton" binding="mensualesButton" default-binding="true">
-        <constraints>
-          <grid row="6" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Mensuales"/>
-        </properties>
-      </component>
       <component id="e2615" class="javax.swing.JLabel">
         <constraints>
           <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -128,6 +104,38 @@
         </constraints>
         <properties>
           <text value=""/>
+        </properties>
+      </component>
+      <component id="78d2e" class="javax.swing.JButton" binding="mensualesButton" default-binding="true">
+        <constraints>
+          <grid row="7" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Mensuales"/>
+        </properties>
+      </component>
+      <component id="a9b9e" class="javax.swing.JButton" binding="semanalesButton" default-binding="true">
+        <constraints>
+          <grid row="6" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Semanales"/>
+        </properties>
+      </component>
+      <component id="63a2f" class="javax.swing.JButton" binding="diariasButton" default-binding="true">
+        <constraints>
+          <grid row="5" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Diarias"/>
+        </properties>
+      </component>
+      <component id="9503" class="javax.swing.JButton" binding="controlStockButton" default-binding="true">
+        <constraints>
+          <grid row="4" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Control Stock"/>
         </properties>
       </component>
     </children>

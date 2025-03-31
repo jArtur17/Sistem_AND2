@@ -20,6 +20,7 @@ public class ReportesGUI {
     private JButton diariasButton;
     private JButton semanalesButton;
     private JButton mensualesButton;
+    private JButton controlStockButton;
 
     private ReportesDAO reportesDAO = new ReportesDAO();
 
@@ -78,16 +79,27 @@ public class ReportesGUI {
                 frame.dispose();
             }
         });
+
+        controlStockButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reportesDAO.StockMin();
+                StockMinimo();
+            }
+        });
     }
 
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
 
+        controlStockButton.setBackground(new Color(0, 51, 102));
         volverButton.setBackground(new Color(0, 51, 102));
         diariasButton.setBackground(new Color(0, 51, 102));
         semanalesButton.setBackground(new Color(0, 51, 102));
         mensualesButton.setBackground(new Color(0, 51, 102));
 
+
+        controlStockButton.setForeground(Color.WHITE);
         diariasButton.setForeground(Color.WHITE);
         semanalesButton.setForeground(Color.WHITE);
         mensualesButton.setForeground(Color.WHITE);
@@ -130,6 +142,39 @@ public class ReportesGUI {
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error when displaying data: " + e.getMessage());
+        }
+    }
+
+    public void StockMinimo() {
+        NonEditableTableModel modelo = new NonEditableTableModel();
+        modelo.addColumn("Nombre");
+        modelo.addColumn("Categoria");
+        modelo.addColumn("Stock");
+        modelo.addColumn("Stock minimo");
+        table1.setModel(modelo);
+
+        try {
+            ResultSet rs = reportesDAO.StockMin();
+
+            if (rs != null) {
+                while (rs.next()) {
+                    String nombre = rs.getString("nombre");
+                    String categoria = rs.getString("categoria");
+                    int stock = rs.getInt("stock");
+                    int stock_minimo = rs.getInt("stock_minimo");
+
+                    modelo.addRow(new Object[]{
+                            nombre,
+                            categoria,
+                            stock,
+                            stock_minimo
+                    });
+                }
+                rs.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error when displaying stock data: " + e.getMessage());
         }
     }
 

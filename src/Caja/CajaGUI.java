@@ -200,8 +200,8 @@ public class CajaGUI {
     public void showdata() {
         NonEditableTableModel modelo = new NonEditableTableModel();
 
-        modelo.addColumn("ID Caja");
-        modelo.addColumn("ID Detalle Financiero");
+        //modelo.addColumn("ID Caja");
+        //modelo.addColumn("ID Detalle Financiero");
         modelo.addColumn("Concepto");
         modelo.addColumn("Valor");
 
@@ -210,7 +210,7 @@ public class CajaGUI {
         Connection con = conexion.getConnection();
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT id_caja, id_detallefinanciero, concepto, valor FROM caja");
+            ResultSet rs = stmt.executeQuery("SELECT df.tipo_pago AS tipo_pago FROM detalle_financiero JOIN c.valor FROM caja");
 
             while (rs.next()) {
                 modelo.addRow(new Object[]{

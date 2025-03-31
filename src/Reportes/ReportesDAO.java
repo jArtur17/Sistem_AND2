@@ -12,6 +12,20 @@ public class ReportesDAO {
 
     private Conexion conexion = new Conexion();
 
+    public ResultSet StockMin() {
+        Connection con = conexion.getConnection();
+        String query = "SELECT nombre, categoria, stock, stock_minimo FROM producto WHERE stock <= stock_minimo";
+
+        try {
+            PreparedStatement pst = con.prepareStatement(query);
+            return pst.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al consultar ventas diarias: " + e.getMessage());
+            return null;
+        }
+    }
+
     public ResultSet Diarias() {
         Connection con = conexion.getConnection();
         String query = "SELECT fecha_hora, SUM(total) as venta_diaria " +

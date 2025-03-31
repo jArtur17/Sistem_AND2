@@ -45,9 +45,13 @@ public class ClienteGUI {
         aplicarEstilos();
 
         registrarButton.addActionListener(e -> {
+            String correo = textField4.getText();
             String cedula = textField2.getText();
             if(clienteDAO.existeCliente(cedula)){
                 JOptionPane.showMessageDialog(null, "la cédula ya se encuentra registrada");
+                return;
+            } else if (clienteDAO.existeCorreo(correo)) {
+                JOptionPane.showMessageDialog(null, "el correo ya se encuentra registrado");
                 return;
             }
 

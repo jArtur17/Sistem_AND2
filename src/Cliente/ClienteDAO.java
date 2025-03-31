@@ -114,5 +114,20 @@ public class ClienteDAO {
             }
             return false;
         }
+
+        public boolean existeCorreo(String correo) {
+            Connection conexion = connectionFA.getConnection();
+            String query = "SELECT * FROM cliente WHERE correo = ?";
+            try {
+                PreparedStatement pst = conexion.prepareStatement(query);
+                pst.setString(1, correo);
+                try (ResultSet rs = pst.executeQuery()){
+                    return  rs.next();
+                }
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+            return false;
+        }
     }
 

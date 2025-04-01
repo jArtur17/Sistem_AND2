@@ -1,11 +1,8 @@
 package Reportes;
 
 import Conexion.Conexion;
-import Producto.ProductoGUI;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -13,11 +10,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * GUI para la generación de reportes de ventas diarias, semanales y mensuales.
+ * @author Nicolle
+ */
 public class ReportesGUI {
     private JPanel main;
     private JButton volverButton;
@@ -25,8 +24,6 @@ public class ReportesGUI {
     private JButton diariasButton;
     private JButton semanalesButton;
     private JButton mensualesButton;
-    private JButton controlStockButton;
-    private JButton actualizarButton;
 
     private ReportesDAO reportesDAO = new ReportesDAO();
 
@@ -35,8 +32,11 @@ public class ReportesGUI {
 
     private Conexion conexion = new Conexion();
 
+    /**
+     * Constructor de la clase ReportesGUI.
+     * @param parentFrame El JFrame padre de esta GUI.
+     */
     public ReportesGUI(JFrame parentFrame) {
-        actualizarButton.setVisible(false);
         this.parentFrame = parentFrame;
 
         // Cambiar color y fuente de los labels
@@ -53,7 +53,6 @@ public class ReportesGUI {
         diariasButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actualizarButton.setVisible(false);
                 reportesDAO.Diarias();
                 showdata();
 
@@ -63,7 +62,6 @@ public class ReportesGUI {
         semanalesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actualizarButton.setVisible(false);
                 reportesDAO.Semanales();
                 ReportesSemanales();
             }
@@ -72,7 +70,6 @@ public class ReportesGUI {
         mensualesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actualizarButton.setVisible(false);
                 reportesDAO.Mensuales();
                 ReportesMensuales();
 
@@ -83,73 +80,28 @@ public class ReportesGUI {
         volverButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actualizarButton.setVisible(false);
                 if (parentFrame != null){
                     parentFrame.setVisible(true);
                 }
                 frame.dispose();
             }
         });
-
-        controlStockButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                actualizarButton.setVisible(true);
-                reportesDAO.StockMin();
-                StockMinimo();
-            }
-        });
-        actualizarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                ProductoGUI p = new ProductoGUI(frame);
-                p.runProducto();
-            }
-        });
     }
 
-    public void actualizarEstado(int idProducto, String nuevoStock) {
-        Connection con = conexion.getConnection();
-
-        String sql = "UPDATE pedidos SET stock = ? WHERE nombre = ?";
-
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, nuevoStock);
-            ps.setInt(2, idProducto);
-            int filasActualizadas = ps.executeUpdate();
-
-            if (filasActualizadas > 0) {
-                //System.out.println("Estado actualizado correctamente en la base de datos.");
-                JOptionPane.showMessageDialog(null, "El stock se actualizó exitosamente");
-                StockMinimo();// Recargar datos de la tabla
-            } else {
-                JOptionPane.showMessageDialog(null, "No se pudo actualizar el stock.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al actualizar el estado: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-
+    /**
+     * Aplica estilos visuales a los componentes de la GUI.
+     */
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
 
-        controlStockButton.setBackground(new Color(0, 51, 102));
         volverButton.setBackground(new Color(0, 51, 102));
         diariasButton.setBackground(new Color(0, 51, 102));
         semanalesButton.setBackground(new Color(0, 51, 102));
         mensualesButton.setBackground(new Color(0, 51, 102));
-        actualizarButton.setBackground(new Color(0, 51, 102));
 
-
-
-        controlStockButton.setForeground(Color.WHITE);
         diariasButton.setForeground(Color.WHITE);
         semanalesButton.setForeground(Color.WHITE);
         mensualesButton.setForeground(Color.WHITE);
-        actualizarButton.setForeground(Color.WHITE);
         volverButton.setForeground(Color.WHITE);
 
         JTableHeader header = table1.getTableHeader();
@@ -163,6 +115,10 @@ public class ReportesGUI {
             table1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     }
+
+    /**
+     * Muestra los datos de ventas diarias en la tabla.
+     */
     public void showdata() {
         NonEditableTableModel modelo = new NonEditableTableModel();
         modelo.addColumn("fecha_hora");
@@ -192,42 +148,9 @@ public class ReportesGUI {
         }
     }
 
-    public void StockMinimo() {
-        DefaultTableModel modelo = new DefaultTableModel();
-        modelo.addColumn("ID");
-        modelo.addColumn("Nombre");
-        modelo.addColumn("Categoria");
-        modelo.addColumn("Stock");
-        modelo.addColumn("Stock minimo");
-        table1.setModel(modelo);
-
-        try {
-            ResultSet rs = reportesDAO.StockMin();
-
-            if (rs != null) {
-                while (rs.next()) {
-                    int id = rs.getInt("id_producto");
-                    String nombre = rs.getString("nombre");
-                    String categoria = rs.getString("categoria");
-                    int stock = rs.getInt("stock");
-                    int stock_minimo = rs.getInt("stock_minimo");
-
-                    modelo.addRow(new Object[]{
-                            id,
-                            nombre,
-                            categoria,
-                            stock,
-                            stock_minimo
-                    });
-                }
-                rs.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error when displaying stock data: " + e.getMessage());
-        }
-    }
-
+    /**
+     * Muestra los datos de ventas semanales en la tabla.
+     */
     public void ReportesSemanales() {
         NonEditableTableModel modelo = new NonEditableTableModel();
         modelo.addColumn("Semana");
@@ -261,6 +184,9 @@ public class ReportesGUI {
         }
     }
 
+    /**
+     * Muestra los datos de ventas mensuales en la tabla.
+     */
     public void ReportesMensuales() {
         NonEditableTableModel modelo = new NonEditableTableModel();
         modelo.addColumn("Año");
@@ -291,6 +217,9 @@ public class ReportesGUI {
         }
     }
 
+    /**
+     * Clase interna para crear un modelo de tabla no editable.
+     */
     public class NonEditableTableModel extends DefaultTableModel {
         @Override
         public boolean isCellEditable(int row, int column) {
@@ -298,9 +227,9 @@ public class ReportesGUI {
         }
     }
 
-
-
-
+    /**
+     * Inicia la GUI de reportes.
+     */
     public void runReport() {
 
         frame = new JFrame("Reportes");
@@ -324,6 +253,9 @@ public class ReportesGUI {
         frame.setLocationRelativeTo(null);
     }
 
+    /**
+     * Clase interna para dibujar el fondo con imagen.
+     */
     class FondoPanel extends JPanel {
         private Image imagenFondo;
 
@@ -343,6 +275,3 @@ public class ReportesGUI {
         }
     }
 }
-
-
-

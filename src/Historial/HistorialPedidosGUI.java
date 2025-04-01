@@ -16,6 +16,10 @@ import java.net.URL;
 import java.sql.*;
 
 
+/**
+ * GUI para mostrar y gestionar el historial de pedidos.
+ * @author Arturo
+ */
 public class HistorialPedidosGUI {
     private JButton volver;
     private JTable tablahistorial;
@@ -27,6 +31,10 @@ public class HistorialPedidosGUI {
     private JFrame parentFrame;
     Conexion conR = new Conexion();
 
+    /**
+     * Constructor de la clase HistorialPedidosGUI.
+     * @param parentFrame El JFrame padre de esta GUI.
+     */
     public HistorialPedidosGUI(JFrame parentFrame) {
         //scrol.setVisible(false);
         this.parentFrame = parentFrame;
@@ -134,11 +142,16 @@ public class HistorialPedidosGUI {
 
     }
 
+    /**
+     * Constructor vacío de la clase HistorialPedidosGUI.
+     */
     public HistorialPedidosGUI() {
 
     }
 
-
+    /**
+     * Llena la tabla con el historial de pedidos.
+     */
     public void Historialordenes() {
         DefaultTableModel orden = new DefaultTableModel();
         orden.addColumn("id_pedido");
@@ -180,6 +193,9 @@ public class HistorialPedidosGUI {
         }
     }
 
+    /**
+     * Aplica estilos visuales a los componentes de la GUI.
+     */
     public void aplicarEstilos() {
         Panel.setBackground(Color.DARK_GRAY);
         volver.setForeground(Color.WHITE);
@@ -207,6 +223,9 @@ public class HistorialPedidosGUI {
         }
     }
 
+    /**
+     * Clase interna para editar la celda de estado en la tabla.
+     */
     class EstadoCellEditor extends DefaultCellEditor {
         public EstadoCellEditor() {
             super(new JComboBox<>(new String[]{"Enviado"}));
@@ -220,6 +239,11 @@ public class HistorialPedidosGUI {
         }
     }
 
+    /**
+     * Actualiza el estado de un pedido en la base de datos.
+     * @param idPedido El ID del pedido.
+     * @param nuevoEstado El nuevo estado del pedido.
+     */
     public void actualizarEstado(int idPedido, String nuevoEstado) {
         Connection con = conR.getConnection();
 
@@ -244,6 +268,10 @@ public class HistorialPedidosGUI {
         }
     }
 
+    /**
+     * Actualiza el stock de los productos asociados a un pedido.
+     * @param idPedido El ID del pedido.
+     */
     public void actualizarStock(int idPedido) {
         Connection con = conR.getConnection();
 
@@ -288,6 +316,10 @@ public class HistorialPedidosGUI {
         }
     }
 
+    /**
+     * Muestra los detalles de un pedido en la tabla de detalles.
+     * @param idPedido El ID del pedido.
+     */
     private void mostrarDetallesPedido(int idPedido) {
         scrol.setVisible(true);
         DefaultTableModel modeloDetalles = new DefaultTableModel();
@@ -314,16 +346,16 @@ public class HistorialPedidosGUI {
                 });
             }
             tabledetalles.setModel(modeloDetalles); // Actualiza la tabla de detalles
-             // Muestra la tabla de detalles
+            // Muestra la tabla de detalles
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-
-
-
+    /**
+     * Inicia la GUI del historial de pedidos.
+     */
     public void runHistorial() {
 
         frame = new JFrame("Historial Pedidos");
@@ -354,7 +386,9 @@ public class HistorialPedidosGUI {
         frame.setLocationRelativeTo(null);
     }
 
-    // ** Clase interna para dibujar el fondo con imagen y degradado **
+    /**
+     * Clase interna para dibujar el fondo con imagen y degradado.
+     */
     class FondoPanel extends JPanel {
         private Image imagenFondo;
 
@@ -384,7 +418,9 @@ public class HistorialPedidosGUI {
         }
     }
 
-
+    /**
+     * Clase interna para crear un modelo de tabla personalizado.
+     */
     class ModeloTabla extends AbstractTableModel {
         private final Object[][] datos;
         private final String[] columnas;
@@ -425,9 +461,4 @@ public class HistorialPedidosGUI {
             fireTableCellUpdated(rowIndex, columnIndex);
         }
     }
-
-
-
-
 }
-

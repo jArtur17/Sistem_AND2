@@ -11,6 +11,11 @@ import java.net.URL;
 import java.sql.*;
 import Conexion.Conexion;
 
+/**
+ * GUI para la gestión de la caja.
+ * Permite visualizar los movimientos de la caja y el saldo actual.
+ * @author Nicolle
+ */
 public class CajaGUI {
     private JPanel main;
     private JButton volverButton;
@@ -26,12 +31,20 @@ public class CajaGUI {
     //private PedidosGUI p = new PedidosGUI();
 
 
+    /**
+     * Constructor vacío de la clase CajaGUI.
+     */
     public CajaGUI() {
 
 
     }
 
-
+    /**
+     * Envía dinero a la caja y actualiza la GUI.
+     * @param Detallef El ID del detalle financiero asociado.
+     * @param concepto El concepto del movimiento.
+     * @param total El valor del movimiento.
+     */
     public void EnviarDinero(int Detallef, String concepto, int total){
         sum_total += total;
         saldoactualtxt.setText(String.valueOf(sum_total));
@@ -65,6 +78,10 @@ public class CajaGUI {
         }
     }
 
+    /**
+     * Constructor de la clase CajaGUI.
+     * @param parentFrame El JFrame padre de esta GUI.
+     */
     public CajaGUI(JFrame parentFrame) {
         this.parentFrame = parentFrame;
         saldoactualtxt.setEditable(false);
@@ -122,6 +139,9 @@ public class CajaGUI {
         });
     }
 
+    /**
+     * Actualiza el total de la caja en el JTextField.
+     */
     public void actualizarTotal() {
         Connection con = conexion.getConnection();
         PreparedStatement ps = null;
@@ -151,6 +171,10 @@ public class CajaGUI {
         }
     }
 
+    /**
+     * Obtiene el saldo total de la caja desde la base de datos.
+     * @return El saldo total de la caja.
+     */
     public int obtenerSaldoTotal() {
         int saldo = 0;
         String sql = "SELECT COALESCE(SUM(Ingreso) - SUM(Egreso), 0) AS saldo_actual FROM detalle_financiero";
@@ -170,12 +194,17 @@ public class CajaGUI {
         return saldo;
     }
 
-
+    /**
+     * Actualiza el saldo en el JTextField.
+     */
     public void actualizarSaldoEnTextField() {
         int saldo = obtenerSaldoTotal();
         saldoactualtxt.setText(String.valueOf(saldo)); // Muestra el saldo en el JTextField
     }
 
+    /**
+     * Aplica estilos visuales a los componentes de la GUI.
+     */
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
 
@@ -196,10 +225,14 @@ public class CajaGUI {
         }
     }
 
-
+    /**
+     * Muestra los datos de la caja en la tabla de la GUI.
+     */
     public void showdata() {
         NonEditableTableModel modelo = new NonEditableTableModel();
 
+        modelo.addColumn("ID Caja");
+        modelo.addColumn("ID Detalle Financiero");
         modelo.addColumn("Concepto");
         modelo.addColumn("Valor");
 
@@ -208,24 +241,13 @@ public class CajaGUI {
         Connection con = conexion.getConnection();
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT\n" +
-                    "    tipo_pago,\n" +
-                    "    CASE\n" +
-                    "        WHEN Ingreso IS NOT NULL AND Ingreso != 0 THEN 'ingreso'\n" +
-                    "        WHEN Egreso IS NOT NULL AND Egreso != 0 THEN 'egreso'\n" +
-                    "        ELSE 'Sin movimiento'\n" +
-                    "    END AS Tipo_Movimiento,\n" +
-                    "    CASE\n" +
-                    "        WHEN Ingreso IS NOT NULL AND Ingreso != 0 THEN Ingreso\n" +
-                    "        WHEN Egreso IS NOT NULL AND Egreso != 0 THEN -Egreso\n" +
-                    "        ELSE 0\n" +
-                    "    END AS Valor\n" +
-                    "FROM\n" +
-                    "    detalle_financiero;");
+            ResultSet rs = stmt.executeQuery("SELECT id_caja, id_detallefinanciero, concepto, valor FROM caja");
 
             while (rs.next()) {
                 modelo.addRow(new Object[]{
-                        rs.getString("tipo_pago"),
+                        rs.getInt("id_caja"),
+                        rs.getInt("id_detallefinanciero"),
+                        rs.getString("concepto"),
                         rs.getInt("valor"),
                 });
             }
@@ -237,12 +259,18 @@ public class CajaGUI {
 
     }
 
+    /**
+     * Obtiene el saldo total de la caja.
+     * @return El saldo total de la caja.
+     */
     public int Obtenertotal(){
         int total = obtenerSaldoTotal();
         return total;
     }
 
-
+    /**
+     * Clase interna para crear un modelo de tabla no editable.
+     */
     public class NonEditableTableModel extends DefaultTableModel {
         @Override
         public boolean isCellEditable(int row, int column) {
@@ -250,6 +278,9 @@ public class CajaGUI {
         }
     }
 
+    /**
+     * Inicia la GUI de la caja.
+     */
     public void runCaja() {
         frame = new JFrame("Gestión de Caja");
 
@@ -277,7 +308,9 @@ public class CajaGUI {
     }
 
 /*************************************************************************************************************************************/
-    // ** Clase interna para dibujar el fondo con imagen y degradado **
+    /**
+     * Clase interna para dibujar el fondo con imagen y degradado.
+     */
     class FondoPanel extends JPanel {
         private Image imagenFondo;
 

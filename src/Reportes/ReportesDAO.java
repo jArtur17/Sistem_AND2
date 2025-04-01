@@ -8,26 +8,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * DAO (Data Access Object) para la generación de reportes de ventas.
+ * @author Nicolle
+ */
 public class ReportesDAO {
 
     private Conexion conexion = new Conexion();
 
-    public ResultSet StockMin() {
-        Connection con = conexion.getConnection();
-        String query = "SELECT id_producto, nombre, categoria, stock, stock_minimo FROM producto WHERE stock <= stock_minimo";
-
-        try {
-            PreparedStatement pst = con.prepareStatement(query);
-            return pst.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al consultar ventas diarias: " + e.getMessage());
-            return null;
-        }
-    }
-
-
-
+    /**
+     * Obtiene las ventas diarias desde la base de datos.
+     * @return Un ResultSet con las ventas diarias, o null si ocurre un error.
+     */
     public ResultSet Diarias() {
         Connection con = conexion.getConnection();
         String query = "SELECT fecha_hora, SUM(total) as venta_diaria " +
@@ -44,6 +36,10 @@ public class ReportesDAO {
         }
     }
 
+    /**
+     * Obtiene las ventas semanales desde la base de datos.
+     * @return Un ResultSet con las ventas semanales, o null si ocurre un error.
+     */
     public ResultSet Semanales() {
         Connection con = conexion.getConnection();
         String query = "SELECT " +
@@ -64,6 +60,10 @@ public class ReportesDAO {
         }
     }
 
+    /**
+     * Obtiene las ventas mensuales desde la base de datos.
+     * @return Un ResultSet con las ventas mensuales, o null si ocurre un error.
+     */
     public ResultSet Mensuales() {
         Connection con = conexion.getConnection();
         String query = "SELECT " +

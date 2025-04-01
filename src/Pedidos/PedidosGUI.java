@@ -1,13 +1,9 @@
 package Pedidos;
-
 import Caja.CajaGUI;
 import Conexion.Conexion;
 import Correo.EnviarCorreo;
 import Historial.HistorialPedidos;
 import Producto.ProductoGUI;
-import Sockets.ChatServer;
-import Sockets.GUIComunicacionServer;
-
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -25,7 +21,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * Clase principal que representa la interfaz gráfica de usuario para el módulo de pedidos.
+ * Permite gestionar pedidos de productos, incluyendo la selección de clientes, productos,
+ * cantidades y generación de ventas.
+ */
 public class PedidosGUI {
     private JTextField textField4;
     private JComboBox comboBoxTipo;
@@ -65,57 +65,98 @@ public class PedidosGUI {
     private JPanel main;
     private JButton BackButton;
     private JCheckBox IVACheckBox;
+    /**
+     * Variable para almacenar el subtotal del pedido.
+     */
     int sub_total = 0;
     private JFrame frame, parentFrame;
-    //JFrame frame = new JFrame("Main");
-
-    //private JFormattedTextField stockminimotxt;
 
     /************************************************************************************************************************/
     //map para el stock simulado
+
+    /**
+     * Mapa para simular el stock durante el proceso de pedido.
+     */
     private Map<Integer, Integer> stockSimulado = new HashMap<>();
 
+
+    /**
+     * Total del pedido.
+     */
     //total del pedido
     int total = 0;
 
     int tot = 0;
 
+    /**
+     * Contador de ítems en el carrito (auto incremental).
+     */
     //item del carrito (auto incremental)
     int item = 0;
 
+
+    /**
+     * Nombre del producto agregado.
+     */
     //nombre del producto agregado
     String product="";
 
+
+    /**
+     * ID del producto agregado.
+     */
     //id del producto agregado
     String idProducto="";
 
     int precio_u = 0;
 
+
+    /**
+     * Modelo de tabla para los productos.
+     */
             //objeto defaultTableModel
     DefaultTableModel model = new DefaultTableModel();
 
 
 /*************************************************************************************************************************/
     //conexion a la base de datos(cf:objeto de la conexion)
+    /**
+     * Objeto para la conexión a la base de datos.
+     */
     Conexion cf = new Conexion();
 
+
+    /**
+     * Objeto para la interfaz de caja.
+     */
     //importar caja
     CajaGUI c = new CajaGUI();
 
-    //importarChat
-    //GUIComunicacionServer chat = new GUIComunicacionServer();
-    //ChatServer cs = new ChatServer();
 
-    //historial pedidos
+    /**
+     * Objeto para el historial de pedidos.
+     */
     HistorialPedidos h = new HistorialPedidos();
     private String textico;
 
+    /**
+     * Objeto para generar PDFs.
+     */
     GenerarPDF pdf = new GenerarPDF();
 
+
+    /**
+     * Objeto para enviar correos electrónicos.
+     */
     EnviarCorreo correo = new EnviarCorreo();
 
     /************************************************************************************************************************/
 
+    /**
+     * Constructor de la clase PedidosGUI.
+     *
+     * @param parentFrame El frame padre desde el cual se invoca esta interfaz.
+     */
     public PedidosGUI(JFrame parentFrame) {
         this.parentFrame = parentFrame;
 
@@ -127,6 +168,7 @@ public class PedidosGUI {
                 label.setFont(new Font("Arial", Font.BOLD, 14));
             }
         }
+
 
         aplicarEstilos();
 
@@ -510,6 +552,9 @@ public class PedidosGUI {
     }
     //fin de las acciones
 
+    /**
+     * Aplica estilos visuales a los componentes de la interfaz.
+     */
     public void aplicarEstilos() {
         Panelcantidad.setBackground(Color.WHITE);
         agregarProductoButton.setBackground(new Color(0, 51, 102));
@@ -539,6 +584,9 @@ public class PedidosGUI {
 
     }
 
+    /**
+     * Agrega una imagen de fondo al panel principal.
+     */
     private void agregarImagenFondo() {
         JLabel labelFondo = new JLabel(new ImageIcon(getClass().getResource("imagenes/img_8.png")));
         PanelPrincipal.add(labelFondo); // Agregar la imagen al panel
@@ -550,6 +598,9 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
+        /**
+         * Agrega un producto al carrito de compras.
+         */
         //metodo de agregar productos al carrito
         void agregarProducto() {
             try {
@@ -651,6 +702,10 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
+
+        /**
+         * Configura las columnas de la tabla del carrito.
+         */
         //definir columnas en la tabla del carrito
         public void Carrito() {
             DefaultTableModel pedidos = new DefaultTableModel();
@@ -667,6 +722,9 @@ public class PedidosGUI {
         /*-------------------------------------------------------------------------------------------------------------*/
 
         //cargar clientes en el combobox de clientes
+        /**
+         * Carga los clientes desde la base de datos al combobox correspondiente.
+         */
         private void cargarClientes() {
             try {
                 Connection con = cf.getConnection();
@@ -694,6 +752,9 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
+        /**
+         * Carga los productos desde la base de datos al combobox correspondiente.
+         */
         private void cargarProductos() {
             try {
                 Connection con = cf.getConnection();
@@ -723,6 +784,11 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
+        /**
+         * Busca clientes según el texto proporcionado.
+         *
+         * @param texto El texto a buscar en los nombres de clientes.
+         */
         private void buscarClientes(String texto) {
             new Thread(() -> {
                 try {
@@ -756,6 +822,11 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
+        /**
+         * Busca productos según el texto proporcionado.
+         *
+         * @param texto El texto a buscar en los nombres de productos.
+         */
         private void buscarProductos(String texto) {
             new Thread(() -> {
                 try {
@@ -791,6 +862,9 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
+        /**
+         * Elimina la fila seleccionada de la tabla del carrito.
+         */
         private void borrarFilaSeleccionada() {
             int filaSeleccionada = tablaCarrito.getSelectedRow();
             if (filaSeleccionada != -1) {
@@ -823,6 +897,16 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
+        /**
+         * Inserta un detalle financiero en la base de datos.
+         *
+         * @param tipopago El tipo de pago utilizado.
+         * @param ingreso El monto de ingreso.
+         * @param egreso El monto de egreso.
+         * @param descripcion La descripción del movimiento.
+         * @param fechah La fecha y hora del movimiento.
+         * @return El ID generado para el detalle financiero.
+         */
         public int insertarDetalleFinanciero(String tipopago, int ingreso, int egreso, String descripcion, String fechah) {
             Connection con = cf.getConnection();
             PreparedStatement psDetalle = null;
@@ -862,6 +946,9 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
+        /**
+         * Calcula y aplica el IVA al total del pedido.
+         */
         public void IVA(){
             if(IVACheckBox.isSelected()){
                 double iva = tot * 0.19;
@@ -873,6 +960,11 @@ public class PedidosGUI {
 
         /*-------------------------------------------------------------------------------------------------------------*/
 
+        /**
+         * Envía la factura por correo electrónico al cliente.
+         *
+         * @param idCliente El ID del cliente al que se enviará la factura.
+         */
         public void FacturaPorGmail(int idCliente){
             try {
                 Connection con = cf.getConnection();
@@ -911,6 +1003,9 @@ public class PedidosGUI {
         //fin de metodos
 /************************************************************************************************************************/
     //main
+    /**
+     * Método principal para ejecutar la interfaz de pedidos.
+     */
     public void RunPedidos() {
         frame = new JFrame("Pedidos");
         frame.setContentPane(new PedidosGUI(frame).PanelPrincipal);
@@ -937,6 +1032,9 @@ public class PedidosGUI {
 
     }
 
+    /**
+     * Clase interna que representa un panel con imagen de fondo.
+     */
     class FondoPanel extends JPanel {
         private Image imagenFondo;
 
@@ -962,23 +1060,48 @@ public class PedidosGUI {
 
 /************************************************************************************************************************/
 
+    /**
+     * Clase que representa un item de cliente con su información básica.
+     */
     //clase para obtener el id del cliente
     class ClientesItem {
         private int id_cliente;
         private String nombre, cedula;
 
+        /**
+         * Constructor de la clase ClientesItem.
+         *
+         * @param id_cliente El ID del cliente.
+         * @param cedula La cédula del cliente.
+         * @param nombre El nombre del cliente.
+         */
         public ClientesItem(int id_cliente, String cedula, String nombre) {
             this.id_cliente= id_cliente;
             this.nombre = nombre;
             this.cedula = cedula;
         }
 
+        /**
+         * Obtiene el ID del cliente.
+         *
+         * @return El ID del cliente.
+         */
         public int getId() {
             return id_cliente;
         }
 
+        /**
+         * Obtiene la cédula del cliente.
+         *
+         * @return La cédula del cliente.
+         */
         public String getCedula(){return cedula;}
 
+        /**
+         * Representación en String del cliente.
+         *
+         * @return El nombre del cliente.
+         */
         @Override
         public String toString() {
             return nombre;
@@ -986,11 +1109,23 @@ public class PedidosGUI {
     }
 
 
+    /**
+     * Clase que representa un item de producto con su información básica.
+     */
     //clase para obtener el id del cliente
     class ProductosItem {
         private int id_producto, stock, stock_minimo, precio_unitario;
         private String nombre;
 
+        /**
+         * Constructor de la clase ProductosItem.
+         *
+         * @param id_producto El ID del producto.
+         * @param nombre El nombre del producto.
+         * @param stock El stock disponible del producto.
+         * @param stock_minimo El stock mínimo del producto.
+         * @param precio_unitario El precio unitario del producto.
+         */
         public ProductosItem(int id_producto, String nombre, int stock, int stock_minimo, int precio_unitario) {
             this.id_producto = id_producto;
             this.nombre = nombre;
@@ -1000,16 +1135,41 @@ public class PedidosGUI {
 
         }
 
+        /**
+         * Obtiene el ID del producto.
+         *
+         * @return El ID del producto.
+         */
         public int getId() {
             return id_producto;
         }
 
+        /**
+         * Obtiene el precio unitario del producto.
+         *
+         * @return El precio unitario del producto.
+         */
         public int getPrecio_unitario(){return precio_unitario;}
 
+        /**
+         * Obtiene el stock mínimo del producto.
+         *
+         * @return El stock mínimo del producto.
+         */
         public int getStock_minimo() {return stock_minimo;}
 
+        /**
+         * Obtiene el stock disponible del producto.
+         *
+         * @return El stock disponible del producto.
+         */
         public int getStock(){return stock;}
 
+        /**
+         * Representación en String del producto.
+         *
+         * @return El nombre del producto.
+         */
         @Override
         public String toString() {
             return nombre;

@@ -5,11 +5,20 @@ import Conexion.Conexion;
 import javax.swing.*;
 import java.sql.*;
 
+/**
+ * DAO (Data Access Object) para la gestión de detalles financieros.
+ * Proporciona métodos para agregar, actualizar y eliminar registros de detalles financieros.
+ * @author Nicolle
+ */
 public class Detalle_FinancieroDAO
 {
     private Conexion conexion = new Conexion();
 
-
+    /**
+     * Agrega un nuevo registro de detalle financiero a la base de datos.
+     * @param detalle_financiero El objeto Detalle_Financiero que contiene los datos del nuevo registro.
+     * @return El ID del nuevo registro insertado, o -1 si ocurre un error.
+     */
     public int Agregar(Detalle_Financiero detalle_financiero) {
         Connection con = conexion.getConnection();
         int nuevoIdFinanciero = -1;
@@ -48,8 +57,10 @@ public class Detalle_FinancieroDAO
         }
     }
 
-
-
+    /**
+     * Actualiza un registro de detalle financiero existente en la base de datos.
+     * @param detalle_financiero El objeto Detalle_Financiero que contiene los datos actualizados del registro.
+     */
     public void Actualizar(Detalle_Financiero detalle_financiero){
         Connection con = conexion.getConnection();
 
@@ -78,6 +89,10 @@ public class Detalle_FinancieroDAO
         }
     }
 
+    /**
+     * Obtiene el último ID insertado en la tabla detalle_financiero.
+     * @return El último ID insertado, o -1 si ocurre un error.
+     */
     public int obtenerUltimoIdInsertado() {
         int ultimoId = -1; // Valor predeterminado en caso de error
         String query = "SELECT id_detallefinanciero FROM detalle_Financiero ORDER BY id_detallefinanciero DESC LIMIT 1";
@@ -95,7 +110,10 @@ public class Detalle_FinancieroDAO
         return ultimoId;
     }
 
-
+    /**
+     * Elimina un registro de detalle financiero de la base de datos.
+     * @param id_detallefinanciero El ID del registro a eliminar.
+     */
     public void Eliminar(int id_detallefinanciero)
     {
         Connection con = conexion.getConnection();
@@ -125,5 +143,3 @@ public class Detalle_FinancieroDAO
     }
 
 }
-
-

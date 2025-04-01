@@ -9,6 +9,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 
+/**
+ * Clase para mostrar y gestionar el historial de pedidos.
+ * @author Arturo
+ */
 public class HistorialPedidos {
     private JButton button1;
     private JTable tablahistorial;
@@ -16,6 +20,10 @@ public class HistorialPedidos {
     private JLabel subtitulo;
     Conexion conR = new Conexion();
 
+    /**
+     * Constructor de la clase HistorialPedidos.
+     * @param frame El JFrame principal.
+     */
     public HistorialPedidos(JFrame frame) {
         //llamar los pedidos en la tabla
         Historialordenes();
@@ -59,11 +67,16 @@ public class HistorialPedidos {
         });
     }
 
+    /**
+     * Constructor vacío de la clase HistorialPedidos.
+     */
     public HistorialPedidos() {
 
     }
 
-
+    /**
+     * Llena la tabla con el historial de pedidos.
+     */
     public void Historialordenes() {
         DefaultTableModel orden = new DefaultTableModel();
         orden.addColumn("id_pedido");
@@ -102,6 +115,9 @@ public class HistorialPedidos {
         }
     }
 
+    /**
+     * Clase interna para editar la celda de estado en la tabla.
+     */
     class EstadoCellEditor extends DefaultCellEditor {
         public EstadoCellEditor() {
             super(new JComboBox<>(new String[]{"Entregado", "Enviado"}));
@@ -115,6 +131,11 @@ public class HistorialPedidos {
         }
     }
 
+    /**
+     * Actualiza el estado de un pedido en la base de datos.
+     * @param idPedido El ID del pedido.
+     * @param nuevoEstado El nuevo estado del pedido.
+     */
     public void actualizarEstado(int idPedido, String nuevoEstado) {
         Connection con = conR.getConnection();
 
@@ -139,6 +160,10 @@ public class HistorialPedidos {
         }
     }
 
+    /**
+     * Actualiza el stock de los productos asociados a un pedido.
+     * @param idPedido El ID del pedido.
+     */
     public void actualizarStock(int idPedido) {
         Connection con = conR.getConnection();
 
@@ -183,7 +208,9 @@ public class HistorialPedidos {
         }
     }
 
-
+    /**
+     * Inicia la GUI del historial de pedidos.
+     */
     public void runHistorial() {
 
         JFrame frame = new JFrame("Historial Pedidos");
@@ -194,9 +221,4 @@ public class HistorialPedidos {
         frame.setResizable(false);
         frame.setVisible(true);
     }
-
-
-
-
 }
-

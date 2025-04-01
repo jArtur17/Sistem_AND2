@@ -10,7 +10,6 @@ import Caja.CajaDAO;
 import Caja.CajaGUI;
 import Conexion.Conexion;
 import Pedidos.PedidosGUI;
-import org.w3c.dom.ls.LSOutput;
 
 import java.awt.*;
 import java.net.URL;
@@ -24,6 +23,11 @@ import java.awt.event.MouseEvent;
 import java.sql.*;
 
 
+/**
+ * GUI para la gestión de detalles financieros.
+ * Permite agregar, actualizar, eliminar y visualizar registros de detalles financieros.
+ * @author Nicolle
+ */
 public class Detalle_FinancieroGUI {
 
     private JPanel main;
@@ -51,7 +55,10 @@ public class Detalle_FinancieroGUI {
     CajaGUI cj = new CajaGUI();
 
 
-
+    /**
+     * Constructor de la clase Detalle_FinancieroGUI.
+     * @param parentFrame El JFrame padre de esta GUI.
+     */
     public Detalle_FinancieroGUI(JFrame parentFrame)
     {
         textField1.setEditable(false);
@@ -198,11 +205,11 @@ public class Detalle_FinancieroGUI {
                     int idCaja = cajaDAO.ObtenerIdCajaPorIdDetalleFinanciero(id_detallefinanciero);
 
                     //if (idCaja != -1) {
-                        // Actualizar el movimiento en caja con la nueva información
-                       // cajaDAO.ActualizarMovimiento(idCaja, tipoOperacion + " - " + descripcion, ingreso - egreso, id_detallefinanciero);
+                    // Actualizar el movimiento en caja con la nueva información
+                    // cajaDAO.ActualizarMovimiento(idCaja, tipoOperacion + " - " + descripcion, ingreso - egreso, id_detallefinanciero);
                     //} else {
-                        //OptionPane.showMessageDialog(null, "No se encontró un movimiento en caja con ese ID de detalle financiero.");
-                   // }
+                    //OptionPane.showMessageDialog(null, "No se encontró un movimiento en caja con ese ID de detalle financiero.");
+                    // }
 
                     clear();
                     showdata();
@@ -299,6 +306,9 @@ public class Detalle_FinancieroGUI {
 
     }
 
+    /**
+     * Aplica estilos visuales a los componentes de la GUI.
+     */
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
 
@@ -324,7 +334,9 @@ public class Detalle_FinancieroGUI {
         }
     }
 
-
+    /**
+     * Muestra los datos de la tabla detalle_financiero en la tabla de la GUI.
+     */
     public void showdata() {
         NonEditableTableModel modelo = new NonEditableTableModel();
 
@@ -371,6 +383,9 @@ public class Detalle_FinancieroGUI {
         }
     }
 
+    /**
+     * Actualiza la tabla de la GUI con los datos de la tabla detalle_financiero.
+     */
     public void actualizarTabla() {
         DefaultTableModel modelo = (DefaultTableModel) table1.getModel();
         modelo.setRowCount(0); // Limpia la tabla
@@ -381,9 +396,9 @@ public class Detalle_FinancieroGUI {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM detalle_financiero");
 
-                while (rs.next()) {
-                    modelo.addRow(new Object[]{rs.getInt("id_detallefinanciero"), rs.getString("tipo_pago"), rs.getInt("ingreso"), rs.getInt("egreso"), rs.getString("descripcion"), rs.getString("fecha_hora")});
-                }
+            while (rs.next()) {
+                modelo.addRow(new Object[]{rs.getInt("id_detallefinanciero"), rs.getString("tipo_pago"), rs.getInt("ingreso"), rs.getInt("egreso"), rs.getString("descripcion"), rs.getString("fecha_hora")});
+            }
 
         }catch (SQLException e) {
             e.printStackTrace();
@@ -392,8 +407,9 @@ public class Detalle_FinancieroGUI {
 
     }
 
-
-
+    /**
+     * Clase interna para crear un modelo de tabla no editable.
+     */
     public class NonEditableTableModel extends DefaultTableModel {
         @Override
         public boolean isCellEditable(int row, int column) {
@@ -401,7 +417,9 @@ public class Detalle_FinancieroGUI {
         }
     }
 
-
+    /**
+     * Limpia los campos de texto de la GUI.
+     */
     public void clear()
     {
         textField1.setText("");
@@ -411,6 +429,15 @@ public class Detalle_FinancieroGUI {
         textField5.setText("");
     }
 
+    /**
+     * Inserta un nuevo registro en la tabla detalle_financiero.
+     * @param tipopago El tipo de pago.
+     * @param ingreso El monto de ingreso.
+     * @param egreso El monto de egreso.
+     * @param descripcion La descripción del registro.
+     * @param fechah La fecha y hora del registro.
+     * @return El ID del registro insertado.
+     */
     public int insertarDetalleFinanciero(String tipopago, int ingreso, int egreso, String descripcion, String fechah) {
         Connection con = conexion.getConnection();
         PreparedStatement psDetalle = null;
@@ -447,7 +474,9 @@ public class Detalle_FinancieroGUI {
             }
         }return -1;
     }
-    // ** Clase interna para dibujar el fondo con imagen y degradado **
+    /**
+     * Clase interna para dibujar el fondo con imagen y degradado.
+     */
     class FondoPanel extends JPanel {
         private Image imagenFondo;
 
@@ -477,6 +506,9 @@ public class Detalle_FinancieroGUI {
         }
     }
 
+    /**
+     * Inicia la GUI de Detalle Financiero.
+     */
     public void runFinanciero() {
 
         frame = new JFrame("Data Base Game");
@@ -509,5 +541,3 @@ public class Detalle_FinancieroGUI {
 
 
 }
-
-

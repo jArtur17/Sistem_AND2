@@ -19,33 +19,55 @@ import java.util.ArrayList;
 
 import static java.sql.Date.valueOf;
 
+/**
+ * La clase `ProductoGUI` proporciona una interfaz gráfica para la gestión de productos.
+ *
+ * @author Nicolle
+ */
 public class ProductoGUI {
+    /** El panel principal que contiene todos los componentes de la GUI. */
     private JPanel main;
+    /** Campos de texto para los datos del producto. */
     private JTextField textField1;
     private JTextField textField2;
     private JTextField textField3;
     private JTextField textField4;
     private JTextField textField5;
     private JTextField textField6;
+    /** Botones para registrar, actualizar, eliminar y volver. */
     private JButton registrarButton;
     private JButton actualizarButton;
     private JButton eliminarButton;
     private JButton BackButton;
+    /** La tabla que muestra los datos de los productos. */
     private JTable table1;
+    /** Campos de texto adicionales para datos del producto. */
     private JTextField textField7;
     private JTextField textField9;
     private JTextField textField8;
     private JTextField textField10;
+    /** Botón para realizar búsquedas. */
     private JButton button1;
+    /** Campo de texto para realizar búsquedas. */
     private JTextField campoBusqueda;
+    /** El frame principal de la GUI. */
     private JFrame frame;
+    /** El frame padre de la GUI. */
     private JFrame parentFrame;
-
+    /** Objeto para la conexión a la base de datos. */
     private Conexion connectionFA = new Conexion();
+    /** Objeto DAO para interactuar con la base de datos de productos. */
     ProductoDAO productoDAO = new ProductoDAO();
+    /** Objeto Producto para almacenar datos de productos. */
     Producto producto = new Producto();
+    /** Variable para almacenar el número de filas seleccionadas. */
     int rows = 0;
 
+    /**
+     * Constructor de `ProductoGUI`.
+     *
+     * @param parentFrame El frame padre de esta GUI.
+     */
     public ProductoGUI(JFrame parentFrame)
     {
         textField1.setEditable(false);
@@ -75,59 +97,59 @@ public class ProductoGUI {
 
         aplicarEstilos();
 
-            registrarButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // Verificar si algún campo está vacío
-                    if (textField2.getText().trim().isEmpty() ||
-                            textField3.getText().trim().isEmpty() ||
-                            textField4.getText().trim().isEmpty() ||
-                            textField5.getText().trim().isEmpty() ||
-                            textField6.getText().trim().isEmpty() ||
-                            textField7.getText().trim().isEmpty() ||
-                            textField8.getText().trim().isEmpty() ||
-                            textField9.getText().trim().isEmpty() ||
-                            textField10.getText().trim().isEmpty()) {
+        registrarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Verificar si algún campo está vacío
+                if (textField2.getText().trim().isEmpty() ||
+                        textField3.getText().trim().isEmpty() ||
+                        textField4.getText().trim().isEmpty() ||
+                        textField5.getText().trim().isEmpty() ||
+                        textField6.getText().trim().isEmpty() ||
+                        textField7.getText().trim().isEmpty() ||
+                        textField8.getText().trim().isEmpty() ||
+                        textField9.getText().trim().isEmpty() ||
+                        textField10.getText().trim().isEmpty()) {
 
-                        JOptionPane.showMessageDialog(null, "Complete todos los campos");
-                        return;
-                    }
-
-                    // Obtener valores de los campos
-                    String nombre = textField2.getText();
-                    String categoria = textField3.getText();
-                    int stock = Integer.parseInt(textField4.getText());
-                    int stock_minimo = Integer.parseInt(textField5.getText());
-                    Date fecha_vencimiento = valueOf(textField6.getText());
-                    String indicaciones = textField9.getText();
-                    String almacen = textField8.getText();
-                    String lote = textField10.getText();
-
-                    String precio_t = (textField5.getText());
-
-                    if (!precio_t.matches("\\d+")) {
-                        JOptionPane.showMessageDialog(null, "El campo de precio solo debe contener números");
-                        return;
-                    }
-
-                    String nombreProducto = textField2.getText();
-                    if(productoDAO.existeProducto(nombreProducto)){
-                        JOptionPane.showMessageDialog(null, "El producto ya existe");
-                        return;
-                    }else{
-                        int precio_unitario = Integer.parseInt(precio_t);
-
-                        //se agrega el producto
-                        Producto producto = new Producto(0,  nombre, categoria, stock, stock_minimo, precio_unitario, fecha_vencimiento, indicaciones, almacen, lote);
-                        productoDAO.agregar(producto);
-                        JOptionPane.showMessageDialog(null, "Producto agregado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                        clear();
-                        obtainInvent();
-                    }
-
-
+                    JOptionPane.showMessageDialog(null, "Complete todos los campos");
+                    return;
                 }
-            });
+
+                // Obtener valores de los campos
+                String nombre = textField2.getText();
+                String categoria = textField3.getText();
+                int stock = Integer.parseInt(textField4.getText());
+                int stock_minimo = Integer.parseInt(textField5.getText());
+                Date fecha_vencimiento = valueOf(textField6.getText());
+                String indicaciones = textField9.getText();
+                String almacen = textField8.getText();
+                String lote = textField10.getText();
+
+                String precio_t = (textField5.getText());
+
+                if (!precio_t.matches("\\d+")) {
+                    JOptionPane.showMessageDialog(null, "El campo de precio solo debe contener números");
+                    return;
+                }
+
+                String nombreProducto = textField2.getText();
+                if(productoDAO.existeProducto(nombreProducto)){
+                    JOptionPane.showMessageDialog(null, "El producto ya existe");
+                    return;
+                }else{
+                    int precio_unitario = Integer.parseInt(precio_t);
+
+                    //se agrega el producto
+                    Producto producto = new Producto(0,  nombre, categoria, stock, stock_minimo, precio_unitario, fecha_vencimiento, indicaciones, almacen, lote);
+                    productoDAO.agregar(producto);
+                    JOptionPane.showMessageDialog(null, "Producto agregado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    clear();
+                    obtainInvent();
+                }
+
+
+            }
+        });
 
 
 
@@ -265,6 +287,9 @@ public class ProductoGUI {
 
 
 
+    /**
+     * Aplica estilos visuales a los componentes de la GUI.
+     */
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
         registrarButton.setBackground(new Color(0, 51, 102));
@@ -289,6 +314,9 @@ public class ProductoGUI {
         }
     }
 
+    /**
+     * Obtiene y muestra los datos de los productos en la tabla.
+     */
     public void obtainInvent()
     {
         NonEditableTableModel modeloa = new NonEditableTableModel();
@@ -342,6 +370,9 @@ public class ProductoGUI {
     }
 
 
+    /**
+     * Clase interna para un modelo de tabla no editable.
+     */
     public class NonEditableTableModel extends DefaultTableModel {
         @Override
         public boolean isCellEditable(int row, int column) {
@@ -351,6 +382,9 @@ public class ProductoGUI {
 
 
 
+    /**
+     * Limpia los campos de texto.
+     */
     public void clear()
     {
         textField1.setText("");
@@ -365,6 +399,9 @@ public class ProductoGUI {
         textField10.setText("");
     }
 
+    /**
+     * Inicia la GUI de gestión de productos.
+     */
     public  void runProducto(){
 
         frame = new JFrame("Gestion de Productos");
@@ -385,6 +422,9 @@ public class ProductoGUI {
         frame.setLocationRelativeTo(null);
     }
 
+    /**
+     * Clase interna para el panel de fondo con una imagen.
+     */
     class FondoPanel extends JPanel {
         private Image imagenFondo;
 
@@ -404,6 +444,13 @@ public class ProductoGUI {
         }
     }
 
+    /**
+     * Busca productos en la base de datos por nombre.
+     *
+     * @param terminoBusqueda El término de búsqueda.
+     * @return Una lista de productos que coinciden con la búsqueda.
+     * @throws SQLException Si ocurre un error de SQL.
+     */
     public java.util.List<Producto> buscarProductos(String terminoBusqueda) throws SQLException {
 
         PreparedStatement consulta = null;
@@ -437,6 +484,11 @@ public class ProductoGUI {
         return productos;
     }
 
+    /**
+     * Actualiza la tabla con los resultados de la búsqueda de productos.
+     *
+     * @param productos La lista de productos a mostrar en la tabla.
+     */
     public void actualizarTablaProductos(java.util.List<Producto> productos) {
         DefaultTableModel modeloa = new DefaultTableModel();
 
@@ -472,4 +524,3 @@ public class ProductoGUI {
         table1.setModel(modeloa);
     }
 }
-

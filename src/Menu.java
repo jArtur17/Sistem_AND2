@@ -24,6 +24,13 @@ import java.net.URL;
 
 
 
+/**
+ * Clase Menu que representa la interfaz gráfica principal del sistema.
+ * Contiene botones para navegar a diferentes secciones, como pedidos, clientes, productos,
+ * historial, reportes y más. Además, permite la comunicación mediante chat.
+ *
+ * @author Nicolle
+ */
 public class Menu {
     private JPanel main;
     private JButton movimientoButton;
@@ -37,7 +44,12 @@ public class Menu {
 
     private JFrame frame;
 
-
+    /**
+     * Constructor de la clase Menu.
+     * Inicializa la interfaz gráfica y configura los botones.
+     *
+     * @param frame La ventana principal del sistema.
+     */
     public Menu(JFrame frame) {
         this.frame = frame;
 
@@ -46,8 +58,7 @@ public class Menu {
         main.setLayout(new BorderLayout());
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10)); // Espaciado horizontal: 20px, vertical: 10px
-
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setOpaque(false);
 
         // Crear botones estilizados
@@ -81,7 +92,7 @@ public class Menu {
         main.add(buttonPanel, BorderLayout.NORTH);
         main.add(imageLabel, BorderLayout.SOUTH);
 
-        // Configuración de eventos
+        // Configuración de eventos para cada botón
         movimientoButton.addActionListener(e -> {
             Detalle_FinancieroGUI detalleFinancieroGUI = new Detalle_FinancieroGUI(frame);
             detalleFinancieroGUI.runFinanciero();
@@ -94,62 +105,40 @@ public class Menu {
             frame.setVisible(false);
         });
 
-        pedidosButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                PedidosGUI pGUI = new PedidosGUI(frame);
-                pGUI.RunPedidos();
-                frame.setVisible(false);
-            }
+        pedidosButton.addActionListener(e -> {
+            PedidosGUI pGUI = new PedidosGUI(frame);
+            pGUI.RunPedidos();
+            frame.setVisible(false);
         });
 
-        clientesButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ClienteGUI clientes = new ClienteGUI(frame);
-                clientes.runCliente();
-                frame.setVisible(false);
-            }
+        clientesButton.addActionListener(e -> {
+            ClienteGUI clientes = new ClienteGUI(frame);
+            clientes.runCliente();
+            frame.setVisible(false);
         });
 
-        chatButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //GUIComunicacionServer guiComunicacionServer = new GUIComunicacionServer();
-                //guiComunicacionServer.runservidor();
-                GUIComunicacion guiComunicacion = new GUIComunicacion();
-                guiComunicacion.runcliente();
-            }
+        chatButton.addActionListener(e -> {
+            GUIComunicacion guiComunicacion = new GUIComunicacion();
+            guiComunicacion.runcliente();
         });
 
-        productosButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ProductoGUI producto = new ProductoGUI(frame);
-                producto.runProducto();
-                frame.setVisible(false);
-            }
+        productosButton.addActionListener(e -> {
+            ProductoGUI producto = new ProductoGUI(frame);
+            producto.runProducto();
+            frame.setVisible(false);
         });
 
-        hisotrialButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                HistorialPedidosGUI h = new HistorialPedidosGUI(frame);
-                h.runHistorial();
-                frame.setVisible(false);
-            }
+        hisotrialButton.addActionListener(e -> {
+            HistorialPedidosGUI h = new HistorialPedidosGUI(frame);
+            h.runHistorial();
+            frame.setVisible(false);
         });
 
-        reportesButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ReportesGUI reportesGUI  = new ReportesGUI(frame);
-                reportesGUI.runReport();
-                frame.setVisible(false);
-            }
+        reportesButton.addActionListener(e -> {
+            ReportesGUI reportesGUI = new ReportesGUI(frame);
+            reportesGUI.runReport();
+            frame.setVisible(false);
         });
-
 
         FondoPanel fondoPanel = new FondoPanel();
         main.setOpaque(false);
@@ -167,6 +156,12 @@ public class Menu {
         frame.setVisible(true);
     }
 
+    /**
+     * Crea un botón con un estilo personalizado.
+     *
+     * @param text Texto del botón.
+     * @return Un JButton con estilo aplicado.
+     */
     public JButton createStyledButton(String text) {
         JButton button = new JButton(text);
         button.setBackground(new Color(0, 51, 102)); // Azul oscuro
@@ -178,6 +173,9 @@ public class Menu {
         return button;
     }
 
+    /**
+     * Clase interna FondoPanel para aplicar un fondo degradado al menú.
+     */
     class FondoPanel extends JPanel {
         @Override
         protected void paintComponent(Graphics g) {
@@ -189,10 +187,13 @@ public class Menu {
         }
     }
 
+    /**
+     * Método principal que inicia la aplicación.
+     *
+     * @param args Argumentos de línea de comandos.
+     */
     public static void main(String[] args) {
         JFrame frame = new JFrame("Menu");
         new Menu(frame);
     }
 }
-
-

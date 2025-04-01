@@ -1,7 +1,5 @@
 package Sockets;
 
-import Cliente.ClienteGUI;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -18,6 +16,11 @@ import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
 
+/**
+ * Clase que representa la interfaz gráfica para la comunicación del chat.
+ *
+ * @author Nicolle
+ */
 public class GUIComunicacion {
     private JTextField textField1;
     private JButton enviarMensajeButton;
@@ -28,64 +31,55 @@ public class GUIComunicacion {
     private BufferedReader in;
     private JFrame frame;
 
+    /**
+     * Constructor que inicializa la interfaz y establece la conexión con el servidor.
+     */
     public GUIComunicacion() {
         conectarServidor();
+        aplicarEstilos();
 
-        // Cambiar color y fuente de los labels
-        for (Component c : main.getComponents()) {
-            if (c instanceof JLabel) {
-                JLabel label = (JLabel) c;
-                label.setForeground(Color.WHITE);
-                label.setFont(new Font("Arial", Font.BOLD, 14));
+        // Permitir enviar mensaje con Enter en el JTextField
+        textField1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                enviarMensaje();
             }
-        }
+        });
 
-           aplicarEstilos();
-
-            // Permitir enviar mensaje con Enter en el JTextField
-           textField1.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    enviarMensaje();
-                }
-            });
-
-
-            enviarMensajeButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    enviarMensaje();
-                }
-            });
+        enviarMensajeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                enviarMensaje();
+            }
+        });
 
         salirButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cerrarConexion(); // Cierra la conexión correctamente
+                cerrarConexion();
                 JOptionPane.showMessageDialog(null, "Saliendo del chat...");
-
-                // Cierra solo esta ventana
                 JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(salirButton);
                 if (topFrame != null) {
-                    topFrame.dispose();  // Cierra la ventana actual
+                    topFrame.dispose();
                 }
             }
         });
     }
 
+    /**
+     * Aplica estilos visuales a la interfaz.
+     */
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
         enviarMensajeButton.setBackground(new Color(0, 51, 102));
         salirButton.setBackground(new Color(0, 51, 102));
-
-
         enviarMensajeButton.setForeground(Color.WHITE);
         salirButton.setForeground(Color.WHITE);
-
     }
 
-
-
+    /**
+     * Conecta el cliente al servidor solicitando la dirección IP.
+     */
     public void conectarServidor() {
         try {
             String serverAddress = JOptionPane.showInputDialog("Ingrese la IP del servidor (localhost si es local)");
@@ -106,7 +100,7 @@ public class GUIComunicacion {
                         SwingUtilities.invokeLater(() -> textArea1.append(finalReceivedMessage + "\n"));
                     }
                 } catch (IOException e) {
-                    if (!e.getMessage().equals("Socket closed")) {  // Evita mostrar el error si el socket fue cerrado
+                    if (!e.getMessage().equals("Socket closed")) {
                         SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Error en el cliente: " + e.getMessage()));
                     }
                 }
@@ -119,23 +113,26 @@ public class GUIComunicacion {
         }
     }
 
-
+    /**
+     * Envía un mensaje al servidor y lo muestra en la interfaz.
+     */
     public void enviarMensaje() {
         String sendMessage = textField1.getText();
         if (!sendMessage.isEmpty() && out != null) {
-            out.println("Cliente: " + sendMessage); // Agregar prefijo "Cliente"
-            textArea1.append("Yo: " + sendMessage + "\n"); // Mostrarlo como "Yo" en la interfaz
-            textField1.setText(""); // Limpiar el campo de texto después de enviar
+            out.println("Cliente: " + sendMessage);
+            textArea1.append("Yo: " + sendMessage + "\n");
+            textField1.setText("");
         }
 
-
-
-        if(sendMessage.equalsIgnoreCase("salir")){
+        if (sendMessage.equalsIgnoreCase("salir")) {
             out.println("cliente ha salido del chat");
             System.exit(0);
-
         }
     }
+
+    /**
+     * Cierra la conexión con el servidor.
+     */
     public void cerrarConexion() {
         try {
             if (out != null) {
@@ -148,11 +145,10 @@ public class GUIComunicacion {
         }
     }
 
-
-
-
+    /**
+     * Inicializa y muestra la ventana del cliente de chat.
+     */
     public void runcliente() {
-
         frame = new JFrame("Chat Cliente");
         frame.setContentPane(this.main);
         frame.pack();
@@ -173,10 +169,15 @@ public class GUIComunicacion {
         frame.setLocationRelativeTo(null);
     }
 
-
+    /**
+     * Clase interna que representa un panel con imagen de fondo.
+     */
     class FondoPanel extends JPanel {
         private Image imagenFondo;
 
+        /**
+         * Constructor que carga la imagen de fondo.
+         */
         public FondoPanel() {
             URL imagenURL = getClass().getClassLoader().getResource("imagenes/img_13.png");
             if (imagenURL != null) {
@@ -184,6 +185,11 @@ public class GUIComunicacion {
             }
         }
 
+        /**
+         * Dibuja la imagen de fondo en el panel.
+         *
+         * @param g Objeto Graphics utilizado para dibujar la imagen.
+         */
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);

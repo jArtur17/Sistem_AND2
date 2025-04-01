@@ -16,17 +16,36 @@ import java.util.ArrayList;
 import Conexion.Conexion;
 import Producto.Producto;
 
+/**
+ * La clase `ClienteGUI` proporciona una interfaz gráfica para la gestión de clientes.
+ *
+ * @author nicolle
+ */
 public class ClienteGUI {
+    /** El panel principal que contiene todos los componentes de la GUI. */
     private JPanel main;
+    /** Campos de texto para los datos del cliente. */
     private JTextField textField1, textField2, textField3, textField4, textField5, textField6;
+    /** La tabla que muestra los datos de los clientes. */
     private JTable table1;
+    /** Botones para registrar, actualizar, eliminar y volver. */
     private JButton registrarButton, actualizarButton, eliminarButton, BackButton;
+    /** Botón para realizar búsquedas. */
     private JButton button1;
+    /** Campo de texto para realizar búsquedas. */
     private JTextField campoBusqueda;
+    /** El frame principal de la GUI. */
     private JFrame frame, parentFrame;
+    /** Objeto DAO para interactuar con la base de datos de clientes. */
     private ClienteDAO clienteDAO = new ClienteDAO();
+    /** Objeto para la conexión a la base de datos. */
     private Conexion connectionFA = new Conexion();
 
+    /**
+     * Constructor de `ClienteGUI`.
+     *
+     * @param parentFrame El frame padre de esta GUI.
+     */
     public ClienteGUI(JFrame parentFrame) {
         this.parentFrame = parentFrame;
         textField1.setEditable(false);
@@ -123,6 +142,9 @@ public class ClienteGUI {
         });
     }
 
+    /**
+     * Aplica estilos visuales a los componentes de la GUI.
+     */
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
         registrarButton.setBackground(new Color(0, 51, 102));
@@ -130,12 +152,10 @@ public class ClienteGUI {
         eliminarButton.setBackground(new Color(0, 51, 102));
         BackButton.setBackground(new Color(0, 51, 102));
 
-
         registrarButton.setForeground(Color.WHITE);
         actualizarButton.setForeground(Color.WHITE);
         eliminarButton.setForeground(Color.WHITE);
         BackButton.setForeground(Color.WHITE);
-
 
         JTableHeader header = table1.getTableHeader();
         header.setBackground(new Color(0, 51, 102));
@@ -149,7 +169,9 @@ public class ClienteGUI {
         }
     }
 
-
+    /**
+     * Muestra los datos de los clientes en la tabla.
+     */
     public void showdata() {
         DefaultTableModel modelo = new DefaultTableModel();
         modelo.addColumn("Id_Cliente");
@@ -170,6 +192,9 @@ public class ClienteGUI {
         }
     }
 
+    /**
+     * Limpia los campos de texto.
+     */
     public void clear() {
         textField1.setText("");
         textField2.setText("");
@@ -179,6 +204,9 @@ public class ClienteGUI {
         textField6.setText("");
     }
 
+    /**
+     * Inicia la GUI de gestión de clientes.
+     */
     public void runCliente() {
         frame = new JFrame("Gestión de Clientes");
         FondoPanel fondoPanel = new FondoPanel();
@@ -198,6 +226,9 @@ public class ClienteGUI {
         frame.setLocationRelativeTo(null);
     }
 
+    /**
+     * Clase interna para el panel de fondo con una imagen.
+     */
     class FondoPanel extends JPanel {
         private Image imagenFondo;
 
@@ -217,6 +248,13 @@ public class ClienteGUI {
         }
     }
 
+    /**
+     * Busca clientes en la base de datos por nombre.
+     *
+     * @param terminoBusqueda El término de búsqueda.
+     * @return Una lista de clientes que coinciden con la búsqueda.
+     * @throws SQLException Si ocurre un error de SQL.
+     */
     public java.util.List<Cliente> buscarClientes(String terminoBusqueda) throws SQLException {
 
         PreparedStatement consulta = null;
@@ -246,6 +284,11 @@ public class ClienteGUI {
         return clientes;
     }
 
+    /**
+     * Actualiza la tabla con los resultados de la búsqueda de clientes.
+     *
+     * @param clientes La lista de clientes a mostrar en la tabla.
+     */
     public void actualizarTablaClientes(java.util.List<Cliente> clientes) {
         DefaultTableModel modelo = new DefaultTableModel();
 

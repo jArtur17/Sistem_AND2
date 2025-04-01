@@ -3,20 +3,10 @@ package Caja;
 import Conexion.Conexion;
 import java.sql.*;
 
-/**
- * DAO (Data Access Object) para la gestión de la caja.
- * Proporciona métodos para obtener el saldo actual, registrar movimientos,
- * eliminar movimientos por id_detallefinanciero y actualizar movimientos.
- * @author Nicolle
- */
 public class CajaDAO {
 
     private Conexion conexion = new Conexion();
 
-    /**
-     * Obtiene el saldo actual de la caja.
-     * @return El saldo actual de la caja.
-     */
     public int ObtenerSaldoActual() {
         int saldo = 0;
         String query = "SELECT SUM(valor) FROM caja";
@@ -34,11 +24,6 @@ public class CajaDAO {
         return saldo;
     }
 
-    /**
-     * Obtiene el ID de la caja asociado a un ID de detalle financiero.
-     * @param id_detallefinanciero El ID del detalle financiero.
-     * @return El ID de la caja, o -1 si no se encuentra.
-     */
     public int ObtenerIdCajaPorIdDetalleFinanciero(int id_detallefinanciero) {
         int id_caja = -1;
         String query = "SELECT id_caja FROM caja WHERE id_detallefinanciero = ?";
@@ -58,12 +43,8 @@ public class CajaDAO {
         return id_caja;
     }
 
-    /**
-     * Registra un nuevo movimiento en la caja.
-     * @param concepto El concepto del movimiento.
-     * @param valorMovimiento El valor del movimiento.
-     * @param id_detallefinanciero El ID del detalle financiero asociado.
-     */
+
+
     public void RegistrarMovimiento(String concepto, int valorMovimiento, int id_detallefinanciero) {
         Connection con = conexion.getConnection();
         try {
@@ -79,10 +60,6 @@ public class CajaDAO {
         }
     }
 
-    /**
-     * Elimina un movimiento de la caja asociado a un ID de detalle financiero.
-     * @param id_detallefinanciero El ID del detalle financiero asociado.
-     */
     public void EliminarMovimientoPorIdDetalleFinanciero(int id_detallefinanciero) {
         String query = "DELETE FROM caja WHERE id_detallefinanciero = ?";
 
@@ -97,13 +74,6 @@ public class CajaDAO {
         }
     }
 
-    /**
-     * Actualiza un movimiento existente en la caja.
-     * @param id_caja El ID de la caja del movimiento a actualizar.
-     * @param concepto El nuevo concepto del movimiento.
-     * @param valor El nuevo valor del movimiento.
-     * @param id_detallefinanciero El nuevo ID del detalle financiero asociado.
-     */
     public void ActualizarMovimiento(int id_caja, String concepto, int valor, int id_detallefinanciero) {
         String query = "UPDATE caja SET concepto = ?, valor = ?, id_detallefinanciero = ? WHERE id_caja = ?";
 
@@ -121,3 +91,4 @@ public class CajaDAO {
         }
     }
 }
+

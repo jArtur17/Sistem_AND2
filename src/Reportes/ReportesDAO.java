@@ -9,16 +9,38 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * DAO (Data Access Object) para la generación de reportes de ventas.
- * @author Nicolle
+ * La clase `ReportesDAO` proporciona métodos para generar reportes desde la base de datos.
+ *
+ * @author nicolle
  */
 public class ReportesDAO {
 
+    /** Instancia de la clase `Conexion` para establecer la conexión con la base de datos. */
     private Conexion conexion = new Conexion();
 
     /**
-     * Obtiene las ventas diarias desde la base de datos.
-     * @return Un ResultSet con las ventas diarias, o null si ocurre un error.
+     * Obtiene un ResultSet con los productos cuyo stock es menor o igual al stock mínimo.
+     *
+     * @return ResultSet con los datos de los productos con stock bajo, o null si hay un error.
+     */
+    public ResultSet StockMin() {
+        Connection con = conexion.getConnection();
+        String query = "SELECT id_producto, nombre, categoria, stock, stock_minimo FROM producto WHERE stock <= stock_minimo";
+
+        try {
+            PreparedStatement pst = con.prepareStatement(query);
+            return pst.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al consultar ventas diarias: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Obtiene un ResultSet con las ventas diarias, agrupadas por fecha.
+     *
+     * @return ResultSet con las ventas diarias, o null si hay un error.
      */
     public ResultSet Diarias() {
         Connection con = conexion.getConnection();
@@ -37,8 +59,9 @@ public class ReportesDAO {
     }
 
     /**
-     * Obtiene las ventas semanales desde la base de datos.
-     * @return Un ResultSet con las ventas semanales, o null si ocurre un error.
+     * Obtiene un ResultSet con las ventas semanales, agrupadas por semana.
+     *
+     * @return ResultSet con las ventas semanales, o null si hay un error.
      */
     public ResultSet Semanales() {
         Connection con = conexion.getConnection();
@@ -61,8 +84,9 @@ public class ReportesDAO {
     }
 
     /**
-     * Obtiene las ventas mensuales desde la base de datos.
-     * @return Un ResultSet con las ventas mensuales, o null si ocurre un error.
+     * Obtiene un ResultSet con las ventas mensuales, agrupadas por mes.
+     *
+     * @return ResultSet con las ventas mensuales, o null si hay un error.
      */
     public ResultSet Mensuales() {
         Connection con = conexion.getConnection();
@@ -82,5 +106,19 @@ public class ReportesDAO {
             return null;
         }
     }
+
+    public ResultSet Caducados() {
+        Connection con = conexion.getConnection();
+        String query = "SELECT nombre, categoria,fecha_vencimiento FROM producto WHERE fecha_vencimiento <= CURRENT_DATE ORDER BY fecha_vencimiento ASC";
+        try {
+            PreparedStatement pst = con.prepareStatement(query);
+            return pst.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al consultar productos caducados: " + e.getMessage());
+            return null;
+        }
+    }
+
 
 }

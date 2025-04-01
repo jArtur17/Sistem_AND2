@@ -1,6 +1,7 @@
 package Reportes;
 
 import Conexion.Conexion;
+import Producto.ProductoGUI;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -14,29 +15,43 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * GUI para la generación de reportes de ventas diarias, semanales y mensuales.
- * @author Nicolle
+ * La clase `ReportesGUI` proporciona una interfaz gráfica para la generación de reportes.
+ *
+ * @author nicolle
  */
 public class ReportesGUI {
+    /** El panel principal que contiene todos los componentes de la GUI. */
     private JPanel main;
+    /** Botón para volver al frame padre. */
     private JButton volverButton;
+    /** Tabla para mostrar los datos de los reportes. */
     private JTable table1;
+    /** Botones para generar reportes diarios, semanales, mensuales y de control de stock. */
     private JButton diariasButton;
     private JButton semanalesButton;
     private JButton mensualesButton;
+    private JButton controlStockButton;
+    private JButton actualizarButton;
+    private JButton productosCaducadosButton;
 
+    /** Objeto DAO para interactuar con la base de datos de reportes. */
     private ReportesDAO reportesDAO = new ReportesDAO();
 
+    /** El frame principal de la GUI. */
     private JFrame frame;
+    /** El frame padre de la GUI. */
     private JFrame parentFrame;
 
+    /** Objeto para la conexión a la base de datos. */
     private Conexion conexion = new Conexion();
 
     /**
-     * Constructor de la clase ReportesGUI.
-     * @param parentFrame El JFrame padre de esta GUI.
+     * Constructor de `ReportesGUI`.
+     *
+     * @param parentFrame El frame padre de esta GUI.
      */
     public ReportesGUI(JFrame parentFrame) {
+        actualizarButton.setVisible(false);
         this.parentFrame = parentFrame;
 
         // Cambiar color y fuente de los labels
@@ -53,6 +68,7 @@ public class ReportesGUI {
         diariasButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                actualizarButton.setVisible(false);
                 reportesDAO.Diarias();
                 showdata();
 
@@ -62,6 +78,7 @@ public class ReportesGUI {
         semanalesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                actualizarButton.setVisible(false);
                 reportesDAO.Semanales();
                 ReportesSemanales();
             }
@@ -70,9 +87,19 @@ public class ReportesGUI {
         mensualesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                actualizarButton.setVisible(false);
                 reportesDAO.Mensuales();
                 ReportesMensuales();
 
+            }
+        });
+
+        productosCaducadosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                actualizarButton.setVisible(true);
+                reportesDAO.Caducados();
+                ProdCaducados();
             }
         });
 
@@ -80,13 +107,34 @@ public class ReportesGUI {
         volverButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                actualizarButton.setVisible(false);
                 if (parentFrame != null){
                     parentFrame.setVisible(true);
                 }
                 frame.dispose();
             }
         });
+
+        controlStockButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                actualizarButton.setVisible(true);
+                reportesDAO.StockMin();
+                StockMinimo();
+            }
+        });
+        actualizarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                ProductoGUI p = new ProductoGUI(frame);
+                p.runProducto();
+            }
+        });
     }
+
+
+
 
     /**
      * Aplica estilos visuales a los componentes de la GUI.
@@ -94,15 +142,21 @@ public class ReportesGUI {
     public void aplicarEstilos() {
         main.setBackground(Color.DARK_GRAY);
 
+        controlStockButton.setBackground(new Color(0, 51, 102));
         volverButton.setBackground(new Color(0, 51, 102));
         diariasButton.setBackground(new Color(0, 51, 102));
         semanalesButton.setBackground(new Color(0, 51, 102));
         mensualesButton.setBackground(new Color(0, 51, 102));
+        actualizarButton.setBackground(new Color(0, 51, 102));
+        productosCaducadosButton.setBackground(new Color(0, 51, 102));
 
+        controlStockButton.setForeground(Color.WHITE);
         diariasButton.setForeground(Color.WHITE);
         semanalesButton.setForeground(Color.WHITE);
         mensualesButton.setForeground(Color.WHITE);
+        actualizarButton.setForeground(Color.WHITE);
         volverButton.setForeground(Color.WHITE);
+        productosCaducadosButton.setForeground(Color.WHITE);
 
         JTableHeader header = table1.getTableHeader();
         header.setBackground(new Color(0, 51, 102));
@@ -139,12 +193,80 @@ public class ReportesGUI {
                     });
                 }
 
-                // Cierra el ResultSet después de usarlo
                 rs.close();
             }
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error when displaying data: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Muestra los datos de stock mínimo en la tabla.
+     */
+    public void StockMinimo() {
+        DefaultTableModel modelo = new DefaultTableModel();
+        modelo.addColumn("ID");
+        modelo.addColumn("Nombre");
+        modelo.addColumn("Categoria");
+        modelo.addColumn("Stock");
+        modelo.addColumn("Stock minimo");
+        table1.setModel(modelo);
+
+        try {
+            ResultSet rs = reportesDAO.StockMin();
+
+            if (rs != null) {
+                while (rs.next()) {
+                    int id = rs.getInt("id_producto");
+                    String nombre = rs.getString("nombre");
+                    String categoria = rs.getString("categoria");
+                    int stock = rs.getInt("stock");
+                    int stock_minimo = rs.getInt("stock_minimo");
+
+                    modelo.addRow(new Object[]{
+                            id,
+                            nombre,
+                            categoria,
+                            stock,
+                            stock_minimo
+                    });
+                }
+                rs.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error when displaying stock data: " + e.getMessage());
+        }
+    }
+
+    public void ProdCaducados() {
+        DefaultTableModel modelo = new DefaultTableModel();
+        modelo.addColumn("Nombre");
+        modelo.addColumn("Categoria");
+        modelo.addColumn("Fecha de Vencimiento");
+        table1.setModel(modelo);
+
+        try {
+            ResultSet rs = reportesDAO.Caducados();
+
+            if (rs != null) {
+                while (rs.next()) {
+                    String nombre = rs.getString("nombre");
+                    String categoria = rs.getString("categoria");
+                    String fecha_vencimiento = rs.getString("fecha_vencimiento");
+
+                    modelo.addRow(new Object[]{
+                            nombre,
+                            categoria,
+                            fecha_vencimiento,
+                    });
+                }
+                rs.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error when displaying productos data: " + e.getMessage());
         }
     }
 
@@ -218,7 +340,7 @@ public class ReportesGUI {
     }
 
     /**
-     * Clase interna para crear un modelo de tabla no editable.
+     * Clase interna para un modelo de tabla no editable.
      */
     public class NonEditableTableModel extends DefaultTableModel {
         @Override
@@ -231,7 +353,6 @@ public class ReportesGUI {
      * Inicia la GUI de reportes.
      */
     public void runReport() {
-
         frame = new JFrame("Reportes");
         frame.setContentPane(this.main);
         frame.pack();
@@ -254,7 +375,7 @@ public class ReportesGUI {
     }
 
     /**
-     * Clase interna para dibujar el fondo con imagen.
+     * Clase interna para el panel de fondo con una imagen.
      */
     class FondoPanel extends JPanel {
         private Image imagenFondo;

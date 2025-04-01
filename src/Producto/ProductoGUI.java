@@ -287,6 +287,8 @@ public class ProductoGUI {
 
 
 
+
+
     /**
      * Aplica estilos visuales a los componentes de la GUI.
      */

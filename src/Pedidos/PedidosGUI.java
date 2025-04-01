@@ -17,6 +17,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -620,6 +621,11 @@ public class PedidosGUI {
                 ProductosItem productosItem = (ProductosItem) comboBoxProductos.getSelectedItem();
                 int idProducto = productosItem.getId();
 
+                if (estaProductoVencido(idProducto)) {
+                    JOptionPane.showMessageDialog(null, "No se puede agregar: el producto está vencido.", "Error", JOptionPane.WARNING_MESSAGE);
+                    return; // Detiene el método aquí
+                }
+
                 // Obtener el stock simulado actual (si existe)
                 int stockActual = stockSimulado.getOrDefault(idProducto, stockReal);
 
@@ -696,6 +702,8 @@ public class PedidosGUI {
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "Agregue un cliente y producto válidos.");
                 ex.printStackTrace(); // Imprimir el rastreo de la excepción para depuración
+            }catch (Exception ex){
+                JOptionPane.showMessageDialog(null, "Ocurrió un error en la base de datos. Vuelve a intentarlo.");
             }
 
         }
@@ -994,6 +1002,36 @@ public class PedidosGUI {
                 e.printStackTrace();
             }
         }
+
+    public boolean estaProductoVencido(int idProducto) throws SQLException {
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        boolean estaVencido = false;
+
+        try {
+            con = cf.getConnection();
+            String sql = "SELECT fecha_vencimiento FROM producto WHERE id_producto = ?";
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, idProducto);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                Date fechaVencimiento = rs.getDate("fecha_vencimiento");
+                if (fechaVencimiento != null) {
+                    // Compara la fecha de vencimiento con la fecha actual
+                    estaVencido = fechaVencimiento.toLocalDate().isBefore(LocalDate.now()) ||
+                            fechaVencimiento.toLocalDate().isEqual(LocalDate.now());
+                }
+            }
+        } finally {
+            //cerrar todox
+            if (rs != null) rs.close();
+            if (ps != null) ps.close();
+            if (con != null) con.close();
+        }
+        return estaVencido;
+    }
 
 
 
